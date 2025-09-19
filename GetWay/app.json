@@ -1,0 +1,40 @@
+{
+    "expo": {
+        "name": "GetWay",
+        "slug": "getway",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#FFFFFF"
+            },
+            "package": "com.getway.app"
+        },
+        "web": {
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            "expo-dev-client"
+        ],
+        "extra": {
+            "eas": {
+                "projectId": "7af154a3-a4f1-49e4-a222-68c7863ab8cd"
+            }
+        },
+        "owner": "naitik2408"
+    }
+}
