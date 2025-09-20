@@ -255,7 +255,7 @@ const Users = () => {
         if (selectedAgeGroup !== 'All' && getAgeGroup(user.age) !== selectedAgeGroup) return false;
         if (selectedOccupation !== 'All' && user.occupation !== selectedOccupation) return false;
         if (selectedMode !== 'All' && user.modePreference !== selectedMode) return false;
-        if (searchTerm && !user.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+        if (searchTerm && !user.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
             !user.id.toLowerCase().includes(searchTerm.toLowerCase())) return false;
         return true;
     });
@@ -264,12 +264,12 @@ const Users = () => {
     const sortedUsers = [...filteredUsers].sort((a, b) => {
         let aValue = a[sortField];
         let bValue = b[sortField];
-        
+
         if (sortField === 'lastActive') {
             aValue = new Date(aValue);
             bValue = new Date(bValue);
         }
-        
+
         if (sortDirection === 'asc') {
             return aValue > bValue ? 1 : -1;
         } else {
@@ -306,9 +306,9 @@ const Users = () => {
                 mode: selectedMode
             }
         };
-        
+
         console.log('Exporting cohort data:', cohortExportData);
-        
+
         // Simulate export process
         setTimeout(() => {
             alert('Cohort data exported successfully! (Check console for details)');
@@ -326,7 +326,7 @@ const Users = () => {
         }, {})
     };
 
-    const mostPopularMode = Object.entries(summaryStats.topMode).sort(([,a], [,b]) => b - a)[0]?.[0] || 'N/A';
+    const mostPopularMode = Object.entries(summaryStats.topMode).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
 
     return (
         <div className="p-6 space-y-6">
@@ -349,7 +349,7 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl shadow-md border p-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -361,7 +361,7 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl shadow-md border p-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -373,7 +373,7 @@ const Users = () => {
                         </div>
                     </div>
                 </div>
-                
+
                 <div className="bg-white rounded-xl shadow-md border p-6">
                     <div className="flex items-center justify-between">
                         <div>
@@ -402,7 +402,7 @@ const Users = () => {
                         Export Cohort Data
                     </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
@@ -417,7 +417,7 @@ const Users = () => {
                             />
                         </div>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
                         <select
@@ -430,7 +430,7 @@ const Users = () => {
                             ))}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
                         <select
@@ -443,7 +443,7 @@ const Users = () => {
                             ))}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
                         <select
@@ -456,7 +456,7 @@ const Users = () => {
                             ))}
                         </select>
                     </div>
-                    
+
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Mode Preference</label>
                         <select
@@ -480,12 +480,12 @@ const Users = () => {
                         Users ({filteredUsers.length})
                     </h2>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-200">
-                                <th 
+                                <th
                                     className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleSort('id')}
                                 >
@@ -496,7 +496,7 @@ const Users = () => {
                                         )}
                                     </div>
                                 </th>
-                                <th 
+                                <th
                                     className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleSort('name')}
                                 >
@@ -507,7 +507,7 @@ const Users = () => {
                                         )}
                                     </div>
                                 </th>
-                                <th 
+                                <th
                                     className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleSort('age')}
                                 >
@@ -519,7 +519,7 @@ const Users = () => {
                                     </div>
                                 </th>
                                 <th className="text-left py-3 px-4 font-medium text-gray-700">Mode Preference</th>
-                                <th 
+                                <th
                                     className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleSort('tripsCount')}
                                 >
@@ -530,7 +530,7 @@ const Users = () => {
                                         )}
                                     </div>
                                 </th>
-                                <th 
+                                <th
                                     className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
                                     onClick={() => handleSort('lastActive')}
                                 >
@@ -559,12 +559,11 @@ const Users = () => {
                                         <span className="text-gray-700">{user.age}</span>
                                     </td>
                                     <td className="py-4 px-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                            user.modePreference === 'Metro' ? 'bg-blue-100 text-blue-600' :
-                                            user.modePreference === 'Bus' ? 'bg-green-100 text-green-600' :
-                                            user.modePreference === 'Auto' ? 'bg-yellow-100 text-yellow-600' :
-                                            'bg-purple-100 text-purple-600'
-                                        }`}>
+                                        <span className={`px-2 py-1 rounded text-xs font-medium ${user.modePreference === 'Metro' ? 'bg-blue-100 text-blue-600' :
+                                                user.modePreference === 'Bus' ? 'bg-green-100 text-green-600' :
+                                                    user.modePreference === 'Auto' ? 'bg-yellow-100 text-yellow-600' :
+                                                        'bg-purple-100 text-purple-600'
+                                            }`}>
                                             {user.modePreference}
                                         </span>
                                     </td>
@@ -584,7 +583,7 @@ const Users = () => {
                         </tbody>
                     </table>
                 </div>
-                
+
                 {/* Pagination */}
                 <div className="p-4 border-t border-gray-200 flex items-center justify-between">
                     <div className="text-sm text-gray-700">
@@ -679,7 +678,7 @@ const Users = () => {
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="segment" />
                                 <YAxis />
-                                <Tooltip 
+                                <Tooltip
                                     content={({ active, payload, label }) => {
                                         if (active && payload && payload.length) {
                                             const data = payload[0].payload;
@@ -706,7 +705,7 @@ const Users = () => {
                         {segmentData.map((segment, index) => (
                             <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                                 <div className="flex items-center space-x-2">
-                                    <div 
+                                    <div
                                         className="w-3 h-3 rounded-full"
                                         style={{ backgroundColor: segment.color }}
                                     ></div>
@@ -737,7 +736,7 @@ const Users = () => {
                             <li>• Metro is the preferred mode (45% users)</li>
                         </ul>
                     </div>
-                    
+
                     <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
                         <h4 className="font-semibold text-green-800 mb-2">Segment Insights</h4>
                         <ul className="text-sm text-green-700 space-y-1">
@@ -746,7 +745,7 @@ const Users = () => {
                             <li>• Strong potential in homemaker segment</li>
                         </ul>
                     </div>
-                    
+
                     <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
                         <h4 className="font-semibold text-purple-800 mb-2">Recommendations</h4>
                         <ul className="text-sm text-purple-700 space-y-1">
