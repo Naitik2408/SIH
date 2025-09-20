@@ -19,8 +19,7 @@ import {
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import CustomerTabNavigator from './src/navigation/CustomerTabNavigator';
-import ScientistTabNavigator from './src/navigation/ScientistTabNavigator';
-import OwnerDashboard from './src/screens/OwnerDashboard';
+import OwnerDashboard from './src/screens/owner/OwnerDashboard';
 import { User } from './src/types';
 import { COLORS } from './src/constants';
 
@@ -91,8 +90,6 @@ export default function App() {
         switch (currentUser.role) {
             case 'customer':
                 return <CustomerTabNavigator user={currentUser} onLogout={handleLogout} />;
-            case 'scientist':
-                return <ScientistTabNavigator user={currentUser} onLogout={handleLogout} />;
             case 'owner':
                 return <OwnerDashboard user={currentUser} onLogout={handleLogout} />;
             default:

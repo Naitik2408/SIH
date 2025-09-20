@@ -8,14 +8,16 @@ import {
     Animated,
     FlatList,
     Dimensions,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+// import * as Location from 'expo-location'; // Temporarily commented out
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, SIZES, FONTS } from '../../constants';
 import { User } from '../../types';
 
 interface CustomerHomeProps {
     user: User;
-    onNavigateToNotifications?: () => void;
 }
 
 interface SurveyQuestion {
@@ -32,6 +34,78 @@ interface BenefitCard {
     icon: keyof typeof Ionicons.glyphMap;
     color: string;
     points: string;
+}
+
+// Add new interfaces for journey tracking
+interface LocationPoint {
+    lat: number;
+    lng: number;
+    accuracy: number;
+    timestamp: string;
+    speed: number | null;
+    heading: number | null;
+}
+
+interface MockLocationObject {
+    coords: {
+        latitude: number;
+        longitude: number;
+        accuracy: number | null;
+        speed: number | null;
+        heading: number | null;
+    };
+    timestamp: number;
+}
+
+interface JourneyData {
+    tripId: string;
+    userId: string;
+    status: 'in_progress' | 'completed';
+    surveyData: {
+        transportMode: string;
+        journeyPurpose: string;
+        routeSatisfaction: string;
+        timeOfDay: string;
+        travelCompanions: string;
+    };
+    tripDetails: {
+        startTime: string;
+        endTime: string | null;
+        actualDuration: number;
+        actualDurationFormatted: string;
+        startLocation: {
+            lat: number;
+            lng: number;
+            address: string;
+            timestamp: string;
+        } | null;
+        endLocation: {
+            lat: number;
+            lng: number;
+            address: string;
+            timestamp: string;
+        } | null;
+    };
+    gpsTrackingData: LocationPoint[];
+    metadata: {
+        appVersion: string;
+        deviceInfo: {
+            platform: string;
+            model: string;
+            osVersion: string;
+        };
+        networkType: string;
+        batteryLevel: number;
+        dataCollectionConsent: boolean;
+        privacyLevel: string;
+    };
+    rewards: {
+        pointsEarned: number;
+        badgesUnlocked: string[];
+        milestoneReached: boolean;
+    } | null;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -105,7 +179,7 @@ const benefitCards: BenefitCard[] = [
     }
 ];
 
-const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotifications }) => {
+const CustomerHome: React.FC<CustomerHomeProps> = ({ user }) => {
     const [showSurvey, setShowSurvey] = React.useState(false);
     const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const [journeyStarted, setJourneyStarted] = React.useState(false);
@@ -122,6 +196,12 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
     const [elapsedTime, setElapsedTime] = React.useState(0);
     const timerRef = React.useRef<NodeJS.Timeout | null>(null);
 
+    // GPS tracking states
+    const [currentJourney, setCurrentJourney] = React.useState<JourneyData | null>(null);
+    const [locationWatcher, setLocationWatcher] = React.useState<NodeJS.Timeout | null>(null);
+    const [currentLocation, setCurrentLocation] = React.useState<MockLocationObject | null>(null);
+    const [gpsTrackingPoints, setGpsTrackingPoints] = React.useState<LocationPoint[]>([]);
+
     // Carousel states
     const [currentBenefitIndex, setCurrentBenefitIndex] = React.useState(0);
     const benefitFlatListRef = React.useRef<FlatList>(null);
@@ -135,11 +215,169 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             if (timerRef.current) {
                 clearInterval(timerRef.current);
             }
+            if (locationWatcher) {
+                clearInterval(locationWatcher);
+            }
         };
     }, []);
 
     // Animation for End Journey button
     const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+    // Utility Functions
+    const generateTripId = (): string => {
+        const date = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        const time = new Date().getTime().toString().slice(-6);
+        return `TRIP_${date}_${time}`;
+    };
+
+    const formatTime = (seconds: number): string => {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        if (hours > 0) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const requestLocationPermissions = async (): Promise<boolean> => {
+        try {
+            // Mock location permission - always granted for demo
+            Alert.alert(
+                'Location Permission',
+                'Demo mode: Location tracking enabled with mock GPS data.',
+                [{ text: 'OK' }]
+            );
+            return true;
+        } catch (error) {
+            console.error('Error requesting location permissions:', error);
+            return false;
+        }
+    };
+
+    const reverseGeocode = async (lat: number, lng: number): Promise<string> => {
+        try {
+            // Mock reverse geocoding - return formatted coordinates
+            const locations = [
+                { lat: 12.9716, lng: 77.5946, name: "MG Road, Bangalore" },
+                { lat: 13.0827, lng: 80.2707, name: "Anna Salai, Chennai" },
+                { lat: 28.6139, lng: 77.2090, name: "Connaught Place, New Delhi" },
+                { lat: 19.0760, lng: 72.8777, name: "Andheri West, Mumbai" },
+            ];
+            
+            // Find closest location or return coordinates
+            const closest = locations.find(loc => 
+                Math.abs(loc.lat - lat) < 0.1 && Math.abs(loc.lng - lng) < 0.1
+            );
+            
+            return closest ? closest.name : `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        }
+    };
+
+    // Mock location generator
+    const generateMockLocation = (baseLocation?: MockLocationObject): MockLocationObject => {
+        const base = baseLocation || {
+            coords: {
+                latitude: 12.9716 + (Math.random() - 0.5) * 0.01,
+                longitude: 77.5946 + (Math.random() - 0.5) * 0.01,
+                accuracy: 3 + Math.random() * 3,
+                speed: Math.random() * 50,
+                heading: Math.random() * 360,
+            },
+            timestamp: Date.now(),
+        };
+
+        return {
+            coords: {
+                latitude: base.coords.latitude + (Math.random() - 0.5) * 0.001,
+                longitude: base.coords.longitude + (Math.random() - 0.5) * 0.001,
+                accuracy: 3 + Math.random() * 3,
+                speed: Math.random() * 50,
+                heading: Math.random() * 360,
+            },
+            timestamp: Date.now(),
+        };
+    };
+
+    const saveJourneyToStorage = async (journey: JourneyData): Promise<void> => {
+        try {
+            // Save to AsyncStorage for app functionality
+            const existingLogs = await AsyncStorage.getItem('journeyLogs');
+            const logs = existingLogs ? JSON.parse(existingLogs) : { journeyLogs: [], summary: {} };
+            
+            const existingIndex = logs.journeyLogs.findIndex((log: JourneyData) => log.tripId === journey.tripId);
+            
+            if (existingIndex >= 0) {
+                logs.journeyLogs[existingIndex] = journey;
+            } else {
+                logs.journeyLogs.push(journey);
+            }
+
+            // Update summary
+            const completedTrips = logs.journeyLogs.filter((log: JourneyData) => log.status === 'completed');
+            logs.summary = {
+                totalTrips: logs.journeyLogs.length,
+                completedTrips: completedTrips.length,
+                inProgressTrips: logs.journeyLogs.filter((log: JourneyData) => log.status === 'in_progress').length,
+                totalPoints: logs.journeyLogs.reduce((sum: number, log: JourneyData) => sum + (log.rewards?.pointsEarned || 0), 0),
+                totalDistance: completedTrips.reduce((sum: number, log: JourneyData) => {
+                    // Calculate distance between start and end points (approximate)
+                    if (log.tripDetails.startLocation && log.tripDetails.endLocation) {
+                        const start = log.tripDetails.startLocation;
+                        const end = log.tripDetails.endLocation;
+                        const distance = Math.sqrt(
+                            Math.pow(end.lat - start.lat, 2) + Math.pow(end.lng - start.lng, 2)
+                        ) * 111; // Rough conversion to km
+                        return sum + distance;
+                    }
+                    return sum;
+                }, 0),
+                totalDuration: completedTrips.reduce((sum: number, log: JourneyData) => sum + log.tripDetails.actualDuration, 0),
+                averageRating: completedTrips.length > 0 ? 4.0 : 0, // Default rating
+                preferredModes: [...new Set(logs.journeyLogs.map((log: JourneyData) => log.surveyData.transportMode))],
+                commonPurposes: [...new Set(logs.journeyLogs.map((log: JourneyData) => log.surveyData.journeyPurpose))]
+            };
+
+            await AsyncStorage.setItem('journeyLogs', JSON.stringify(logs));
+            
+            // Show the data that would be added to journeyLogs.json
+            console.log('📝 Journey Data for journeyLogs.json:');
+            console.log('=====================================');
+            console.log(JSON.stringify(journey, null, 2));
+            console.log('=====================================');
+            console.log('📊 Updated Summary:');
+            console.log(JSON.stringify(logs.summary, null, 2));
+            
+            // Create a user-friendly alert showing the data
+            const dataPreview = `
+🆔 Trip ID: ${journey.tripId}
+🚌 Transport: ${journey.surveyData.transportMode}
+🎯 Purpose: ${journey.surveyData.journeyPurpose}
+⏱️ Duration: ${journey.tripDetails.actualDurationFormatted}
+📍 GPS Points: ${journey.gpsTrackingData.length}
+🏆 Points: ${journey.rewards?.pointsEarned || 0}
+📱 Status: ${journey.status}
+            `.trim();
+
+            if (journey.status === 'completed') {
+                Alert.alert(
+                    '✅ Journey Saved!',
+                    `Your journey data has been logged:\n\n${dataPreview}\n\nThis data would be added to journeyLogs.json in a real backend system.`,
+                    [{ text: 'View in Console', onPress: () => console.log('Full Journey Data:', journey) }]
+                );
+            }
+
+            console.log('Journey saved successfully:', journey.tripId);
+        } catch (error) {
+            console.error('Error saving journey to storage:', error);
+            Alert.alert('Error', 'Failed to save journey data. Please check console for details.');
+        }
+    };
 
     // Animation functions
     const startPulseAnimation = () => {
@@ -184,15 +422,130 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
         setElapsedTime(0);
     };
 
-    const formatTime = (seconds: number): string => {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
+    // GPS Tracking Functions (Mock Implementation)
+    const startLocationTracking = async (): Promise<void> => {
+        try {
+            const hasPermission = await requestLocationPermissions();
+            if (!hasPermission) return;
 
-        if (hours > 0) {
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            // Generate initial mock location
+            const initialLocation = generateMockLocation();
+            setCurrentLocation(initialLocation);
+
+            // Start mock location updates every 5 seconds
+            const watcher = setInterval(() => {
+                const newLocation = generateMockLocation(currentLocation || undefined);
+                setCurrentLocation(newLocation);
+                
+                // Add GPS point to tracking data
+                const gpsPoint: LocationPoint = {
+                    lat: newLocation.coords.latitude,
+                    lng: newLocation.coords.longitude,
+                    accuracy: newLocation.coords.accuracy || 0,
+                    timestamp: new Date().toISOString(),
+                    speed: newLocation.coords.speed || null,
+                    heading: newLocation.coords.heading || null,
+                };
+
+                setGpsTrackingPoints(prev => [...prev, gpsPoint]);
+
+                // Update current journey with new GPS data
+                if (currentJourney) {
+                    const updatedJourney = {
+                        ...currentJourney,
+                        gpsTrackingData: [...currentJourney.gpsTrackingData, gpsPoint],
+                        tripDetails: {
+                            ...currentJourney.tripDetails,
+                            actualDuration: elapsedTime,
+                            actualDurationFormatted: formatTime(elapsedTime),
+                        },
+                        updatedAt: new Date().toISOString(),
+                    };
+
+                    setCurrentJourney(updatedJourney);
+                    // Auto-save progress every minute and simulate file update
+                    if (elapsedTime % 60 === 0 && elapsedTime > 0) {
+                        simulateFileUpdate(updatedJourney, 'UPDATE');
+                        saveJourneyToStorage(updatedJourney);
+                    }
+                }
+            }, 5000); // Update every 5 seconds
+
+            setLocationWatcher(watcher);
+        } catch (error) {
+            console.error('Error starting location tracking:', error);
+            Alert.alert('Error', 'Failed to start location tracking. Please try again.');
         }
-        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const stopLocationTracking = (): void => {
+        if (locationWatcher) {
+            clearInterval(locationWatcher);
+            setLocationWatcher(null);
+        }
+        setGpsTrackingPoints([]);
+    };
+
+    const createJourneyData = async (): Promise<JourneyData> => {
+        const startTime = new Date().toISOString();
+        const startLocation = currentLocation ? {
+            lat: currentLocation.coords.latitude,
+            lng: currentLocation.coords.longitude,
+            address: await reverseGeocode(currentLocation.coords.latitude, currentLocation.coords.longitude),
+            timestamp: startTime,
+        } : null;
+
+        const surveyData = {
+            transportMode: surveyQuestions[0].options[answers['1'] || 0],
+            journeyPurpose: surveyQuestions[1].options[answers['2'] || 0],
+            routeSatisfaction: surveyQuestions[2].options[answers['3'] || 2],
+            timeOfDay: surveyQuestions[3].options[answers['4'] || 0],
+            travelCompanions: surveyQuestions[4].options[answers['5'] || 0],
+        };
+
+        const journey: JourneyData = {
+            tripId: generateTripId(),
+            userId: user.id || 'USER_DEFAULT',
+            status: 'in_progress',
+            surveyData,
+            tripDetails: {
+                startTime,
+                endTime: null,
+                actualDuration: 0,
+                actualDurationFormatted: '00:00:00',
+                startLocation,
+                endLocation: null,
+            },
+            gpsTrackingData: currentLocation ? [{
+                lat: currentLocation.coords.latitude,
+                lng: currentLocation.coords.longitude,
+                accuracy: currentLocation.coords.accuracy || 0,
+                timestamp: startTime,
+                speed: currentLocation.coords.speed || null,
+                heading: currentLocation.coords.heading || null,
+            }] : [],
+            metadata: {
+                appVersion: '1.0.0',
+                deviceInfo: {
+                    platform: 'React Native',
+                    model: 'Mobile Device',
+                    osVersion: 'Unknown',
+                },
+                networkType: 'Unknown',
+                batteryLevel: 100,
+                dataCollectionConsent: true,
+                privacyLevel: 'standard',
+            },
+            rewards: {
+                pointsEarned: 0,
+                badgesUnlocked: [],
+                milestoneReached: false,
+            },
+            createdAt: startTime,
+            updatedAt: startTime,
+        };
+
+        return journey;
     };
 
     const handleStartJourney = () => {
@@ -212,7 +565,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
         }));
     };
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (currentQuestion < surveyQuestions.length - 1) {
             setCurrentQuestion(prev => prev + 1);
             // Keep survey in view when moving to next question
@@ -226,15 +579,39 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             setCurrentQuestion(0);
             setJourneyStarted(true); // Mark journey as started
 
-            // Start the timer and pulsing animation for End Journey button
-            startTimer();
-            startPulseAnimation();
+            try {
+                // Create and start tracking journey
+                const journey = await createJourneyData();
+                setCurrentJourney(journey);
+                
+                // Simulate file update for journey start
+                simulateFileUpdate(journey, 'START');
+                
+                // Start GPS tracking
+                await startLocationTracking();
+                
+                // Start the timer and pulsing animation for End Journey button
+                startTimer();
+                startPulseAnimation();
 
-            // Scroll to show the timer and end journey button
-            setTimeout(() => {
-                scrollViewRef.current?.scrollToEnd({ animated: true });
-            }, 100);
-            // Here you can navigate to trip logging or process the data
+                // Save initial journey data
+                await saveJourneyToStorage(journey);
+
+                // Scroll to show the timer and end journey button
+                setTimeout(() => {
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                }, 100);
+
+                Alert.alert(
+                    'Journey Started! 🚀',
+                    `Your journey tracking has begun. We'll collect data to help improve transportation in your area.\n\nTrip ID: ${journey.tripId}\nCheck console for detailed logs.`,
+                    [{ text: 'Great!' }]
+                );
+            } catch (error) {
+                console.error('Error starting journey:', error);
+                Alert.alert('Error', 'Failed to start journey tracking. Please try again.');
+                setJourneyStarted(false);
+            }
         }
     };
 
@@ -248,21 +625,90 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
         }
     };
 
-    const handleEndJourney = () => {
-        // Stop the timer and pulsing animation
-        stopTimer();
-        stopPulseAnimation();
+    const handleEndJourney = async () => {
+        try {
+            if (!currentJourney) {
+                Alert.alert('Error', 'No active journey found.');
+                return;
+            }
 
-        // End the journey and reset to initial state
-        setJourneyStarted(false);
-        // Reset answers to defaults
-        const defaultAnswers: { [key: string]: number } = {};
-        surveyQuestions.forEach(q => {
-            defaultAnswers[q.id] = q.defaultAnswer;
-        });
-        setAnswers(defaultAnswers);
-        console.log('Journey ended');
-        // Here you can process end journey data
+            // Stop the timer and pulsing animation
+            stopTimer();
+            stopPulseAnimation();
+
+            // Stop location tracking
+            stopLocationTracking();
+
+            const endTime = new Date().toISOString();
+            const endLocation = currentLocation ? {
+                lat: currentLocation.coords.latitude,
+                lng: currentLocation.coords.longitude,
+                address: await reverseGeocode(currentLocation.coords.latitude, currentLocation.coords.longitude),
+                timestamp: endTime,
+            } : null;
+
+            // Calculate rewards based on journey
+            const pointsEarned = Math.max(10, Math.floor(elapsedTime / 60) * 2); // 2 points per minute
+            const badges = [];
+            if (elapsedTime >= 1800) badges.push('Long Distance Traveler'); // 30+ minutes
+            if (currentJourney.surveyData.transportMode === 'Bus' || currentJourney.surveyData.transportMode === 'Train') {
+                badges.push('Public Transport Champion');
+            }
+
+            // Update journey with completion data
+            const completedJourney: JourneyData = {
+                ...currentJourney,
+                status: 'completed',
+                tripDetails: {
+                    ...currentJourney.tripDetails,
+                    endTime,
+                    endLocation,
+                    actualDuration: elapsedTime,
+                    actualDurationFormatted: formatTime(elapsedTime),
+                },
+                gpsTrackingData: [...currentJourney.gpsTrackingData, ...gpsTrackingPoints],
+                rewards: {
+                    pointsEarned,
+                    badgesUnlocked: badges,
+                    milestoneReached: pointsEarned >= 50,
+                },
+                updatedAt: endTime,
+            };
+
+            // Simulate file update for journey completion
+            simulateFileUpdate(completedJourney, 'COMPLETE');
+
+            // Save completed journey
+            await saveJourneyToStorage(completedJourney);
+
+            // Reset states
+            setJourneyStarted(false);
+            setCurrentJourney(null);
+            setCurrentLocation(null);
+            setGpsTrackingPoints([]);
+
+            // Reset answers to defaults
+            const defaultAnswers: { [key: string]: number } = {};
+            surveyQuestions.forEach(q => {
+                defaultAnswers[q.id] = q.defaultAnswer;
+            });
+            setAnswers(defaultAnswers);
+
+            // Show completion message
+            Alert.alert(
+                'Journey Completed! 🎉',
+                `Great job! You've earned ${pointsEarned} points for this journey.${badges.length > 0 ? `\n\nNew badges unlocked: ${badges.join(', ')}` : ''}\n\nTrip ID: ${completedJourney.tripId}\nDuration: ${completedJourney.tripDetails.actualDurationFormatted}\n\nCheck console for detailed journey data that would be added to journeyLogs.json!`,
+                [
+                    { text: 'View Logs', onPress: showCurrentJourneyLogs },
+                    { text: 'Awesome!' }
+                ]
+            );
+
+            console.log('Journey ended successfully:', completedJourney.tripId);
+        } catch (error) {
+            console.error('Error ending journey:', error);
+            Alert.alert('Error', 'Failed to complete journey. Please try again.');
+        }
     };
 
     const renderBenefitCard = ({ item }: { item: BenefitCard }) => (
@@ -290,6 +736,55 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
         setCurrentBenefitIndex(index);
     };
 
+    // Demo function to show current journey logs
+    const showCurrentJourneyLogs = async (): Promise<void> => {
+        try {
+            const existingLogs = await AsyncStorage.getItem('journeyLogs');
+            if (existingLogs) {
+                const logs = JSON.parse(existingLogs);
+                console.log('📂 Current Journey Logs:');
+                console.log('========================');
+                console.log(JSON.stringify(logs, null, 2));
+                
+                Alert.alert(
+                    '📂 Journey Logs',
+                    `Total Trips: ${logs.summary.totalTrips || 0}\nCompleted: ${logs.summary.completedTrips || 0}\nIn Progress: ${logs.summary.inProgressTrips || 0}\nTotal Points: ${logs.summary.totalPoints || 0}`,
+                    [
+                        { text: 'View Full Log', onPress: () => console.log('Full Logs:', logs) },
+                        { text: 'OK' }
+                    ]
+                );
+            } else {
+                Alert.alert('📂 Journey Logs', 'No journey data found yet. Start your first journey!');
+            }
+        } catch (error) {
+            console.error('Error reading journey logs:', error);
+        }
+    };
+
+    // Demo function to simulate real-time file updates
+    const simulateFileUpdate = (journey: JourneyData, action: 'START' | 'UPDATE' | 'COMPLETE'): void => {
+        const timestamp = new Date().toISOString();
+        let message = '';
+        
+        switch (action) {
+            case 'START':
+                message = `🟢 JOURNEY STARTED at ${timestamp}\n\nAdding to journeyLogs.json:\n- Trip ID: ${journey.tripId}\n- Status: ${journey.status}\n- Transport: ${journey.surveyData.transportMode}\n- Purpose: ${journey.surveyData.journeyPurpose}`;
+                break;
+            case 'UPDATE':
+                message = `🔄 JOURNEY UPDATE at ${timestamp}\n\nUpdating journeyLogs.json:\n- Trip ID: ${journey.tripId}\n- Duration: ${journey.tripDetails.actualDurationFormatted}\n- GPS Points: ${journey.gpsTrackingData.length}`;
+                break;
+            case 'COMPLETE':
+                message = `🔴 JOURNEY COMPLETED at ${timestamp}\n\nFinalizing in journeyLogs.json:\n- Trip ID: ${journey.tripId}\n- Status: ${journey.status}\n- Total Duration: ${journey.tripDetails.actualDurationFormatted}\n- Points Earned: ${journey.rewards?.pointsEarned}\n- Badges: ${journey.rewards?.badgesUnlocked.join(', ') || 'None'}`;
+                break;
+        }
+        
+        console.log('📄 FILE UPDATE SIMULATION:');
+        console.log('============================');
+        console.log(message);
+        console.log('============================');
+    };
+
     return (
         <ScrollView
             ref={scrollViewRef}
@@ -302,20 +797,6 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                     <Text style={styles.greeting}>Hello, {user.name}! 👋</Text>
                     <Text style={styles.subtitle}>Ready to log your journey?</Text>
                 </View>
-                <TouchableOpacity
-                    style={styles.notificationButton}
-                    onPress={onNavigateToNotifications}
-                >
-                    <Ionicons
-                        name="notifications-outline"
-                        size={SIZES.subheading + 2} // 18px - slightly larger than subheading
-                        color={COLORS.textSecondary}
-                    />
-                    {/* Notification badge */}
-                    <View style={styles.notificationBadge}>
-                        <Text style={styles.badgeText}>3</Text>
-                    </View>
-                </TouchableOpacity>
             </View>
 
             <View style={styles.statsContainer}>
@@ -333,13 +814,13 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                     <Text style={styles.statNumber}>250</Text>
                     <Text style={styles.statLabel}>Points Earned</Text>
                 </View>
-                <View style={styles.statCard}>
+                <TouchableOpacity style={styles.statCard} onPress={showCurrentJourneyLogs}>
                     <View style={styles.statIconContainer}>
-                        <Ionicons name="trending-up-outline" size={18} color="#10b981" />
+                        <Ionicons name="document-text-outline" size={18} color="#10b981" />
                     </View>
-                    <Text style={styles.statNumber}>2</Text>
-                    <Text style={styles.statLabel}>Routes Improved</Text>
-                </View>
+                    <Text style={styles.statNumber}>📂</Text>
+                    <Text style={styles.statLabel}>View Logs</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Benefits Carousel */}
@@ -374,6 +855,50 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                     ))}
                 </View>
             </View>
+
+            {/* Journey Status and GPS Info */}
+            {journeyStarted && currentJourney && (
+                <View style={styles.journeyStatusContainer}>
+                    <View style={styles.journeyStatusCard}>
+                        <View style={styles.journeyHeader}>
+                            <View style={styles.journeyTitleContainer}>
+                                <Ionicons name="navigate-circle" size={20} color={COLORS.primary} />
+                                <Text style={styles.journeyTitle}>Journey in Progress</Text>
+                            </View>
+                            <View style={styles.journeyIdContainer}>
+                                <Text style={styles.journeyId}>{currentJourney.tripId}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.journeyStatsRow}>
+                            <View style={styles.journeyStatItem}>
+                                <Text style={styles.journeyStatLabel}>Transport</Text>
+                                <Text style={styles.journeyStatValue}>{currentJourney.surveyData.transportMode}</Text>
+                            </View>
+                            <View style={styles.journeyStatItem}>
+                                <Text style={styles.journeyStatLabel}>Purpose</Text>
+                                <Text style={styles.journeyStatValue}>{currentJourney.surveyData.journeyPurpose}</Text>
+                            </View>
+                            <View style={styles.journeyStatItem}>
+                                <Text style={styles.journeyStatLabel}>GPS Points</Text>
+                                <Text style={styles.journeyStatValue}>{currentJourney.gpsTrackingData.length}</Text>
+                            </View>
+                        </View>
+
+                        {currentLocation && (
+                            <View style={styles.locationInfo}>
+                                <Ionicons name="location" size={14} color={COLORS.textTertiary} />
+                                <Text style={styles.locationText}>
+                                    {currentLocation.coords.latitude.toFixed(4)}, {currentLocation.coords.longitude.toFixed(4)}
+                                </Text>
+                                <Text style={styles.accuracyText}>
+                                    (±{currentLocation.coords.accuracy?.toFixed(0)}m)
+                                </Text>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            )}
 
             {/* Timer Display */}
             {journeyStarted && (
@@ -519,7 +1044,6 @@ const styles = StyleSheet.create({
     },
     headerContent: {
         flex: 1,
-        marginRight: 16, // Space between content and notification button
     },
     greeting: {
         fontSize: SIZES.heading, // 20 - Match trip logs title size
@@ -541,13 +1065,13 @@ const styles = StyleSheet.create({
     statCard: {
         backgroundColor: '#ffffff',
         padding: 16, // Reduced from 20 to 16
-        borderRadius: 12, // Match notification button radius
+        borderRadius: 12,
         alignItems: 'center',
         flex: 1,
         marginHorizontal: 6, // Reduced from 8 to 6
         minHeight: 100, // Reduced from 120 to 100
         justifyContent: 'center',
-        // Match notification button shadow exactly
+        // Card shadow styling
         shadowColor: '#00000062',
         shadowOffset: {
             width: 0,
@@ -611,45 +1135,6 @@ const styles = StyleSheet.create({
         fontSize: SIZES.subheading, // 16
         fontFamily: FONTS.bold,
         letterSpacing: 0.5, // Slight letter spacing for prominence
-    },
-    notificationButton: {
-        width: 35,
-        height: 35,
-        borderRadius: 12, // Perfectly round
-        backgroundColor: '#ffffff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // Shadow for floating effect
-        shadowColor: '#00000062',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-        // Position for absolute positioning if needed
-        position: 'relative',
-        marginTop: 4, // Slight alignment with greeting text
-    },
-    notificationBadge: {
-        position: 'absolute',
-        top: -2,
-        right: -2,
-        backgroundColor: COLORS.primary, // Red notification color
-        width: 16,
-        height: 16,
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: '#ffffff', // White border to separate from button
-    },
-    badgeText: {
-        fontSize: 10,
-        fontFamily: FONTS.bold,
-        color: '#ffffff',
-        lineHeight: 12,
     },
     // Survey Modal Styles
     surveyContainer: {
@@ -1026,6 +1511,96 @@ const styles = StyleSheet.create({
     activeIndicator: {
         width: 20,
         backgroundColor: COLORS.primary,
+    },
+    // Journey Status Styles
+    journeyStatusContainer: {
+        paddingHorizontal: 20,
+        paddingTop: 16,
+    },
+    journeyStatusCard: {
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        borderLeftWidth: 4,
+        borderLeftColor: COLORS.primary,
+    },
+    journeyHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    journeyTitleContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    journeyTitle: {
+        fontSize: SIZES.subheading,
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginLeft: 8,
+    },
+    journeyIdContainer: {
+        backgroundColor: 'rgba(162, 142, 249, 0.1)',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    journeyId: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.medium,
+        color: COLORS.primary,
+    },
+    journeyStatsRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+    },
+    journeyStatItem: {
+        flex: 1,
+        alignItems: 'center',
+    },
+    journeyStatLabel: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.medium,
+        color: COLORS.textTertiary,
+        marginBottom: 2,
+    },
+    journeyStatValue: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.semiBold,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
+    },
+    locationInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        padding: 8,
+        borderRadius: 8,
+        marginTop: 4,
+    },
+    locationText: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.medium,
+        color: COLORS.textSecondary,
+        marginLeft: 4,
+        flex: 1,
+    },
+    accuracyText: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.regular,
+        color: COLORS.textTertiary,
+        marginLeft: 4,
     },
 });
 

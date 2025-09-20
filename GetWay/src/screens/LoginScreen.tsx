@@ -118,13 +118,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onSignUp }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity
-                        style={[styles.demoButton, { backgroundColor: COLORS.accent }]}
-                        onPress={() => fillDemoCredentials('scientist')}
-                    >
-                        <Text style={styles.demoButtonText}>Scientist</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
                         style={[styles.demoButton, { backgroundColor: COLORS.primary }]}
                         onPress={() => fillDemoCredentials('owner')}
                     >

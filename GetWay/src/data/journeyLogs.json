@@ -1,0 +1,139 @@
+{
+  "journeyLogs": [
+    {
+      "tripId": "TRIP_20250920_001",
+      "userId": "USER_12345",
+      "status": "completed",
+      "surveyData": {
+        "transportMode": "Bus",
+        "journeyPurpose": "Work/Office",
+        "routeSatisfaction": "Satisfied",
+        "timeOfDay": "Early Morning (6-9 AM)",
+        "travelCompanions": "Just me"
+      },
+      "tripDetails": {
+        "startTime": "2025-09-20T08:15:30.000Z",
+        "endTime": "2025-09-20T09:45:15.000Z",
+        "actualDuration": 5385,
+        "actualDurationFormatted": "01:29:45",
+        "startLocation": {
+          "lat": 12.9716,
+          "lng": 77.5946,
+          "address": "MG Road, Bangalore",
+          "timestamp": "2025-09-20T08:15:30.000Z"
+        },
+        "endLocation": {
+          "lat": 13.0827,
+          "lng": 80.2707,
+          "address": "Anna Salai, Chennai",
+          "timestamp": "2025-09-20T09:45:15.000Z"
+        }
+      },
+      "gpsTrackingData": [
+        {
+          "lat": 12.9716,
+          "lng": 77.5946,
+          "accuracy": 5.2,
+          "timestamp": "2025-09-20T08:15:30.000Z",
+          "speed": 0,
+          "heading": null
+        },
+        {
+          "lat": 12.9720,
+          "lng": 77.5950,
+          "accuracy": 4.8,
+          "timestamp": "2025-09-20T08:16:00.000Z",
+          "speed": 5.2,
+          "heading": 45
+        },
+        {
+          "lat": 12.9850,
+          "lng": 77.6200,
+          "accuracy": 6.1,
+          "timestamp": "2025-09-20T08:30:00.000Z",
+          "speed": 35.5,
+          "heading": 90
+        },
+        {
+          "lat": 13.0827,
+          "lng": 80.2707,
+          "accuracy": 4.5,
+          "timestamp": "2025-09-20T09:45:15.000Z",
+          "speed": 0,
+          "heading": null
+        }
+      ],
+      "orsData": {
+        "distanceRoad": 350.4,
+        "durationRoad": 310.33,
+        "durationRoadFormatted": "05:10:20",
+        "routePolyline": "encoded_polyline_string_here",
+        "routeGeometry": [
+          [77.5946, 12.9716],
+          [77.6200, 12.9850],
+          [80.2707, 13.0827]
+        ],
+        "waypoints": [
+          {
+            "lat": 12.9716,
+            "lng": 77.5946,
+            "name": "Start Point"
+          },
+          {
+            "lat": 13.0827,
+            "lng": 80.2707,
+            "name": "End Point"
+          }
+        ]
+      },
+      "environmentalData": {
+        "weather": {
+          "condition": "Partly Cloudy",
+          "temperature": 28,
+          "humidity": 65,
+          "windSpeed": 12
+        },
+        "trafficConditions": "Moderate",
+        "roadQuality": "Good",
+        "crowdingLevel": "Medium"
+      },
+      "userExperience": {
+        "comfortLevel": 4,
+        "punctuality": 3,
+        "accessibility": 5,
+        "costEffectiveness": 4,
+        "overallRating": 4
+      },
+      "metadata": {
+        "appVersion": "1.0.0",
+        "deviceInfo": {
+          "platform": "iOS",
+          "model": "iPhone 13",
+          "osVersion": "17.0"
+        },
+        "networkType": "4G",
+        "batteryLevel": 85,
+        "dataCollectionConsent": true,
+        "privacyLevel": "standard"
+      },
+      "rewards": {
+        "pointsEarned": 25,
+        "badgesUnlocked": ["First Journey", "Morning Commuter"],
+        "milestoneReached": false
+      },
+      "createdAt": "2025-09-20T08:15:30.000Z",
+      "updatedAt": "2025-09-20T09:45:15.000Z"
+    }
+  ],
+  "summary": {
+    "totalTrips": 1,
+    "completedTrips": 1,
+    "inProgressTrips": 0,
+    "totalPoints": 25,
+    "totalDistance": 350.4,
+    "totalDuration": 5385,
+    "averageRating": 4.0,
+    "preferredModes": ["Bus"],
+    "commonPurposes": ["Work/Office"]
+  }
+}
