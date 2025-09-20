@@ -7,8 +7,8 @@ import {
     ScrollView,
     Alert,
 } from 'react-native';
-import { COLORS, SIZES } from '../constants';
-import { User } from '../types';
+import { COLORS, SIZES } from '../../constants';
+import { User } from '../../types';
 
 interface OwnerDashboardProps {
     user: User;
@@ -17,7 +17,7 @@ interface OwnerDashboardProps {
 
 const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ user, onLogout }) => {
     const handleManageUsers = () => {
-        Alert.alert('User Management', 'Manage customer and scientist accounts.');
+        Alert.alert('User Management', 'Manage customer accounts.');
     };
 
     const handleSystemSettings = () => {

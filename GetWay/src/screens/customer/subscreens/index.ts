@@ -1,5 +1,4 @@
 // Subscreens index file for better imports
-export { default as CustomerNotifications } from './notifications/CustomerNotifications';
 export { default as ProfileSetup } from './profile/ProfileSetup';
 export { default as MonthlyCheckIn } from './profile/MonthlyCheckIn';
 export { default as SmartTripLogger } from './trips/SmartTripLogger';

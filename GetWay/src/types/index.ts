@@ -1,4 +1,4 @@
-export type UserRole = 'customer' | 'scientist' | 'owner';
+export type UserRole = 'customer' | 'owner';
 
 // Fixed Data - Collected Once at Onboarding
 export interface UserProfile {
@@ -143,13 +143,6 @@ export type CustomerTabParamList = {
     Home: undefined;
     TripLogs: undefined;
     Blogs: undefined;
-    Profile: undefined;
-};
-
-export type ScientistTabParamList = {
-    Dashboard: undefined;
-    Analytics: undefined;
-    Research: undefined;
     Profile: undefined;
 };
 

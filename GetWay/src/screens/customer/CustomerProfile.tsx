@@ -39,7 +39,6 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
         { id: 'personal', label: 'Personal Info', icon: 'person-outline' },
         { id: 'preferences', label: 'Travel Preferences', icon: 'settings-outline' },
         { id: 'privacy', label: 'Privacy Settings', icon: 'shield-outline' },
-        { id: 'notifications', label: 'Notifications', icon: 'notifications-outline' },
         { id: 'help', label: 'Help & Support', icon: 'help-circle-outline' },
         { id: 'about', label: 'About App', icon: 'information-circle-outline' },
     ];
@@ -49,7 +48,7 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>My Profile</Text>
-                <TouchableOpacity style={styles.notificationButton}>
+                <TouchableOpacity style={styles.settingsButton}>
                     <Ionicons
                         name="settings-outline"
                         size={SIZES.subheading + 2} // 18px
@@ -149,7 +148,7 @@ const styles = StyleSheet.create({
         color: COLORS.textPrimary, // Use hierarchy colors
         marginBottom: 4,
     },
-    notificationButton: {
+    settingsButton: {
         width: 35,
         height: 35,
         borderRadius: 12,

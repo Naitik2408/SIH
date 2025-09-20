@@ -5,7 +5,6 @@ import CustomerHome from '../screens/customer/CustomerHome';
 import CustomerTripLogs from '../screens/customer/CustomerTripLogs';
 import CustomerPosts from '../screens/customer/CustomerPosts';
 import CustomerProfile from '../screens/customer/CustomerProfile';
-import CustomerNotifications from '../screens/customer/subscreens/notifications/CustomerNotifications';
 import CustomBottomTabBar from '../components/CustomBottomTabBar';
 import type { User } from '../types';
 
@@ -18,29 +17,15 @@ interface CustomerTabNavigatorProps {
 
 const CustomerTabNavigator: React.FC<CustomerTabNavigatorProps> = ({ user, onLogout }) => {
     const [activeTab, setActiveTab] = React.useState('Home');
-    const [showNotifications, setShowNotifications] = React.useState(false);
 
     const handleTabPress = (tabName: string) => {
         setActiveTab(tabName);
-        setShowNotifications(false); // Hide notifications when switching tabs
-    };
-
-    const handleNavigateToNotifications = () => {
-        setShowNotifications(true);
-    };
-
-    const handleBackFromNotifications = () => {
-        setShowNotifications(false);
     };
 
     const renderScreen = () => {
-        if (showNotifications) {
-            return <CustomerNotifications onBack={handleBackFromNotifications} />;
-        }
-
         switch (activeTab) {
             case 'Home':
-                return <CustomerHome user={user} onNavigateToNotifications={handleNavigateToNotifications} />;
+                return <CustomerHome user={user} />;
             case 'TripLogs':
                 return <CustomerTripLogs />;
             case 'Blogs':
@@ -48,19 +33,17 @@ const CustomerTabNavigator: React.FC<CustomerTabNavigatorProps> = ({ user, onLog
             case 'Profile':
                 return <CustomerProfile user={user} onLogout={onLogout} />;
             default:
-                return <CustomerHome user={user} onNavigateToNotifications={handleNavigateToNotifications} />;
+                return <CustomerHome user={user} />;
         }
     };
 
     return (
         <View style={styles.container}>
             {renderScreen()}
-            {!showNotifications && (
-                <CustomBottomTabBar
-                    activeTab={activeTab}
-                    onTabPress={handleTabPress}
-                />
-            )}
+            <CustomBottomTabBar
+                activeTab={activeTab}
+                onTabPress={handleTabPress}
+            />
         </View>
     );
 };
