@@ -18,12 +18,13 @@ import {
 
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import LoginScreen from './src/screens/LoginScreen';
+import SignupScreen from './src/screens/SignupScreen';
 import CustomerTabNavigator from './src/navigation/CustomerTabNavigator';
 import OwnerDashboard from './src/screens/owner/OwnerDashboard';
 import { User } from './src/types';
 import { COLORS } from './src/constants';
 
-type AppState = 'loading' | 'onboarding' | 'login' | 'dashboard';
+type AppState = 'loading' | 'onboarding' | 'login' | 'signup' | 'dashboard';
 
 export default function App() {
     const [appState, setAppState] = useState<AppState>('loading');
@@ -79,8 +80,25 @@ export default function App() {
     };
 
     const handleSignUp = () => {
-        // For now, just show login screen
-        // In the future, this would navigate to a sign-up screen
+        setAppState('signup');
+    };
+
+    const handleSignupSuccess = () => {
+        // Create a mock user for demonstration
+        const newUser: User = {
+            id: 'new-user-' + Date.now(),
+            email: 'newuser@example.com',
+            name: 'New User',
+            role: 'customer',
+            onboardingCompleted: true,
+            govCoins: 0,
+            joinedAt: new Date(),
+        };
+        setCurrentUser(newUser);
+        setAppState('dashboard');
+    };
+
+    const handleBackToLogin = () => {
         setAppState('login');
     };
 
@@ -122,6 +140,8 @@ export default function App() {
                 return <OnboardingScreen onComplete={handleOnboardingComplete} />;
             case 'login':
                 return <LoginScreen onLogin={handleLogin} onSignUp={handleSignUp} />;
+            case 'signup':
+                return <SignupScreen onSignupSuccess={handleSignupSuccess} onBack={handleBackToLogin} />;
             case 'dashboard':
                 return renderDashboard();
             default:
