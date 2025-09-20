@@ -1,0 +1,329 @@
+{
+  "rawTrips": [
+    {
+      "tripId": "TRIP001",
+      "userId": "U001",
+      "userName": "Raj Kumar",
+      "userPhone": "+91-9876543210",
+      "mode": "Bus",
+      "purpose": "Work",
+      "startTime": "2025-09-20T08:10:00Z",
+      "endTime": "2025-09-20T09:05:00Z",
+      "status": "Completed",
+      "coordinates": [
+        { "lat": 12.9716, "lng": 77.5946, "timestamp": "2025-09-20T08:10:00Z" },
+        { "lat": 12.9800, "lng": 77.6000, "timestamp": "2025-09-20T08:15:00Z" },
+        { "lat": 12.9900, "lng": 77.6100, "timestamp": "2025-09-20T08:25:00Z" },
+        { "lat": 13.0000, "lng": 77.6200, "timestamp": "2025-09-20T08:35:00Z" },
+        { "lat": 13.0100, "lng": 77.6300, "timestamp": "2025-09-20T08:45:00Z" },
+        { "lat": 13.0200, "lng": 77.6400, "timestamp": "2025-09-20T08:55:00Z" },
+        { "lat": 13.0827, "lng": 80.2707, "timestamp": "2025-09-20T09:05:00Z" }
+      ],
+      "startLocation": {
+        "address": "Koramangala, Bangalore",
+        "lat": 12.9716,
+        "lng": 77.5946
+      },
+      "endLocation": {
+        "address": "Electronic City, Bangalore",
+        "lat": 13.0827,
+        "lng": 80.2707
+      },
+      "deviceInfo": {
+        "deviceId": "DEV001",
+        "platform": "Android",
+        "appVersion": "1.0.0"
+      },
+      "rawDistance": 25.4,
+      "rawDuration": 55
+    },
+    {
+      "tripId": "TRIP002",
+      "userId": "U002",
+      "userName": "Priya Sharma",
+      "userPhone": "+91-9876543211",
+      "mode": "Car",
+      "purpose": "Shopping",
+      "startTime": "2025-09-20T14:30:00Z",
+      "endTime": "2025-09-20T15:10:00Z",
+      "status": "Completed",
+      "coordinates": [
+        { "lat": 13.0827, "lng": 80.2707, "timestamp": "2025-09-20T14:30:00Z" },
+        { "lat": 13.0900, "lng": 80.2800, "timestamp": "2025-09-20T14:35:00Z" },
+        { "lat": 13.1000, "lng": 80.2900, "timestamp": "2025-09-20T14:45:00Z" },
+        { "lat": 13.1100, "lng": 80.3000, "timestamp": "2025-09-20T14:55:00Z" },
+        { "lat": 13.1200, "lng": 80.3100, "timestamp": "2025-09-20T15:05:00Z" },
+        { "lat": 13.1300, "lng": 80.3200, "timestamp": "2025-09-20T15:10:00Z" }
+      ],
+      "startLocation": {
+        "address": "Electronic City, Bangalore",
+        "lat": 13.0827,
+        "lng": 80.2707
+      },
+      "endLocation": {
+        "address": "Forum Mall, Bangalore",
+        "lat": 13.1300,
+        "lng": 80.3200
+      },
+      "deviceInfo": {
+        "deviceId": "DEV002",
+        "platform": "iOS",
+        "appVersion": "1.0.0"
+      },
+      "rawDistance": 8.2,
+      "rawDuration": 40
+    },
+    {
+      "tripId": "TRIP003",
+      "userId": "U003",
+      "userName": "Amit Singh",
+      "userPhone": "+91-9876543212",
+      "mode": "Metro",
+      "purpose": "Education",
+      "startTime": "2025-09-20T09:00:00Z",
+      "endTime": "2025-09-20T09:45:00Z",
+      "status": "Completed",
+      "coordinates": [
+        { "lat": 28.6139, "lng": 77.2090, "timestamp": "2025-09-20T09:00:00Z" },
+        { "lat": 28.6200, "lng": 77.2150, "timestamp": "2025-09-20T09:10:00Z" },
+        { "lat": 28.6300, "lng": 77.2200, "timestamp": "2025-09-20T09:20:00Z" },
+        { "lat": 28.6400, "lng": 77.2300, "timestamp": "2025-09-20T09:30:00Z" },
+        { "lat": 28.6500, "lng": 77.2400, "timestamp": "2025-09-20T09:40:00Z" },
+        { "lat": 28.6600, "lng": 77.2500, "timestamp": "2025-09-20T09:45:00Z" }
+      ],
+      "startLocation": {
+        "address": "Connaught Place, Delhi",
+        "lat": 28.6139,
+        "lng": 77.2090
+      },
+      "endLocation": {
+        "address": "Delhi University, Delhi",
+        "lat": 28.6600,
+        "lng": 77.2500
+      },
+      "deviceInfo": {
+        "deviceId": "DEV003",
+        "platform": "Android",
+        "appVersion": "1.0.1"
+      },
+      "rawDistance": 12.8,
+      "rawDuration": 45
+    },
+    {
+      "tripId": "TRIP004",
+      "userId": "U001",
+      "userName": "Raj Kumar",
+      "userPhone": "+91-9876543210",
+      "mode": "Auto",
+      "purpose": "Personal",
+      "startTime": "2025-09-20T18:00:00Z",
+      "endTime": "2025-09-20T18:25:00Z",
+      "status": "Completed",
+      "coordinates": [
+        { "lat": 13.0827, "lng": 80.2707, "timestamp": "2025-09-20T18:00:00Z" },
+        { "lat": 13.0700, "lng": 80.2600, "timestamp": "2025-09-20T18:05:00Z" },
+        { "lat": 13.0600, "lng": 80.2500, "timestamp": "2025-09-20T18:10:00Z" },
+        { "lat": 13.0500, "lng": 80.2400, "timestamp": "2025-09-20T18:15:00Z" },
+        { "lat": 13.0400, "lng": 80.2300, "timestamp": "2025-09-20T18:20:00Z" },
+        { "lat": 13.0300, "lng": 80.2200, "timestamp": "2025-09-20T18:25:00Z" }
+      ],
+      "startLocation": {
+        "address": "Electronic City, Bangalore",
+        "lat": 13.0827,
+        "lng": 80.2707
+      },
+      "endLocation": {
+        "address": "Jayanagar, Bangalore",
+        "lat": 13.0300,
+        "lng": 80.2200
+      },
+      "deviceInfo": {
+        "deviceId": "DEV001",
+        "platform": "Android",
+        "appVersion": "1.0.0"
+      },
+      "rawDistance": 6.5,
+      "rawDuration": 25
+    },
+    {
+      "tripId": "TRIP005",
+      "userId": "U004",
+      "userName": "Sneha Patel",
+      "userPhone": "+91-9876543213",
+      "mode": "Bus",
+      "purpose": "Healthcare",
+      "startTime": "2025-09-20T11:15:00Z",
+      "endTime": "2025-09-20T12:30:00Z",
+      "status": "Completed",
+      "coordinates": [
+        { "lat": 19.0760, "lng": 72.8777, "timestamp": "2025-09-20T11:15:00Z" },
+        { "lat": 19.0800, "lng": 72.8800, "timestamp": "2025-09-20T11:25:00Z" },
+        { "lat": 19.0900, "lng": 72.8900, "timestamp": "2025-09-20T11:35:00Z" },
+        { "lat": 19.1000, "lng": 72.9000, "timestamp": "2025-09-20T11:45:00Z" },
+        { "lat": 19.1100, "lng": 72.9100, "timestamp": "2025-09-20T11:55:00Z" },
+        { "lat": 19.1200, "lng": 72.9200, "timestamp": "2025-09-20T12:05:00Z" },
+        { "lat": 19.1300, "lng": 72.9300, "timestamp": "2025-09-20T12:15:00Z" },
+        { "lat": 19.1400, "lng": 72.9400, "timestamp": "2025-09-20T12:25:00Z" },
+        { "lat": 19.1500, "lng": 72.9500, "timestamp": "2025-09-20T12:30:00Z" }
+      ],
+      "startLocation": {
+        "address": "Andheri, Mumbai",
+        "lat": 19.0760,
+        "lng": 72.8777
+      },
+      "endLocation": {
+        "address": "Bandra, Mumbai",
+        "lat": 19.1500,
+        "lng": 72.9500
+      },
+      "deviceInfo": {
+        "deviceId": "DEV004",
+        "platform": "iOS",
+        "appVersion": "1.0.1"
+      },
+      "rawDistance": 18.7,
+      "rawDuration": 75
+    }
+  ],
+  "processedTrips": [
+    {
+      "tripId": "TRIP001",
+      "userId": "U001",
+      "userName": "Raj Kumar",
+      "mode": "Bus",
+      "purpose": "Work",
+      "startLocation": { "lat": 12.9716, "lng": 77.5946, "address": "Koramangala, Bangalore" },
+      "endLocation": { "lat": 13.0827, "lng": 80.2707, "address": "Electronic City, Bangalore" },
+      "startTime": "2025-09-20T08:10:00Z",
+      "endTime": "2025-09-20T09:05:00Z",
+      "durationApp": 55,
+      "distanceRoad": 28.4,
+      "durationRoad": 52,
+      "routePolyline": "[[77.5946,12.9716],[77.6000,12.9800],[77.6100,12.9900],[77.6200,13.0000],[77.6300,13.0100],[77.6400,13.0200],[80.2707,13.0827]]",
+      "emissions": {
+        "co2": 0.85,
+        "nox": 0.12,
+        "pm": 0.05
+      },
+      "cost": {
+        "estimated": 25.0,
+        "currency": "INR"
+      },
+      "weather": {
+        "condition": "Clear",
+        "temperature": 28
+      },
+      "processedAt": "2025-09-20T09:10:00Z"
+    },
+    {
+      "tripId": "TRIP002",
+      "userId": "U002",
+      "userName": "Priya Sharma",
+      "mode": "Car",
+      "purpose": "Shopping",
+      "startLocation": { "lat": 13.0827, "lng": 80.2707, "address": "Electronic City, Bangalore" },
+      "endLocation": { "lat": 13.1300, "lng": 80.3200, "address": "Forum Mall, Bangalore" },
+      "startTime": "2025-09-20T14:30:00Z",
+      "endTime": "2025-09-20T15:10:00Z",
+      "durationApp": 40,
+      "distanceRoad": 9.2,
+      "durationRoad": 38,
+      "routePolyline": "[[80.2707,13.0827],[80.2800,13.0900],[80.2900,13.1000],[80.3000,13.1100],[80.3100,13.1200],[80.3200,13.1300]]",
+      "emissions": {
+        "co2": 2.15,
+        "nox": 0.28,
+        "pm": 0.08
+      },
+      "cost": {
+        "estimated": 120.0,
+        "currency": "INR"
+      },
+      "weather": {
+        "condition": "Partly Cloudy",
+        "temperature": 32
+      },
+      "processedAt": "2025-09-20T15:15:00Z"
+    },
+    {
+      "tripId": "TRIP003",
+      "userId": "U003",
+      "userName": "Amit Singh",
+      "mode": "Metro",
+      "purpose": "Education",
+      "startLocation": { "lat": 28.6139, "lng": 77.2090, "address": "Connaught Place, Delhi" },
+      "endLocation": { "lat": 28.6600, "lng": 77.2500, "address": "Delhi University, Delhi" },
+      "startTime": "2025-09-20T09:00:00Z",
+      "endTime": "2025-09-20T09:45:00Z",
+      "durationApp": 45,
+      "distanceRoad": 14.2,
+      "durationRoad": 42,
+      "routePolyline": "[[77.2090,28.6139],[77.2150,28.6200],[77.2200,28.6300],[77.2300,28.6400],[77.2400,28.6500],[77.2500,28.6600]]",
+      "emissions": {
+        "co2": 0.42,
+        "nox": 0.05,
+        "pm": 0.02
+      },
+      "cost": {
+        "estimated": 30.0,
+        "currency": "INR"
+      },
+      "weather": {
+        "condition": "Hazy",
+        "temperature": 35
+      },
+      "processedAt": "2025-09-20T09:50:00Z"
+    }
+  ],
+  "analytics": {
+    "totalTrips": 5,
+    "totalUsers": 4,
+    "totalDistance": 75.7,
+    "totalDuration": 255,
+    "avgTripDistance": 15.14,
+    "avgTripDuration": 51,
+    "modeDistribution": {
+      "Bus": 40,
+      "Car": 20,
+      "Metro": 20,
+      "Auto": 20
+    },
+    "purposeDistribution": {
+      "Work": 20,
+      "Shopping": 20,
+      "Education": 20,
+      "Personal": 20,
+      "Healthcare": 20
+    },
+    "peakHours": {
+      "morning": "08:00-10:00",
+      "evening": "17:00-19:00"
+    },
+    "topRoutes": [
+      {
+        "route": "Koramangala to Electronic City",
+        "frequency": 1,
+        "avgDuration": 55
+      },
+      {
+        "route": "Electronic City to Forum Mall",
+        "frequency": 1,
+        "avgDuration": 40
+      }
+    ],
+    "environmentalImpact": {
+      "totalCO2": 3.42,
+      "totalNOx": 0.45,
+      "totalPM": 0.15,
+      "savedEmissions": 2.1
+    },
+    "lastUpdated": "2025-09-20T18:30:00Z"
+  },
+  "systemMetrics": {
+    "dataCollectionRate": 98.5,
+    "processingAccuracy": 97.2,
+    "apiResponseTime": 1.2,
+    "userRetention": 85.4,
+    "appCrashRate": 0.1,
+    "lastSystemCheck": "2025-09-20T18:25:00Z"
+  }
+}
