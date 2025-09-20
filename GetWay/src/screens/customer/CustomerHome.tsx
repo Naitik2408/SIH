@@ -18,6 +18,7 @@ import { User } from '../../types';
 
 interface CustomerHomeProps {
     user: User;
+    onNavigateToNotifications?: () => void;
 }
 
 interface SurveyQuestion {
@@ -179,7 +180,7 @@ const benefitCards: BenefitCard[] = [
     }
 ];
 
-const CustomerHome: React.FC<CustomerHomeProps> = ({ user }) => {
+const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotifications }) => {
     const [showSurvey, setShowSurvey] = React.useState(false);
     const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const [journeyStarted, setJourneyStarted] = React.useState(false);
@@ -797,6 +798,20 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user }) => {
                     <Text style={styles.greeting}>Hello, {user.name}! 👋</Text>
                     <Text style={styles.subtitle}>Ready to log your journey?</Text>
                 </View>
+                <TouchableOpacity
+                    style={styles.notificationButton}
+                    onPress={onNavigateToNotifications}
+                >
+                    <Ionicons
+                        name="notifications-outline"
+                        size={SIZES.subheading + 2}
+                        color={COLORS.textSecondary}
+                    />
+                    {/* Notification badge */}
+                    <View style={styles.notificationBadge}>
+                        <Text style={styles.badgeText}>3</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.statsContainer}>
@@ -1044,6 +1059,44 @@ const styles = StyleSheet.create({
     },
     headerContent: {
         flex: 1,
+        marginRight: 16, // Space between content and notification button
+    },
+    notificationButton: {
+        width: 35,
+        height: 35,
+        borderRadius: 12,
+        backgroundColor: COLORS.white,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        position: 'relative',
+        marginTop: 4,
+    },
+    notificationBadge: {
+        position: 'absolute',
+        top: -2,
+        right: -2,
+        backgroundColor: COLORS.primary,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: COLORS.white,
+    },
+    badgeText: {
+        fontSize: SIZES.tiny,
+        fontFamily: FONTS.bold,
+        color: COLORS.white,
+        lineHeight: 12,
     },
     greeting: {
         fontSize: SIZES.heading, // 20 - Match trip logs title size

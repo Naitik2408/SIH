@@ -86,7 +86,11 @@ const mockPosts: Post[] = [
     },
 ];
 
-const CustomerPosts: React.FC = () => {
+interface CustomerPostsProps {
+    onNavigateToCreatePost?: () => void;
+}
+
+const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost }) => {
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
@@ -191,8 +195,20 @@ const CustomerPosts: React.FC = () => {
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.title}>Community Posts</Text>
-                <Text style={styles.subtitle}>Share and discover travel experiences</Text>
+                <View style={styles.headerContent}>
+                    <Text style={styles.title}>Community Posts</Text>
+                    <Text style={styles.subtitle}>Share and discover travel experiences</Text>
+                </View>
+                <TouchableOpacity
+                    style={styles.addButton}
+                    onPress={onNavigateToCreatePost}
+                >
+                    <Ionicons
+                        name="add"
+                        size={SIZES.subheading + 2}
+                        color={COLORS.white}
+                    />
+                </TouchableOpacity>
             </View>
 
             {/* Posts List */}
@@ -218,9 +234,33 @@ const styles = StyleSheet.create({
         paddingBottom: 120, // Extra padding to ensure content is above bottom navbar
     },
     header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingTop: 60,
         paddingBottom: 20,
+    },
+    headerContent: {
+        flex: 1,
+        marginRight: 16,
+    },
+    addButton: {
+        width: 35,
+        height: 35,
+        borderRadius: 12,
+        backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+        marginTop: 4,
     },
     title: {
         fontSize: SIZES.heading, // 20 - Match trip logs title size
