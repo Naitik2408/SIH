@@ -43,17 +43,24 @@ const MainLayout = () => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
             {/* Sidebar */}
-            <div className={`bg-white shadow-lg transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} ${sidebarOpen ? '' : 'lg:w-64'}`}>
-                <div className="p-4 border-b">
+            <div className={`bg-gradient-to-b from-white to-gray-50 shadow-lg transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-16'} ${sidebarOpen ? '' : 'lg:w-64'} border-r border-gray-200`}>
+                <div className="p-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
-                        <h1 className={`font-bold text-xl text-gray-800 ${sidebarOpen ? 'block' : 'hidden lg:block'}`}>
-                            Transport Analytics
-                        </h1>
+                        <div className={`flex items-center space-x-3 ${sidebarOpen ? 'block' : 'hidden lg:block'}`}>
+                            <img 
+                                src="/logo.png" 
+                                alt="GetWay Logo" 
+                                className="w-8 h-8 object-contain"
+                            />
+                            <h1 className="font-bold text-xl text-gray-800 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                                GetWay
+                            </h1>
+                        </div>
                         <button
                             onClick={() => setSidebarOpen(!sidebarOpen)}
-                            className="p-1 rounded-lg hover:bg-gray-100 lg:hidden"
+                            className="p-2 rounded-lg hover:bg-purple-50 hover:text-purple-600 transition-colors lg:hidden"
                         >
                             <Menu className="w-5 h-5" />
                         </button>
@@ -66,9 +73,9 @@ const MainLayout = () => {
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
-                                    className={`flex items-center px-3 py-2 rounded-lg transition-colors ${isActivePath(item.path)
-                                        ? 'bg-blue-100 text-blue-700 border-r-2 border-blue-700'
-                                        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                                    className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${isActivePath(item.path)
+                                        ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 border-r-4 border-purple-500 shadow-sm'
+                                        : 'text-gray-600 hover:bg-gradient-to-r hover:from-purple-50 hover:to-transparent hover:text-purple-600 hover:shadow-sm'
                                         }`}
                                 >
                                     <item.icon className="w-5 h-5 mr-3" />
@@ -85,28 +92,28 @@ const MainLayout = () => {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Top Bar */}
-                <header className="bg-white shadow-sm border-b">
+                <header className="bg-white shadow-lg border-b border-gray-200 backdrop-blur-sm">
                     <div className="flex items-center justify-between px-6 py-4">
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                                className="p-2 rounded-lg hover:bg-gray-100 lg:hidden"
+                                className="p-2 rounded-lg hover:bg-purple-50 hover:text-purple-600 transition-colors lg:hidden"
                             >
                                 <Menu className="w-5 h-5" />
                             </button>
 
                             {/* Date Picker */}
-                            <div className="flex items-center space-x-2">
-                                <label className="text-sm text-gray-600">Date Range:</label>
+                            <div className="flex items-center space-x-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
+                                <label className="text-sm font-medium text-gray-700">Date Range:</label>
                                 <input
                                     type="date"
-                                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                                     defaultValue="2025-09-01"
                                 />
-                                <span className="text-gray-400">to</span>
+                                <span className="text-gray-400 font-medium">to</span>
                                 <input
                                     type="date"
-                                    className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                                     defaultValue="2025-09-20"
                                 />
                             </div>
@@ -114,8 +121,8 @@ const MainLayout = () => {
 
                         <div className="flex items-center space-x-4">
                             {/* Global Filters Placeholder */}
-                            <div className="hidden md:flex items-center space-x-2">
-                                <select className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <div className="hidden md:flex items-center space-x-3">
+                                <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white transition-colors">
                                     <option>All Regions</option>
                                     <option>North</option>
                                     <option>South</option>
@@ -123,7 +130,7 @@ const MainLayout = () => {
                                     <option>West</option>
                                 </select>
 
-                                <select className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <select className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white transition-colors">
                                     <option>All Modes</option>
                                     <option>Car</option>
                                     <option>Bus</option>
@@ -133,20 +140,20 @@ const MainLayout = () => {
                             </div>
 
                             {/* Notifications */}
-                            <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                            <button className="relative p-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors">
                                 <Bell className="w-5 h-5" />
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                                <span className="absolute -top-1 -right-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-lg">
                                     3
                                 </span>
                             </button>
 
                             {/* User Profile Menu */}
                             <div className="relative">
-                                <button className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                                        JS
+                                <button className="flex items-center space-x-3 p-3 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-colors">
+                                    <div className="w-9 h-9 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg">
+                                        GW
                                     </div>
-                                    <span className="hidden md:block text-sm font-medium">John Scientist</span>
+                                    <span className="hidden md:block text-sm font-semibold text-gray-700">GetWay Admin</span>
                                     <ChevronDown className="w-4 h-4" />
                                 </button>
                             </div>
@@ -155,7 +162,7 @@ const MainLayout = () => {
                 </header>
 
                 {/* Main Content */}
-                <main className="flex-1 overflow-y-auto bg-gray-50">
+                <main className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 via-white to-purple-50">
                     <Outlet />
                 </main>
             </div>
