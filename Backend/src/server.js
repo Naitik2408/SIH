@@ -16,11 +16,40 @@ connectDB();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration
+// CORS configuration for web and mobile clients
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:19006', // Expo dev server
+    'http://10.0.2.2:19006',  // Android emulator
+    'exp://',                 // Expo client
+    'exps://',               // Expo client (secure)
+    ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',') : []),
+    ...(process.env.MOBILE_CLIENT_ORIGINS ? process.env.MOBILE_CLIENT_ORIGINS.split(',') : [])
+];
+
 app.use(cors({
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+
+        // Check if origin is in allowed list or matches Expo patterns
+        if (allowedOrigins.some(allowedOrigin =>
+            origin.startsWith(allowedOrigin) || allowedOrigin.startsWith(origin)
+        )) {
+            return callback(null, true);
+        }
+
+        // Log rejected origins in development
+        if (process.env.NODE_ENV === 'development') {
+            console.warn(`CORS: Rejected origin ${origin}`);
+        }
+
+        return callback(new Error('Not allowed by CORS'), false);
+    },
     credentials: true,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 
 // Request logging middleware

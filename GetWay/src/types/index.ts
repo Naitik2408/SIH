@@ -1,4 +1,4 @@
-export type UserRole = 'customer' | 'owner';
+export type UserRole = 'customer' | 'owner' | 'scientist';
 
 // Fixed Data - Collected Once at Onboarding
 export interface UserProfile {
@@ -44,6 +44,11 @@ export interface User {
     onboardingCompleted?: boolean;
     govCoins?: number;
     joinedAt?: Date;
+    // Backend specific fields
+    organizationId?: string;
+    isApproved?: boolean;
+    lastLogin?: string;
+    isActive?: boolean;
 }
 
 // Transport and Travel Types
