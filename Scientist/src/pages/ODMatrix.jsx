@@ -34,77 +34,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import L from 'leaflet';
-
-// Generate dummy zone coordinates (Delhi areas)
-const zones = [
-    { id: 'CP', name: 'Connaught Place', coords: [28.6315, 77.2167] },
-    { id: 'GGN', name: 'Gurgaon', coords: [28.4595, 77.0266] },
-    { id: 'DWK', name: 'Dwarka', coords: [28.5921, 77.0460] },
-    { id: 'NOI', name: 'Noida', coords: [28.5355, 77.3910] },
-    { id: 'VAS', name: 'Vasant Kunj', coords: [28.5244, 77.1588] },
-    { id: 'RKP', name: 'Rajouri Garden', coords: [28.6470, 77.1204] },
-    { id: 'LJN', name: 'Lajpat Nagar', coords: [28.5677, 77.2438] },
-    { id: 'KLK', name: 'Karol Bagh', coords: [28.6519, 77.1908] }
-];
-
-// Generate dummy OD matrix data
-const generateODMatrix = () => {
-    const matrix = {};
-    zones.forEach(origin => {
-        matrix[origin.id] = {};
-        zones.forEach(destination => {
-            if (origin.id === destination.id) {
-                matrix[origin.id][destination.id] = 0;
-            } else {
-                matrix[origin.id][destination.id] = Math.floor(Math.random() * 500) + 50;
-            }
-        });
-    });
-    return matrix;
-};
-
-// Generate dummy corridor data
-const generateCorridorData = (origin, destination) => {
-    const dailyTrips = Array.from({ length: 7 }, (_, i) => ({
-        day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
-        trips: Math.floor(Math.random() * 200) + 100
-    }));
-
-    const modeData = [
-        { mode: 'Car', trips: Math.floor(Math.random() * 150) + 50 },
-        { mode: 'Bus', trips: Math.floor(Math.random() * 100) + 30 },
-        { mode: 'Metro', trips: Math.floor(Math.random() * 80) + 20 },
-        { mode: 'Walk', trips: Math.floor(Math.random() * 40) + 10 }
-    ];
-
-    const peakHours = Array.from({ length: 24 }, (_, i) => ({
-        hour: i,
-        trips: i >= 7 && i <= 9 || i >= 17 && i <= 19
-            ? Math.floor(Math.random() * 50) + 30
-            : Math.floor(Math.random() * 20) + 5
-    }));
-
-    return { dailyTrips, modeData, peakHours };
-};
-
-// Get top corridors
-const getTopCorridors = (matrix) => {
-    const corridors = [];
-    Object.keys(matrix).forEach(origin => {
-        Object.keys(matrix[origin]).forEach(destination => {
-            if (matrix[origin][destination] > 0) {
-                corridors.push({
-                    origin,
-                    destination,
-                    trips: matrix[origin][destination],
-                    originName: zones.find(z => z.id === origin)?.name,
-                    destinationName: zones.find(z => z.id === destination)?.name
-                });
-            }
-        });
-    });
-    return corridors.sort((a, b) => b.trips - a.trips).slice(0, 10);
-};
+import { 
+    extractZonesFromUserData, 
+    generateRealODMatrix, 
+    generateRealCorridorData, 
+    getRealTopCorridors 
+} from '../utils/odMatrixAnalytics';
 
 // Fix for default markers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -120,8 +55,9 @@ const ODMatrix = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [matrixView, setMatrixView] = useState('absolute'); // 'absolute' or 'percentage'
 
-    const odMatrix = useMemo(() => generateODMatrix(), []);
-    const topCorridors = useMemo(() => getTopCorridors(odMatrix), [odMatrix]);
+    // Use real data from user analytics
+    const { matrix: odMatrix, zones } = useMemo(() => generateRealODMatrix(), []);
+    const topCorridors = useMemo(() => getRealTopCorridors(odMatrix, zones), [odMatrix, zones]);
 
     // Calculate total trips for percentage view
     const totalTrips = useMemo(() => {
@@ -135,7 +71,7 @@ const ODMatrix = () => {
     }, [odMatrix]);
 
     const corridorData = selectedCorridor
-        ? generateCorridorData(selectedCorridor.origin, selectedCorridor.destination)
+        ? generateRealCorridorData(selectedCorridor.origin, selectedCorridor.destination)
         : null;
 
     const handleCellClick = (origin, destination, trips) => {
@@ -168,9 +104,9 @@ const ODMatrix = () => {
                             </div>
                             <div>
                                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                                    Origin-Destination Matrix
+                                    Delhi NCR OD Matrix
                                 </h1>
-                                <p className="text-slate-600 text-lg">Travel pattern analysis between zones</p>
+                                <p className="text-slate-600 text-lg">Real travel patterns from {zones.length} zones based on user data</p>
                             </div>
                         </div>
                         
@@ -179,8 +115,9 @@ const ODMatrix = () => {
                             <div className="flex items-start space-x-3">
                                 <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                                 <div className="text-sm text-blue-800">
-                                    <p className="font-semibold mb-1">How to use this matrix:</p>
+                                    <p className="font-semibold mb-1">How to use this real data matrix:</p>
                                     <ul className="space-y-1 text-blue-700">
+                                        <li>• Based on actual user trip data from 100 Delhi NCR residents</li>
                                         <li>• Click any cell to analyze that corridor in detail</li>
                                         <li>• Darker colors indicate higher trip volumes</li>
                                         <li>• Hover over cells to see trip counts and zone names</li>
@@ -230,8 +167,8 @@ const ODMatrix = () => {
                         </div>
                         <CardDescription className="text-slate-600">
                             {matrixView === 'absolute' 
-                                ? 'Daily trip volumes between origin and destination zones'
-                                : 'Percentage distribution of total daily trips'
+                                ? 'Real daily trip volumes between zones from user data'
+                                : 'Percentage distribution of total daily trips from user data'
                             }
                         </CardDescription>
                     </CardHeader>
@@ -319,8 +256,8 @@ const ODMatrix = () => {
                         {/* Enhanced Legend */}
                         <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200">
                             <div className="flex items-center justify-between mb-3">
-                                <h4 className="font-semibold text-slate-700">Trip Volume Legend</h4>
-                                <div className="text-sm text-slate-600">Total: {totalTrips.toLocaleString()} trips/day</div>
+                                <h4 className="font-semibold text-slate-700">Real Trip Volume Legend</h4>
+                                <div className="text-sm text-slate-600">Total: {totalTrips.toLocaleString()} real trips/day</div>
                             </div>
                             <div className="flex flex-wrap items-center justify-center gap-4 text-xs">
                                 <div className="flex items-center space-x-2">
@@ -367,8 +304,8 @@ const ODMatrix = () => {
                                         <Route className="w-5 h-5 text-white" />
                                     </div>
                                     <div>
-                                        <p className="text-sm text-blue-700 font-medium">Total Corridors</p>
-                                        <p className="text-2xl font-bold text-blue-800">{topCorridors.length}</p>
+                                        <p className="text-sm text-blue-700 font-medium">Active Zones</p>
+                                        <p className="text-2xl font-bold text-blue-800">{zones.length}</p>
                                     </div>
                                 </div>
                             </CardContent>
@@ -396,11 +333,11 @@ const ODMatrix = () => {
                                 <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
                                     <MapPin className="w-5 h-5 text-white" />
                                 </div>
-                                Corridor Visualization
+                                Real Corridor Visualization
                             </CardTitle>
                             <CardDescription className="text-slate-600">
                                 {selectedCorridor 
-                                    ? `Showing: ${getOriginZone(selectedCorridor.origin)?.name} → ${getDestinationZone(selectedCorridor.destination)?.name}`
+                                    ? `Real route: ${zones.find(z => z.id === selectedCorridor.origin)?.name} → ${zones.find(z => z.id === selectedCorridor.destination)?.name}`
                                     : 'Select a corridor from the matrix to visualize the route'
                                 }
                             </CardDescription>
@@ -432,12 +369,11 @@ const ODMatrix = () => {
                                         </Marker>
                                     ))}
 
-                                    {/* Enhanced Selected Corridor Line */}
                                     {selectedCorridor && (
                                         <Polyline
                                             positions={[
-                                                getOriginZone(selectedCorridor.origin)?.coords,
-                                                getDestinationZone(selectedCorridor.destination)?.coords
+                                                zones.find(z => z.id === selectedCorridor.origin)?.coords,
+                                                zones.find(z => z.id === selectedCorridor.destination)?.coords
                                             ]}
                                             pathOptions={{
                                                 color: '#3B82F6',
@@ -471,7 +407,7 @@ const ODMatrix = () => {
                                 <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg mr-3">
                                     <ArrowRight className="w-5 h-5 text-white" />
                                 </div>
-                                Detailed Corridor Analysis
+                                Real Corridor Analysis
                             </CardTitle>
                             <Button 
                                 variant="outline" 
@@ -484,15 +420,15 @@ const ODMatrix = () => {
                         <CardDescription className="text-slate-600 flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
                                 <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                                    {getOriginZone(selectedCorridor.origin)?.name}
+                                    {zones.find(z => z.id === selectedCorridor.origin)?.name}
                                 </Badge>
                                 <ArrowRight className="w-4 h-4 text-slate-400" />
                                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                    {getDestinationZone(selectedCorridor.destination)?.name}
+                                    {zones.find(z => z.id === selectedCorridor.destination)?.name}
                                 </Badge>
                             </div>
                             <Badge className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-                                {selectedCorridor.trips} trips/day
+                                {selectedCorridor.trips} real trips/day
                             </Badge>
                         </CardDescription>
                     </CardHeader>
@@ -502,7 +438,7 @@ const ODMatrix = () => {
                             <div className="lg:col-span-2">
                                 <h3 className="font-semibold text-slate-800 mb-4 flex items-center">
                                     <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />
-                                    Weekly Trip Pattern
+                                    Real Weekly Trip Pattern
                                 </h3>
                                 <div className="h-64 bg-white rounded-lg border border-slate-200 p-4">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -542,7 +478,7 @@ const ODMatrix = () => {
                             <div>
                                 <h3 className="font-semibold text-slate-800 mb-4 flex items-center">
                                     <Car className="w-5 h-5 mr-2 text-green-600" />
-                                    Transportation Mode
+                                    Real Transport Modes
                                 </h3>
                                 <div className="h-64 bg-white rounded-lg border border-slate-200 p-4">
                                     <ResponsiveContainer width="100%" height="100%">
