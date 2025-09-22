@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import {
     BarChart3,
     Map,
@@ -20,6 +21,8 @@ import {
 } from 'lucide-react';
 
 const MainLayout = () => {
+    const navigate = useNavigate();
+    const { logout, user } = useAuth();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [startDate, setStartDate] = useState('2025-09-01');
     const [endDate, setEndDate] = useState('2025-09-20');
@@ -104,7 +107,13 @@ const MainLayout = () => {
                     
                     {/* Sign Out Button */}
                     <div className="px-2 mt-auto mb-4 border-t border-gray-200 pt-4">
-                        <button className="w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 hover:shadow-md border border-transparent hover:border-red-200 group">
+                        <button 
+                            onClick={() => {
+                                logout();
+                                navigate('/signin');
+                            }}
+                            className="w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-gray-600 hover:bg-gradient-to-r hover:from-red-50 hover:to-red-100 hover:text-red-600 hover:shadow-md border border-transparent hover:border-red-200 group"
+                        >
                             <LogOut className="w-5 h-5 mr-3 group-hover:transform group-hover:scale-110 transition-transform" />
                             <span className={`font-semibold ${sidebarOpen ? 'block' : 'hidden lg:block'}`}>
                                 Sign Out
@@ -243,10 +252,15 @@ const MainLayout = () => {
                             <div className="relative">
                                 <button className="flex items-center space-x-2 p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md group">
                                     <div className="w-9 h-9 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg group-hover:scale-105 transition-transform">
-                                        GW
+                                        {user?.name ? user.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'SC'}
                                     </div>
                                     <div className="hidden lg:block min-w-0">
-                                        <span className="text-sm font-bold text-gray-700 group-hover:text-purple-600 block whitespace-nowrap">GetWay Admin</span>
+                                        <span className="text-sm font-bold text-gray-700 group-hover:text-purple-600 block whitespace-nowrap">
+                                            {user?.name || 'Scientist'}
+                                        </span>
+                                        <span className="text-xs text-gray-500 block">
+                                            {user?.orgId || 'Organization'}
+                                        </span>
                                     </div>
                                     <ChevronDown className="w-4 h-4 group-hover:text-purple-600 transition-colors" />
                                 </button>
