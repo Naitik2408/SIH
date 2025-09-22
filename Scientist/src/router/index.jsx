@@ -11,11 +11,26 @@ import Reports from '../pages/Reports';
 import Alerts from '../pages/Alerts';
 import Users from '../pages/Users';
 import Admin from '../pages/Admin';
+import SignUp from '../pages/SignUp';
+import SignIn from '../pages/SignIn';
+import ProtectedRoute from '../components/ProtectedRoute';
 
 export const router = createBrowserRouter([
     {
+        path: '/signin',
+        element: <SignIn />,
+    },
+    {
+        path: '/signup',
+        element: <SignUp />,
+    },
+    {
         path: '/',
-        element: <MainLayout />,
+        element: (
+            <ProtectedRoute>
+                <MainLayout />
+            </ProtectedRoute>
+        ),
         children: [
             {
                 index: true,
