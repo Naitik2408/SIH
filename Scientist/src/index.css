@@ -8,6 +8,26 @@ body {
   background-color: #f8fafc;
 }
 
+/* Scrollbar styling for modern look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 /* Custom animations */
 @keyframes slideInUp {
   from {
@@ -27,6 +47,32 @@ body {
 /* Input focus ring enhancement */
 .input-focus-ring:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .mobile-hide {
+    display: none !important;
+  }
+  
+  .mobile-full {
+    width: 100% !important;
+  }
+  
+  .mobile-stack {
+    flex-direction: column !important;
+  }
+}
+
+/* Responsive text sizing */
+.text-responsive {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+  .text-responsive {
+    font-size: 1rem;
+  }
 }
 
 /* Leaflet styles - override if needed */
@@ -195,4 +241,286 @@ button:focus-visible {
   button:hover {
     background: linear-gradient(135deg, #8b7cf6, #7c3aed);
   }
+}
+
+/* Geospatial Analysis Specific Styles */
+
+/* Custom slider styling */
+input[type="range"].slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"].slider::-webkit-slider-track {
+  background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%);
+  height: 6px;
+  border-radius: 3px;
+}
+
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ffffff;
+  border: 2px solid #3B82F6;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+input[type="range"].slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+input[type="range"].slider::-moz-range-track {
+  background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 50%, #93C5FD 100%);
+  height: 6px;
+  border-radius: 3px;
+  border: none;
+}
+
+input[type="range"].slider::-moz-range-thumb {
+  background: #ffffff;
+  border: 2px solid #3B82F6;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* Heatmap point styles */
+.heatmap-point {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.hexbin-point {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Leaflet popup customization */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 12px 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.leaflet-popup-tip {
+  background: white;
+  border: none;
+}
+
+/* Custom checkbox styling for layers */
+input[type="checkbox"] {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked {
+  background: #3B82F6;
+  border-color: #3B82F6;
+}
+
+input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 1px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Modal backdrop blur effect */
+.modal-backdrop {
+  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Floating button animation */
+.floating-button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+}
+
+/* Progress bar for time slider */
+.time-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.time-progress::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #EF4444, #F59E0B, #10B981);
+  opacity: 0.3;
+  transition: width 0.3s ease;
+}
+
+/* Layer panel enhancements */
+.layer-item {
+  transition: all 0.2s ease;
+}
+
+.layer-item:hover {
+  background: rgba(59, 130, 246, 0.05);
+  border-radius: 6px;
+}
+
+.layer-indicator {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Stats card hover effects */
+.stats-card {
+  transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive map controls */
+@media (max-width: 768px) {
+  .layer-control {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .time-control {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* Custom scrollbar for panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Map overlay styles */
+.map-overlay {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Button group styles */
+.button-group button {
+  border-radius: 0;
+  border-right: none;
+  margin: 0;
+}
+
+.button-group button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.button-group button:last-child {
+  border-radius: 0 6px 6px 0;
+  border-right: 1px solid #d1d5db;
+}
+
+.button-group button.active {
+  background: #3B82F6;
+  color: white;
+  border-color: #3B82F6;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.focus-ring:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* Typography enhancements */
+.text-shadow {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Card gradient borders */
+.gradient-border {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+  border-radius: inherit;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
 }

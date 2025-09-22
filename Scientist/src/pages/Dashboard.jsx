@@ -178,29 +178,29 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-      {/* Enhanced Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div className="p-3 md:p-6 space-y-6 md:space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
+      {/* Enhanced Header - Responsive */}
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 bg-clip-text text-transparent">
               Transportation Dashboard
             </h1>
-            <p className="text-gray-600 mt-2 text-lg">Real-time analytics and key performance indicators</p>
+            <p className="text-gray-600 mt-2 text-base md:text-lg">Real-time analytics and key performance indicators</p>
           </div>
-          <div className="flex space-x-3">
-            <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+            <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50 text-sm md:text-base">
               Export Data
             </Button>
-            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
+            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-sm md:text-base">
               Live View
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Enhanced KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      {/* Enhanced KPI Cards - Improved responsive grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
         <EnhancedKPICard
           title="Total Trips"
           value="15,432"
@@ -243,8 +243,8 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Enhanced Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Enhanced Charts Row 1 - Responsive */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 md:gap-8">
         {/* Enhanced Mode Share Pie Chart */}
         <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-purple-50/20 to-white">
           <CardHeader className="pb-4">
@@ -257,7 +257,7 @@ const Dashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
+            <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
                   data={modeShareData}
@@ -329,8 +329,8 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Enhanced Charts Row 2 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      {/* Enhanced Charts Row 2 - Responsive */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* Enhanced Daily Trends Area Chart */}
         <Card className="lg:col-span-2 shadow-xl border-0 bg-gradient-to-br from-white via-green-50/20 to-white">
           <CardHeader className="pb-4">
