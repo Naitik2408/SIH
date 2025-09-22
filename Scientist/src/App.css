@@ -40,3 +40,52 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Custom Select Placeholder Styling */
+select:invalid {
+  color: #9ca3af; /* gray-400 */
+}
+
+select option {
+  color: #1f2937; /* gray-800 */
+}
+
+select option:disabled {
+  color: #9ca3af; /* gray-400 */
+}
+
+/* Date Input Styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-datetime-edit-text {
+  color: #6b7280; /* gray-500 */
+}
+
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field,
+input[type="date"]::-webkit-datetime-edit-year-field {
+  color: #1f2937; /* gray-800 */
+}
+
+/* Enhanced purple theme colors */
+.purple-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+}
+
+/* Hover effects for dropdowns */
+.dropdown-hover:hover {
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-color: #a855f7;
+}
+
+/* Focus states */
+.focus-purple:focus {
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
