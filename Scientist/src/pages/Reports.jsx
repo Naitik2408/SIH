@@ -36,63 +36,68 @@ import {
     AlertCircle,
     Layers,
     Target,
-    Database
+    Database,
+    TrendingUp,
+    Activity
 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
-// Report types
+// Enhanced Report types with purple theme
 const reportTypes = [
     {
         id: 'mode_share',
         label: 'Mode Share Analysis',
         description: 'Transportation mode distribution and trends',
         icon: PieChartIcon,
-        color: 'bg-blue-100 text-blue-600'
+        gradient: 'from-purple-500 to-purple-600'
     },
     {
         id: 'trip_purpose',
         label: 'Trip Purpose Report',
         description: 'Analysis of trip purposes and patterns',
         icon: Target,
-        color: 'bg-green-100 text-green-600'
+        gradient: 'from-blue-500 to-blue-600'
     },
     {
         id: 'od_matrix',
         label: 'Origin-Destination Analysis',
         description: 'OD matrix and corridor analysis',
         icon: MapPin,
-        color: 'bg-purple-100 text-purple-600'
+        gradient: 'from-indigo-500 to-indigo-600'
     },
     {
         id: 'demographics',
         label: 'Demographics Report',
         description: 'User demographics and equity analysis',
         icon: Users,
-        color: 'bg-orange-100 text-orange-600'
+        gradient: 'from-violet-500 to-violet-600'
     },
     {
         id: 'temporal',
         label: 'Temporal Analysis',
         description: 'Time-based patterns and trends',
         icon: Clock,
-        color: 'bg-pink-100 text-pink-600'
+        gradient: 'from-pink-500 to-pink-600'
     }
 ];
 
-// Export formats
+// Enhanced Export formats
 const exportFormats = [
-    { id: 'pdf', label: 'PDF Report', icon: FileType, color: 'bg-red-500', description: 'Formatted report with charts' },
-    { id: 'csv', label: 'CSV Data', icon: FileSpreadsheet, color: 'bg-green-500', description: 'Raw data export' },
-    { id: 'excel', label: 'Excel Workbook', icon: Database, color: 'bg-blue-500', description: 'Multiple sheets with data and charts' }
+    { id: 'pdf', label: 'PDF Report', icon: FileType, gradient: 'from-red-500 to-red-600', description: 'Formatted report with charts' },
+    { id: 'csv', label: 'CSV Data', icon: FileSpreadsheet, gradient: 'from-green-500 to-green-600', description: 'Raw data export' },
+    { id: 'excel', label: 'Excel Workbook', icon: Database, gradient: 'from-blue-500 to-blue-600', description: 'Multiple sheets with data and charts' }
 ];
 
-// Sample data for previews
+// Enhanced sample data with purple theme colors
 const sampleData = {
     mode_share: {
         chart: [
-            { mode: 'Metro', value: 45, color: '#3B82F6' },
-            { mode: 'Bus', value: 30, color: '#10B981' },
-            { mode: 'Auto', value: 15, color: '#F59E0B' },
-            { mode: 'Walk', value: 10, color: '#8B5CF6' }
+            { mode: 'Metro', value: 45, color: '#a28ef9' },
+            { mode: 'Bus', value: 30, color: '#8b7cf6' },
+            { mode: 'Auto', value: 15, color: '#7c3aed' },
+            { mode: 'Walk', value: 10, color: '#c084fc' }
         ],
         table: [
             { mode: 'Metro', trips: 45000, percentage: 45, growth: '+12%' },
@@ -103,20 +108,20 @@ const sampleData = {
     },
     trip_purpose: {
         chart: [
-            { purpose: 'Work', trips: 40000, color: '#3B82F6' },
-            { purpose: 'Education', trips: 25000, color: '#10B981' },
-            { purpose: 'Shopping', trips: 15000, color: '#F59E0B' },
-            { purpose: 'Social', trips: 12000, color: '#8B5CF6' },
-            { purpose: 'Medical', trips: 8000, color: '#EF4444' }
+            { purpose: 'Work', trips: 40000, color: '#a28ef9' },
+            { purpose: 'Education', trips: 25000, color: '#8b7cf6' },
+            { purpose: 'Shopping', trips: 15000, color: '#7c3aed' },
+            { purpose: 'Social', trips: 12000, color: '#c084fc' },
+            { purpose: 'Medical', trips: 8000, color: '#e879f9' }
         ]
     },
     demographics: {
         chart: [
-            { age: '18-25', trips: 25000, color: '#3B82F6' },
-            { age: '26-35', trips: 35000, color: '#10B981' },
-            { age: '36-45', trips: 20000, color: '#F59E0B' },
-            { age: '46-55', trips: 15000, color: '#8B5CF6' },
-            { age: '56+', trips: 5000, color: '#EF4444' }
+            { age: '18-25', trips: 25000, color: '#a28ef9' },
+            { age: '26-35', trips: 35000, color: '#8b7cf6' },
+            { age: '36-45', trips: 20000, color: '#7c3aed' },
+            { age: '46-55', trips: 15000, color: '#c084fc' },
+            { age: '56+', trips: 5000, color: '#e879f9' }
         ]
     },
     temporal: {
@@ -164,6 +169,30 @@ const metricsOptions = {
     temporal: ['Hourly Patterns', 'Daily Trends', 'Seasonal Variations', 'Peak Hour Analysis']
 };
 
+// Custom Tooltip Component for better styling
+const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+        return (
+            <Card className="border border-gray-200 shadow-xl backdrop-blur-sm bg-white/95">
+                <CardContent className="p-3">
+                    <p className="font-semibold text-gray-800 mb-2">{label}</p>
+                    {payload.map((entry, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                            <div
+                                className="w-3 h-3 rounded-full"
+                                style={{ backgroundColor: entry.color }}
+                            ></div>
+                            <span className="text-sm text-gray-600">{entry.name || entry.dataKey}:</span>
+                            <span className="text-sm font-semibold text-gray-800">{entry.value}</span>
+                        </div>
+                    ))}
+                </CardContent>
+            </Card>
+        );
+    }
+    return null;
+};
+
 const Reports = () => {
     const [selectedReportType, setSelectedReportType] = useState('mode_share');
     const [selectedDataset, setSelectedDataset] = useState('current_week');
@@ -200,11 +229,11 @@ const Reports = () => {
     };
 
     const nextStep = () => {
-        if (currentStep < 3) setCurrentStep(currentStep + 1);
+        if (currentStep < 3) setCurrentStep(prev => prev + 1);
     };
 
     const prevStep = () => {
-        if (currentStep > 1) setCurrentStep(currentStep - 1);
+        if (currentStep > 1) setCurrentStep(prev => prev - 1);
     };
 
     const renderChart = () => {
@@ -213,34 +242,45 @@ const Reports = () => {
         switch (selectedReportType) {
             case 'mode_share':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={350}>
                         <PieChart>
                             <Pie
                                 data={data.chart}
                                 cx="50%"
                                 cy="50%"
-                                outerRadius={100}
+                                outerRadius={120}
+                                innerRadius={50}
                                 dataKey="value"
                                 label={({ name, value }) => `${name}: ${value}%`}
+                                stroke="#fff"
+                                strokeWidth={2}
                             >
                                 {data.chart.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                             </Pie>
-                            <Tooltip />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend />
                         </PieChart>
                     </ResponsiveContainer>
                 );
 
             case 'trip_purpose':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={350}>
                         <BarChart data={data.chart}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="purpose" />
-                            <YAxis />
-                            <Tooltip formatter={(value) => [value.toLocaleString(), 'Trips']} />
-                            <Bar dataKey="trips" radius={[4, 4, 0, 0]}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                            <XAxis 
+                                dataKey="purpose" 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <YAxis 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Bar dataKey="trips" radius={[6, 6, 0, 0]}>
                                 {data.chart.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
@@ -251,13 +291,20 @@ const Reports = () => {
 
             case 'demographics':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={350}>
                         <BarChart data={data.chart}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="age" />
-                            <YAxis />
-                            <Tooltip formatter={(value) => [value.toLocaleString(), 'Trips']} />
-                            <Bar dataKey="trips" radius={[4, 4, 0, 0]}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                            <XAxis 
+                                dataKey="age" 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <YAxis 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Bar dataKey="trips" radius={[6, 6, 0, 0]}>
                                 {data.chart.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
@@ -268,18 +315,26 @@ const Reports = () => {
 
             case 'temporal':
                 return (
-                    <ResponsiveContainer width="100%" height={300}>
+                    <ResponsiveContainer width="100%" height={350}>
                         <LineChart data={data.chart}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="hour" />
-                            <YAxis />
-                            <Tooltip formatter={(value) => [value.toLocaleString(), 'Trips']} />
+                            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                            <XAxis 
+                                dataKey="hour" 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <YAxis 
+                                tick={{ fontSize: 12, fill: '#64748b' }}
+                                axisLine={{ stroke: '#e2e8f0' }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
                             <Line
                                 type="monotone"
                                 dataKey="trips"
-                                stroke="#3B82F6"
+                                stroke="#8b7cf6"
                                 strokeWidth={3}
-                                dot={{ r: 4, fill: '#3B82F6' }}
+                                dot={{ r: 5, fill: '#8b7cf6', strokeWidth: 2 }}
+                                activeDot={{ r: 7, stroke: '#8b7cf6', strokeWidth: 2 }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -287,8 +342,11 @@ const Reports = () => {
 
             default:
                 return (
-                    <div className="h-72 flex items-center justify-center bg-gray-50 rounded-lg">
-                        <p className="text-gray-500">Select a report type to view preview</p>
+                    <div className="h-80 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                        <div className="text-center">
+                            <Activity className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                            <p className="text-gray-500 font-medium">Select a report type to view preview</p>
+                        </div>
                     </div>
                 );
         }
@@ -302,20 +360,23 @@ const Reports = () => {
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-gray-200">
-                                <th className="text-left py-2 font-medium text-gray-700">Mode</th>
-                                <th className="text-right py-2 font-medium text-gray-700">Trips</th>
-                                <th className="text-right py-2 font-medium text-gray-700">Share</th>
-                                <th className="text-right py-2 font-medium text-gray-700">Growth</th>
+                                <th className="text-left py-3 font-semibold text-gray-700">Mode</th>
+                                <th className="text-right py-3 font-semibold text-gray-700">Trips</th>
+                                <th className="text-right py-3 font-semibold text-gray-700">Share</th>
+                                <th className="text-right py-3 font-semibold text-gray-700">Growth</th>
                             </tr>
                         </thead>
                         <tbody>
                             {data.map((row, index) => (
-                                <tr key={index} className="border-b border-gray-100">
-                                    <td className="py-2 font-medium text-gray-800">{row.mode}</td>
-                                    <td className="py-2 text-right text-gray-600">{row.trips.toLocaleString()}</td>
-                                    <td className="py-2 text-right text-gray-600">{row.percentage}%</td>
-                                    <td className={`py-2 text-right font-medium ${row.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                                        }`}>
+                                <tr key={index} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="py-3 font-medium text-gray-800">{row.mode}</td>
+                                    <td className="py-3 text-right text-gray-600">{row.trips.toLocaleString()}</td>
+                                    <td className="py-3 text-right text-gray-600">
+                                        <Badge variant="secondary">{row.percentage}%</Badge>
+                                    </td>
+                                    <td className={`py-3 text-right font-medium ${
+                                        row.growth.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                                    }`}>
                                         {row.growth}
                                     </td>
                                 </tr>
@@ -326,387 +387,444 @@ const Reports = () => {
             );
         }
         return (
-            <div className="bg-gray-50 p-4 rounded-lg">
-                <p className="text-gray-500 text-center">Summary statistics will appear here</p>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg border border-gray-200">
+                <div className="text-center">
+                    <BarChart3 className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-gray-500 font-medium">Summary statistics will appear here</p>
+                </div>
             </div>
         );
     };
 
     return (
-        <div className="p-6">
-            {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Reports & Exports</h1>
-                <p className="text-gray-600 mt-2">Generate comprehensive analytical reports and export data</p>
-            </div>
-
-            {/* Report Builder Toggle */}
-            <div className="mb-6">
-                <button
-                    onClick={() => setShowWizard(!showWizard)}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
-                >
-                    <Settings className="w-5 h-5 mr-2" />
-                    {showWizard ? 'Close' : 'Open'} Report Builder
-                </button>
-            </div>
-
-            {/* Report Builder Wizard */}
-            {showWizard && (
-                <div className="bg-white rounded-2xl shadow-lg border p-6 mb-6">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-6">Report Builder Wizard</h2>
-
-                    {/* Step Indicator */}
-                    <div className="flex items-center justify-center mb-8">
-                        {reportSteps.map((step, index) => (
-                            <div key={step.id} className="flex items-center">
-                                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.id
-                                        ? 'bg-blue-600 border-blue-600 text-white'
-                                        : 'border-gray-300 text-gray-400'
-                                    }`}>
-                                    {currentStep > step.id ? (
-                                        <CheckCircle className="w-5 h-5" />
-                                    ) : (
-                                        step.id
-                                    )}
-                                </div>
-                                <div className="ml-3 mr-8">
-                                    <p className={`font-medium ${currentStep >= step.id ? 'text-gray-900' : 'text-gray-400'
-                                        }`}>
-                                        {step.title}
-                                    </p>
-                                    <p className="text-sm text-gray-500">{step.description}</p>
-                                </div>
-                                {index < reportSteps.length - 1 && (
-                                    <ChevronRight className="w-5 h-5 text-gray-400 mr-8" />
-                                )}
-                            </div>
-                        ))}
+        <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
+            {/* Enhanced Header */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 bg-clip-text text-transparent">
+                            Reports & Analytics
+                        </h1>
+                        <p className="text-gray-600 mt-2 text-lg">Generate comprehensive analytical reports and export data</p>
                     </div>
-
-                    {/* Step Content */}
-                    <div className="min-h-[300px]">
-                        {currentStep === 1 && (
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Dataset & Time Range</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Dataset</label>
-                                        <div className="space-y-2">
-                                            {datasets.map(dataset => (
-                                                <label key={dataset.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                    <input
-                                                        type="radio"
-                                                        name="dataset"
-                                                        value={dataset.id}
-                                                        checked={selectedDataset === dataset.id}
-                                                        onChange={(e) => setSelectedDataset(e.target.value)}
-                                                        className="mr-3"
-                                                    />
-                                                    <div>
-                                                        <p className="font-medium text-gray-800">{dataset.label}</p>
-                                                        <p className="text-sm text-gray-500">{dataset.description}</p>
-                                                    </div>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Custom Date Range</label>
-                                        <div className="space-y-3">
-                                            <div>
-                                                <label className="block text-xs text-gray-500 mb-1">Start Date</label>
-                                                <input
-                                                    type="date"
-                                                    value={dateRange.start}
-                                                    onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs text-gray-500 mb-1">End Date</label>
-                                                <input
-                                                    type="date"
-                                                    value={dateRange.end}
-                                                    onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {currentStep === 2 && (
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Metrics & Dimensions</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
-                                        <div className="space-y-2">
-                                            {reportTypes.map(type => (
-                                                <label key={type.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
-                                                    <input
-                                                        type="radio"
-                                                        name="reportType"
-                                                        value={type.id}
-                                                        checked={selectedReportType === type.id}
-                                                        onChange={(e) => setSelectedReportType(e.target.value)}
-                                                        className="mr-3"
-                                                    />
-                                                    <div className={`p-2 rounded-lg mr-3 ${type.color}`}>
-                                                        <type.icon className="w-4 h-4" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-medium text-gray-800">{type.label}</p>
-                                                        <p className="text-sm text-gray-500">{type.description}</p>
-                                                    </div>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Available Metrics</label>
-                                        <div className="space-y-2 max-h-64 overflow-y-auto">
-                                            {metricsOptions[selectedReportType]?.map(metric => (
-                                                <label key={metric} className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedMetrics.includes(metric)}
-                                                        onChange={() => handleMetricToggle(metric)}
-                                                        className="mr-3"
-                                                    />
-                                                    <span className="text-gray-700">{metric}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {currentStep === 3 && (
-                            <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Export Configuration</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {exportFormats.map(format => (
-                                        <div key={format.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                                            <div className="flex items-center mb-3">
-                                                <div className={`p-2 rounded-lg ${format.color} text-white mr-3`}>
-                                                    <format.icon className="w-5 h-5" />
-                                                </div>
-                                                <h4 className="font-medium text-gray-800">{format.label}</h4>
-                                            </div>
-                                            <p className="text-sm text-gray-600 mb-4">{format.description}</p>
-                                            <button
-                                                onClick={() => handleExport(format.id)}
-                                                className={`w-full py-2 px-4 rounded-lg text-white ${format.color} hover:opacity-90 transition-opacity`}
-                                            >
-                                                Export {format.label}
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Export Summary */}
-                                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                                    <h4 className="font-medium text-gray-800 mb-2">Export Summary</h4>
-                                    <div className="text-sm text-gray-600 space-y-1">
-                                        <p><strong>Report Type:</strong> {currentReportType?.label}</p>
-                                        <p><strong>Dataset:</strong> {datasets.find(d => d.id === selectedDataset)?.label}</p>
-                                        <p><strong>Date Range:</strong> {dateRange.start} to {dateRange.end}</p>
-                                        <p><strong>Selected Metrics:</strong> {selectedMetrics.length > 0 ? selectedMetrics.join(', ') : 'All metrics'}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Navigation */}
-                    <div className="flex justify-between mt-6">
-                        <button
-                            onClick={prevStep}
-                            disabled={currentStep === 1}
-                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                    <div className="flex space-x-3">
+                        <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
+                            <Download className="w-4 h-4 mr-2" />
+                            Quick Export
+                        </Button>
+                        <Button 
+                            onClick={() => setShowWizard(!showWizard)}
+                            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
                         >
-                            <ChevronLeft className="w-4 h-4 mr-1" />
-                            Previous
-                        </button>
-                        <button
-                            onClick={nextStep}
-                            disabled={currentStep === 3}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
-                        >
-                            Next
-                            <ChevronRight className="w-4 h-4 ml-1" />
-                        </button>
+                            <Settings className="w-4 h-4 mr-2" />
+                            {showWizard ? 'Close' : 'Open'} Report Builder
+                        </Button>
                     </div>
                 </div>
+            </div>
+
+            {/* Enhanced Report Builder Wizard */}
+            {showWizard && (
+                <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-purple-50/20 to-white">
+                    <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center text-xl">
+                            <Settings className="w-5 h-5 mr-2 text-purple-600" />
+                            Report Builder Wizard
+                        </CardTitle>
+                        <CardDescription>
+                            Follow the steps to configure and generate your custom report
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {/* Enhanced Step Indicator */}
+                        <div className="flex items-center justify-center mb-8">
+                            {reportSteps.map((step, index) => (
+                                <div key={step.id} className="flex items-center">
+                                    <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 ${
+                                        currentStep >= step.id
+                                            ? 'bg-gradient-to-r from-purple-600 to-purple-700 border-purple-600 text-white shadow-lg'
+                                            : 'border-gray-300 text-gray-400 bg-white'
+                                    }`}>
+                                        {currentStep > step.id ? (
+                                            <CheckCircle className="w-6 h-6" />
+                                        ) : (
+                                            <span className="font-bold">{step.id}</span>
+                                        )}
+                                    </div>
+                                    <div className="ml-4 mr-8">
+                                        <p className={`font-semibold transition-colors ${
+                                            currentStep >= step.id ? 'text-gray-900' : 'text-gray-400'
+                                        }`}>
+                                            {step.title}
+                                        </p>
+                                        <p className="text-sm text-gray-500">{step.description}</p>
+                                    </div>
+                                    {index < reportSteps.length - 1 && (
+                                        <ChevronRight className="w-5 h-5 text-gray-400 mr-8" />
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Step Content */}
+                        <div className="min-h-[300px]">
+                            {currentStep === 1 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Dataset & Time Range</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Dataset</label>
+                                            <div className="space-y-2">
+                                                {datasets.map(dataset => (
+                                                    <label key={dataset.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                                        <input
+                                                            type="radio"
+                                                            name="dataset"
+                                                            value={dataset.id}
+                                                            checked={selectedDataset === dataset.id}
+                                                            onChange={(e) => setSelectedDataset(e.target.value)}
+                                                            className="mr-3"
+                                                        />
+                                                        <div>
+                                                            <p className="font-medium text-gray-800">{dataset.label}</p>
+                                                            <p className="text-sm text-gray-500">{dataset.description}</p>
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Custom Date Range</label>
+                                            <div className="space-y-3">
+                                                <div>
+                                                    <label className="block text-xs text-gray-500 mb-1">Start Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={dateRange.start}
+                                                        onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs text-gray-500 mb-1">End Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={dateRange.end}
+                                                        onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                                                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {currentStep === 2 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Metrics & Dimensions</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Report Type</label>
+                                            <div className="space-y-2">
+                                                {reportTypes.map(type => (
+                                                    <label key={type.id} className="flex items-center p-3 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                                        <input
+                                                            type="radio"
+                                                            name="reportType"
+                                                            value={type.id}
+                                                            checked={selectedReportType === type.id}
+                                                            onChange={(e) => setSelectedReportType(e.target.value)}
+                                                            className="mr-3"
+                                                        />
+                                                        <div className={`p-2 rounded-lg mr-3 bg-gradient-to-r ${type.gradient} text-white`}>
+                                                            <type.icon className="w-4 h-4" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-gray-800">{type.label}</p>
+                                                            <p className="text-sm text-gray-500">{type.description}</p>
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Available Metrics</label>
+                                            <div className="space-y-2 max-h-64 overflow-y-auto">
+                                                {metricsOptions[selectedReportType]?.map(metric => (
+                                                    <label key={metric} className="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer transition-colors">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedMetrics.includes(metric)}
+                                                            onChange={() => handleMetricToggle(metric)}
+                                                            className="mr-3"
+                                                        />
+                                                        <span className="text-gray-700">{metric}</span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {currentStep === 3 && (
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800 mb-4">Export Configuration</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {exportFormats.map(format => (
+                                            <Card key={format.id} className="border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer">
+                                                <CardContent className="p-4">
+                                                    <div className="flex items-center mb-3">
+                                                        <div className={`p-2 rounded-lg bg-gradient-to-r ${format.gradient} text-white mr-3`}>
+                                                            <format.icon className="w-5 h-5" />
+                                                        </div>
+                                                        <h4 className="font-semibold text-gray-800">{format.label}</h4>
+                                                    </div>
+                                                    <p className="text-sm text-gray-600 mb-4">{format.description}</p>
+                                                    <Button
+                                                        onClick={() => handleExport(format.id)}
+                                                        className={`w-full bg-gradient-to-r ${format.gradient} hover:opacity-90 transition-opacity text-white`}
+                                                    >
+                                                        Export {format.label}
+                                                    </Button>
+                                                </CardContent>
+                                            </Card>
+                                        ))}
+                                    </div>
+
+                                    {/* Export Summary */}
+                                    <Card className="mt-6 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+                                        <CardContent className="p-4">
+                                            <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
+                                                <Eye className="w-4 h-4 mr-2" />
+                                                Export Summary
+                                            </h4>
+                                            <div className="text-sm text-gray-600 space-y-1">
+                                                <p><strong>Report Type:</strong> {currentReportType?.label}</p>
+                                                <p><strong>Dataset:</strong> {datasets.find(d => d.id === selectedDataset)?.label}</p>
+                                                <p><strong>Date Range:</strong> {dateRange.start} to {dateRange.end}</p>
+                                                <p><strong>Selected Metrics:</strong> {selectedMetrics.length > 0 ? selectedMetrics.join(', ') : 'All metrics'}</p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Navigation */}
+                        <div className="flex justify-between mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={prevStep}
+                                disabled={currentStep === 1}
+                                className="border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                Previous
+                            </Button>
+                            <Button
+                                onClick={nextStep}
+                                disabled={currentStep === 3}
+                                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Next
+                                <ChevronRight className="w-4 h-4 ml-1" />
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
             )}
 
             {/* Main Layout */}
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-                {/* Left Sidebar - Filters */}
+                {/* Enhanced Left Sidebar - Filters */}
                 <div className="xl:col-span-1">
-                    <div className="bg-white rounded-2xl shadow-md border p-6 sticky top-6">
-                        <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                            <Filter className="w-5 h-5 mr-2 text-blue-600" />
-                            Report Filters
-                        </h2>
-
-                        {/* Report Type Filter */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-3">Report Type</label>
-                            <div className="space-y-2">
-                                {reportTypes.map(type => {
-                                    const Icon = type.icon;
-                                    return (
-                                        <button
-                                            key={type.id}
-                                            onClick={() => setSelectedReportType(type.id)}
-                                            className={`w-full p-3 rounded-lg border text-left transition-colors ${selectedReportType === type.id
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:bg-gray-50'
+                    <Card className="border-0 shadow-lg sticky top-6">
+                        <CardHeader className="pb-4">
+                            <CardTitle className="flex items-center text-lg">
+                                <Filter className="w-5 h-5 mr-2 text-purple-600" />
+                                Report Filters
+                            </CardTitle>
+                            <CardDescription>
+                                Configure your report parameters
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* Report Type Filter */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-3">Report Type</label>
+                                <div className="space-y-2">
+                                    {reportTypes.map(type => {
+                                        const Icon = type.icon;
+                                        return (
+                                            <Button
+                                                key={type.id}
+                                                variant={selectedReportType === type.id ? "default" : "outline"}
+                                                onClick={() => setSelectedReportType(type.id)}
+                                                className={`w-full justify-start h-auto p-3 ${
+                                                    selectedReportType === type.id 
+                                                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white' 
+                                                        : 'border-gray-200 hover:bg-purple-50'
                                                 }`}
-                                        >
-                                            <div className="flex items-center">
-                                                <div className={`p-2 rounded-lg mr-3 ${type.color}`}>
+                                            >
+                                                <div className={`p-2 rounded-lg mr-3 ${
+                                                    selectedReportType === type.id 
+                                                        ? 'bg-white/20' 
+                                                        : `bg-gradient-to-r ${type.gradient} text-white`
+                                                }`}>
                                                     <Icon className="w-4 h-4" />
                                                 </div>
-                                                <div>
-                                                    <p className="font-medium text-gray-800 text-sm">{type.label}</p>
-                                                    <p className="text-xs text-gray-500">{type.description}</p>
+                                                <div className="text-left">
+                                                    <p className="font-medium">{type.label}</p>
+                                                    <p className={`text-xs ${
+                                                        selectedReportType === type.id ? 'text-purple-100' : 'text-gray-500'
+                                                    }`}>
+                                                        {type.description}
+                                                    </p>
                                                 </div>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        {/* Date Range Filter */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
-                            <div className="space-y-2">
-                                <input
-                                    type="date"
-                                    value={dateRange.start}
-                                    onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                                />
-                                <input
-                                    type="date"
-                                    value={dateRange.end}
-                                    onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                                    className="w-full p-2 border border-gray-300 rounded-lg text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Quick Export Buttons */}
-                        <div className="space-y-2">
-                            <p className="text-sm font-medium text-gray-700 mb-2">Quick Export</p>
-                            {exportFormats.map(format => (
-                                <button
-                                    key={format.id}
-                                    onClick={() => handleExport(format.id)}
-                                    className={`w-full p-2 rounded-lg text-white text-sm font-medium ${format.color} hover:opacity-90 transition-opacity flex items-center justify-center`}
-                                >
-                                    <format.icon className="w-4 h-4 mr-2" />
-                                    {format.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Side - Preview Panel */}
-                <div className="xl:col-span-3">
-                    <div className="bg-white rounded-2xl shadow-md border">
-                        {/* Header with Export Buttons */}
-                        <div className="p-6 border-b border-gray-200">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                                        <Eye className="w-5 h-5 mr-2 text-green-600" />
-                                        Report Preview - {currentReportType?.label}
-                                    </h2>
-                                    <p className="text-gray-600 text-sm mt-1">
-                                        {dateRange.start} to {dateRange.end}
-                                    </p>
+                                            </Button>
+                                        );
+                                    })}
                                 </div>
-                                <div className="flex space-x-2">
+                            </div>
+
+                            {/* Date Range Filter */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+                                <div className="space-y-2">
+                                    <input
+                                        type="date"
+                                        value={dateRange.start}
+                                        onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                    />
+                                    <input
+                                        type="date"
+                                        value={dateRange.end}
+                                        onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                                        className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Quick Export Buttons */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Quick Export</label>
+                                <div className="space-y-2">
                                     {exportFormats.map(format => (
-                                        <button
+                                        <Button
                                             key={format.id}
                                             onClick={() => handleExport(format.id)}
-                                            className={`px-4 py-2 rounded-lg text-white text-sm font-medium ${format.color} hover:opacity-90 transition-opacity flex items-center`}
+                                            className={`w-full bg-gradient-to-r ${format.gradient} hover:opacity-90 transition-opacity text-white`}
                                         >
                                             <format.icon className="w-4 h-4 mr-2" />
-                                            {format.id.toUpperCase()}
-                                        </button>
+                                            {format.label}
+                                        </Button>
                                     ))}
                                 </div>
                             </div>
-                        </div>
+                        </CardContent>
+                    </Card>
+                </div>
 
-                        {/* Preview Content */}
-                        <div className="p-6">
+                {/* Enhanced Main Content Area */}
+                <div className="xl:col-span-3">
+                    <Card className="border-0 shadow-lg">
+                        {/* Report Preview Header */}
+                        <CardHeader className="pb-4 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="flex items-center text-xl">
+                                        <Eye className="w-5 h-5 mr-2 text-purple-600" />
+                                        Report Preview - {currentReportType?.label}
+                                    </CardTitle>
+                                    <CardDescription className="mt-1">
+                                        {dateRange.start} to {dateRange.end}
+                                    </CardDescription>
+                                </div>
+                                <div className="flex space-x-2">
+                                    {exportFormats.map(format => (
+                                        <Button
+                                            key={format.id}
+                                            onClick={() => handleExport(format.id)}
+                                            className={`bg-gradient-to-r ${format.gradient} hover:opacity-90 transition-opacity text-white`}
+                                            size="sm"
+                                        >
+                                            <format.icon className="w-4 h-4 mr-1" />
+                                            {format.id.toUpperCase()}
+                                        </Button>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardHeader>
+
+                        {/* Report Content */}
+                        <CardContent className="p-6">
                             {/* Chart Section */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <BarChart3 className="w-5 h-5 mr-2 text-purple-600" />
                                     {currentReportType?.label} Visualization
                                 </h3>
-                                <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
                                     {renderChart()}
                                 </div>
                             </div>
 
                             {/* Table Section */}
                             <div className="mb-8">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <Database className="w-5 h-5 mr-2 text-purple-600" />
                                     Summary Statistics
                                 </h3>
-                                <div className="bg-gray-50 rounded-lg p-4">
+                                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4 border border-gray-200">
                                     {renderTable()}
                                 </div>
                             </div>
 
-                            {/* Key Insights */}
+                            {/* Enhanced Insights Section */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Key Insights</h3>
+                                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                    <TrendingUp className="w-5 h-5 mr-2 text-purple-600" />
+                                    Key Insights
+                                </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="bg-blue-50 p-4 rounded-lg">
-                                        <div className="flex items-center mb-2">
-                                            <CheckCircle className="w-5 h-5 text-blue-600 mr-2" />
-                                            <p className="font-medium text-blue-800">Primary Finding</p>
-                                        </div>
-                                        <p className="text-blue-700 text-sm">
-                                            {selectedReportType === 'mode_share' && 'Metro dominates with 45% mode share'}
-                                            {selectedReportType === 'trip_purpose' && 'Work trips account for 40% of all journeys'}
-                                            {selectedReportType === 'demographics' && 'Most active age group is 26-35 years'}
-                                            {selectedReportType === 'temporal' && 'Peak hours are 8AM and 6PM'}
-                                            {selectedReportType === 'od_matrix' && 'Central corridors show highest traffic'}
-                                        </p>
-                                    </div>
-                                    <div className="bg-green-50 p-4 rounded-lg">
-                                        <div className="flex items-center mb-2">
-                                            <AlertCircle className="w-5 h-5 text-green-600 mr-2" />
-                                            <p className="font-medium text-green-800">Recommendation</p>
-                                        </div>
-                                        <p className="text-green-700 text-sm">
-                                            {selectedReportType === 'mode_share' && 'Consider increasing bus capacity to balance load'}
-                                            {selectedReportType === 'trip_purpose' && 'Optimize schedules for work commute patterns'}
-                                            {selectedReportType === 'demographics' && 'Target services for young professional demographic'}
-                                            {selectedReportType === 'temporal' && 'Implement dynamic pricing for peak hours'}
-                                            {selectedReportType === 'od_matrix' && 'Focus infrastructure improvements on high-traffic corridors'}
-                                        </p>
-                                    </div>
+                                    <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center mb-2">
+                                                <CheckCircle className="w-5 h-5 text-blue-600 mr-2" />
+                                                <p className="font-semibold text-blue-800">Primary Finding</p>
+                                            </div>
+                                            <p className="text-blue-700 text-sm">
+                                                {selectedReportType === 'mode_share' && 'Metro dominates with 45% mode share'}
+                                                {selectedReportType === 'trip_purpose' && 'Work trips account for 40% of all journeys'}
+                                                {selectedReportType === 'demographics' && 'Most active age group is 26-35 years'}
+                                                {selectedReportType === 'temporal' && 'Peak hours are 8AM and 6PM'}
+                                                {selectedReportType === 'od_matrix' && 'Central corridors show highest traffic'}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
+                                    
+                                    <Card className="border border-green-200 bg-gradient-to-br from-green-50 to-green-100">
+                                        <CardContent className="p-4">
+                                            <div className="flex items-center mb-2">
+                                                <AlertCircle className="w-5 h-5 text-green-600 mr-2" />
+                                                <p className="font-semibold text-green-800">Recommendation</p>
+                                            </div>
+                                            <p className="text-green-700 text-sm">
+                                                {selectedReportType === 'mode_share' && 'Consider increasing bus capacity to balance load'}
+                                                {selectedReportType === 'trip_purpose' && 'Optimize schedules for work commute patterns'}
+                                                {selectedReportType === 'demographics' && 'Target services for young professional demographic'}
+                                                {selectedReportType === 'temporal' && 'Implement dynamic pricing for peak hours'}
+                                                {selectedReportType === 'od_matrix' && 'Focus infrastructure improvements on high-traffic corridors'}
+                                            </p>
+                                        </CardContent>
+                                    </Card>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
