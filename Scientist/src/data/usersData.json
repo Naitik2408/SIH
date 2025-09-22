@@ -1,0 +1,7603 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Rahul Sharma",
+      "age": 28,
+      "gender": "male",
+      "occupation": "Software Engineer",
+      "home_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "work_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 3,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 2,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 9,
+          "duration": 45,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 18,
+          "duration": 50,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 2,
+      "name": "Priya Singh",
+      "age": 32,
+      "gender": "female",
+      "occupation": "Doctor",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 2,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 7,
+          "duration": 60,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 19,
+          "duration": 75,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 3,
+      "name": "Amit Kumar",
+      "age": 45,
+      "gender": "male",
+      "occupation": "Government Employee",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Central Delhi"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 2,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 9,
+          "duration": 35,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 17,
+          "duration": 40,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 4,
+      "name": "Sneha Patel",
+      "age": 24,
+      "gender": "female",
+      "occupation": "Student",
+      "home_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "work_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Delhi University"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 8,
+          "duration": 50,
+          "mode": "bus",
+          "purpose": "education"
+        },
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 16,
+          "duration": 55,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bus",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 5,
+      "name": "Vikram Joshi",
+      "age": 35,
+      "gender": "male",
+      "occupation": "Business Owner",
+      "home_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 2,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 10,
+          "duration": 25,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 20,
+          "duration": 30,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 6,
+      "name": "Anjali Gupta",
+      "age": 29,
+      "gender": "female",
+      "occupation": "Teacher",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 2,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 8,
+          "duration": 45,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 15,
+          "duration": 50,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 7,
+      "name": "Rajesh Agarwal",
+      "age": 52,
+      "gender": "male",
+      "occupation": "Manager",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 2,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 9,
+          "duration": 20,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 18,
+          "duration": 25,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 8,
+      "name": "Meera Shah",
+      "age": 26,
+      "gender": "female",
+      "occupation": "Marketing Executive",
+      "home_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 3,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 9,
+          "duration": 45,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 19,
+          "duration": 50,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro",
+        "cab"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 9,
+      "name": "Suresh Kumar",
+      "age": 38,
+      "gender": "male",
+      "occupation": "Taxi Driver",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Multiple Locations"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 5,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 4,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 6,
+          "duration": 20,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 22,
+          "duration": 25,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 8,
+        "tuesday": 8,
+        "wednesday": 8,
+        "thursday": 8,
+        "friday": 10,
+        "saturday": 6,
+        "sunday": 4
+      }
+    },
+    {
+      "id": 10,
+      "name": "Kavita Sharma",
+      "age": 31,
+      "gender": "female",
+      "occupation": "Nurse",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 1,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 6,
+          "duration": 30,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 20,
+          "duration": 35,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 11,
+      "name": "Arjun Reddy",
+      "age": 18,
+      "gender": "male",
+      "occupation": "Mechanic",
+      "home_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 3,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 4,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 8,
+          "duration": 56,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 18,
+          "duration": 47,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 12,
+      "name": "Deepika Rao",
+      "age": 29,
+      "gender": "male",
+      "occupation": "Artist",
+      "home_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 2,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 4,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 3,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 8,
+          "duration": 46,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 20,
+          "duration": 25,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 13,
+      "name": "Karan Singh",
+      "age": 28,
+      "gender": "female",
+      "occupation": "Consultant",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 5,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 6,
+          "duration": 37,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 17,
+          "duration": 62,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 14,
+      "name": "Pooja Sharma",
+      "age": 50,
+      "gender": "female",
+      "occupation": "Consultant",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 4,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 8,
+          "duration": 16,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 17,
+          "duration": 55,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk",
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 15,
+      "name": "Ravi Kumar",
+      "age": 47,
+      "gender": "female",
+      "occupation": "Lawyer",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5383,
+          "lng": 77.2507,
+          "area": "Saket",
+          "frequency": 3,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 8,
+          "duration": 28,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 19,
+          "duration": 59,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 16,
+      "name": "Sita Devi",
+      "age": 45,
+      "gender": "male",
+      "occupation": "Teacher",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 3,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 2,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 8,
+          "duration": 74,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 21,
+          "duration": 63,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 17,
+      "name": "Manish Jain",
+      "age": 27,
+      "gender": "male",
+      "occupation": "Marketing Executive",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 3,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 5,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 9,
+          "duration": 54,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 20,
+          "duration": 15,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 18,
+      "name": "Neha Agarwal",
+      "age": 20,
+      "gender": "female",
+      "occupation": "Marketing Executive",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 5,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 4,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 6,
+          "duration": 69,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 21,
+          "duration": 15,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 19,
+      "name": "Rohit Verma",
+      "age": 44,
+      "gender": "male",
+      "occupation": "Manager",
+      "home_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "work_location": {
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "area": "Rajpath"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 1,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.4595,
+          "lng": 77.0266,
+          "area": "Gurgaon",
+          "frequency": 4,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 2,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6129,
+            77.2295
+          ],
+          "time": 6,
+          "duration": 68,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6129,
+            77.2295
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 19,
+          "duration": 33,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 20,
+      "name": "Sunita Singh",
+      "age": 23,
+      "gender": "male",
+      "occupation": "Barber",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5383,
+          "lng": 77.2507,
+          "area": "Saket",
+          "frequency": 5,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 2,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 9,
+          "duration": 74,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 20,
+          "duration": 67,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "bike",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 21,
+      "name": "Aarav Mehta",
+      "age": 20,
+      "gender": "female",
+      "occupation": "Designer",
+      "home_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "work_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 3,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 7,
+          "duration": 69,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 18,
+          "duration": 69,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 22,
+      "name": "Diya Patel",
+      "age": 36,
+      "gender": "male",
+      "occupation": "Doctor",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 3,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 7,
+          "duration": 61,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 21,
+          "duration": 63,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 23,
+      "name": "Ishaan Gupta",
+      "age": 42,
+      "gender": "male",
+      "occupation": "Sales Executive",
+      "home_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 3,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 6,
+          "duration": 32,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 19,
+          "duration": 24,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 24,
+      "name": "Riya Joshi",
+      "age": 28,
+      "gender": "female",
+      "occupation": "Real Estate Agent",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 2,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 1,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 1,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 7,
+          "duration": 71,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 20,
+          "duration": 70,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 25,
+      "name": "Varun Malhotra",
+      "age": 23,
+      "gender": "male",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 2,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 2,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 5,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 6,
+          "duration": 37,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 20,
+          "duration": 49,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 26,
+      "name": "Anita Chopra",
+      "age": 47,
+      "gender": "male",
+      "occupation": "Nurse",
+      "home_location": {
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "area": "Rajpath"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 5,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6129,
+            77.2295
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 9,
+          "duration": 73,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.6129,
+            77.2295
+          ],
+          "time": 21,
+          "duration": 30,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 27,
+      "name": "Vishal Thakur",
+      "age": 51,
+      "gender": "male",
+      "occupation": "Artist",
+      "home_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 1,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 2,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 6,
+          "duration": 47,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 18,
+          "duration": 72,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bike",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 28,
+      "name": "Priya Nair",
+      "age": 52,
+      "gender": "female",
+      "occupation": "Journalist",
+      "home_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 1,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 1,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 9,
+          "duration": 74,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 21,
+          "duration": 21,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 29,
+      "name": "Gaurav Saxena",
+      "age": 30,
+      "gender": "female",
+      "occupation": "Designer",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 5,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 6,
+          "duration": 68,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 21,
+          "duration": 50,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 30,
+      "name": "Komal Shah",
+      "age": 51,
+      "gender": "male",
+      "occupation": "Chef",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 7,
+          "duration": 26,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 20,
+          "duration": 16,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 31,
+      "name": "Nikhil Bansal",
+      "age": 41,
+      "gender": "male",
+      "occupation": "Engineer",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 3,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 4,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 3,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 7,
+          "duration": 54,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 20,
+          "duration": 21,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 32,
+      "name": "Shreya Mishra",
+      "age": 25,
+      "gender": "female",
+      "occupation": "Business Owner",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 4,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 9,
+          "duration": 55,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 17,
+          "duration": 21,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 33,
+      "name": "Aditya Kapoor",
+      "age": 18,
+      "gender": "female",
+      "occupation": "Teacher",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 4,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 6,
+          "duration": 41,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 17,
+          "duration": 29,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 34,
+      "name": "Tanvi Srivastava",
+      "age": 51,
+      "gender": "male",
+      "occupation": "Teacher",
+      "home_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 5,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 5,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 5,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 9,
+          "duration": 36,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 21,
+          "duration": 28,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 35,
+      "name": "Harsh Goyal",
+      "age": 39,
+      "gender": "female",
+      "occupation": "Lawyer",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 1,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 5,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 4,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 7,
+          "duration": 59,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 21,
+          "duration": 23,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "bus",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 36,
+      "name": "Simran Kaur",
+      "age": 40,
+      "gender": "male",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "work_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 7,
+          "duration": 52,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 18,
+          "duration": 18,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 37,
+      "name": "Rohan Das",
+      "age": 27,
+      "gender": "male",
+      "occupation": "Designer",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 3,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 9,
+          "duration": 68,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 21,
+          "duration": 30,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 38,
+      "name": "Nidhi Agrawal",
+      "age": 35,
+      "gender": "female",
+      "occupation": "Mechanic",
+      "home_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "work_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 2,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 2,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 3,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 8,
+          "duration": 21,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 20,
+          "duration": 35,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 39,
+      "name": "Akash Tiwari",
+      "age": 52,
+      "gender": "female",
+      "occupation": "Student",
+      "home_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "work_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 1,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 8,
+          "duration": 44,
+          "mode": "auto",
+          "purpose": "education"
+        },
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 19,
+          "duration": 43,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 40,
+      "name": "Pallavi Rastogi",
+      "age": 39,
+      "gender": "female",
+      "occupation": "Chef",
+      "home_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 2,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 5,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 9,
+          "duration": 32,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 18,
+          "duration": 16,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 41,
+      "name": "Yash Pandey",
+      "age": 29,
+      "gender": "male",
+      "occupation": "Marketing Executive",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 1,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 1,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 3,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 8,
+          "duration": 29,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 17,
+          "duration": 66,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk",
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 42,
+      "name": "Sakshi Dubey",
+      "age": 29,
+      "gender": "female",
+      "occupation": "Photographer",
+      "home_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "work_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 2,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 5,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 7,
+          "duration": 32,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 21,
+          "duration": 74,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "auto",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 43,
+      "name": "Kunal Bajaj",
+      "age": 42,
+      "gender": "male",
+      "occupation": "Barber",
+      "home_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "work_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 2,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 3,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 4,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 7,
+          "duration": 66,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 18,
+          "duration": 22,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 44,
+      "name": "Isha Jindal",
+      "age": 29,
+      "gender": "male",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "work_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 2,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 2,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 8,
+          "duration": 70,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 18,
+          "duration": 31,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 45,
+      "name": "Saurabh Mittal",
+      "age": 49,
+      "gender": "male",
+      "occupation": "Business Owner",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 5,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 2,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 1,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 8,
+          "duration": 56,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 20,
+          "duration": 72,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 46,
+      "name": "Ritika Bhatia",
+      "age": 55,
+      "gender": "male",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 1,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 1,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 5,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 8,
+          "duration": 70,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 21,
+          "duration": 41,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 47,
+      "name": "Ankit Sinha",
+      "age": 41,
+      "gender": "male",
+      "occupation": "Sales Executive",
+      "home_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "work_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 1,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 9,
+          "duration": 21,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 19,
+          "duration": 61,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 48,
+      "name": "Preeti Mahajan",
+      "age": 21,
+      "gender": "female",
+      "occupation": "Business Owner",
+      "home_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 7,
+          "duration": 47,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 18,
+          "duration": 58,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 49,
+      "name": "Divya Arora",
+      "age": 29,
+      "gender": "female",
+      "occupation": "Barber",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 8,
+          "duration": 31,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 21,
+          "duration": 37,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bike",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 50,
+      "name": "Kartik Jha",
+      "age": 32,
+      "gender": "male",
+      "occupation": "Artist",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 1,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 1,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 3,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 8,
+          "duration": 21,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 18,
+          "duration": 28,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 51,
+      "name": "Swati Kulkarni",
+      "age": 36,
+      "gender": "male",
+      "occupation": "Software Engineer",
+      "home_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "work_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 4,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 6,
+          "duration": 52,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 21,
+          "duration": 61,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 52,
+      "name": "Abhishek Khurana",
+      "age": 25,
+      "gender": "female",
+      "occupation": "Engineer",
+      "home_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "work_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 5,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 9,
+          "duration": 66,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 21,
+          "duration": 62,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 53,
+      "name": "Megha Saini",
+      "age": 21,
+      "gender": "female",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 4,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 3,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 1,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 6,
+          "duration": 51,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 21,
+          "duration": 60,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 54,
+      "name": "Tarun Aggarwal",
+      "age": 30,
+      "gender": "male",
+      "occupation": "Driver",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 1,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 9,
+          "duration": 35,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 17,
+          "duration": 31,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 55,
+      "name": "Kavya Sethi",
+      "age": 53,
+      "gender": "female",
+      "occupation": "Artist",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.5274,
+        "lng": 77.2065,
+        "area": "Hauz Khas"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 1,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5274,
+            77.2065
+          ],
+          "time": 7,
+          "duration": 44,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5274,
+            77.2065
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 18,
+          "duration": 25,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 56,
+      "name": "Mohit Garg",
+      "age": 41,
+      "gender": "male",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 2,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 2,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 4,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 6,
+          "duration": 74,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 20,
+          "duration": 50,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 57,
+      "name": "Shipra Bhardwaj",
+      "age": 49,
+      "gender": "female",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 4,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 8,
+          "duration": 34,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 17,
+          "duration": 53,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 58,
+      "name": "Nitin Choudhary",
+      "age": 37,
+      "gender": "female",
+      "occupation": "Government Employee",
+      "home_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 3,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.4595,
+          "lng": 77.0266,
+          "area": "Gurgaon",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 7,
+          "duration": 30,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 20,
+          "duration": 52,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 59,
+      "name": "Aparna Dixit",
+      "age": 23,
+      "gender": "male",
+      "occupation": "Driver",
+      "home_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "work_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 3,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 5,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 1,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 6,
+          "duration": 58,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 20,
+          "duration": 61,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 60,
+      "name": "Vaibhav Tyagi",
+      "age": 42,
+      "gender": "male",
+      "occupation": "Engineer",
+      "home_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "work_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5274,
+          "lng": 77.2065,
+          "area": "Hauz Khas",
+          "frequency": 5,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 3,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 9,
+          "duration": 65,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 20,
+          "duration": 26,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 61,
+      "name": "Shweta Khanna",
+      "age": 46,
+      "gender": "male",
+      "occupation": "Driver",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 4,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 1,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 1,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 8,
+          "duration": 26,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 21,
+          "duration": 27,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "auto",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 62,
+      "name": "Pankaj Yadav",
+      "age": 46,
+      "gender": "male",
+      "occupation": "Nurse",
+      "home_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "work_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 1,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 5,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 2,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 7,
+          "duration": 64,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 18,
+          "duration": 60,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 63,
+      "name": "Seema Rajput",
+      "age": 45,
+      "gender": "male",
+      "occupation": "Engineer",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "area": "Rajpath"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 4,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 1,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6129,
+            77.2295
+          ],
+          "time": 6,
+          "duration": 65,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6129,
+            77.2295
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 20,
+          "duration": 19,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 64,
+      "name": "Sameer Ali",
+      "age": 28,
+      "gender": "male",
+      "occupation": "Electrician",
+      "home_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "work_location": {
+        "lat": 28.6692,
+        "lng": 77.4538,
+        "area": "Ghaziabad"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 2,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.6692,
+            77.4538
+          ],
+          "time": 9,
+          "duration": 23,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6692,
+            77.4538
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 17,
+          "duration": 70,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 65,
+      "name": "Rachna Bhatt",
+      "age": 35,
+      "gender": "female",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 3,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 8,
+          "duration": 17,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 21,
+          "duration": 22,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 66,
+      "name": "Ajay Rawat",
+      "age": 36,
+      "gender": "female",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 4,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 7,
+          "duration": 49,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 18,
+          "duration": 52,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "car",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 67,
+      "name": "Vandana Shukla",
+      "age": 49,
+      "gender": "male",
+      "occupation": "Marketing Executive",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5383,
+          "lng": 77.2507,
+          "area": "Saket",
+          "frequency": 1,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 2,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 7,
+          "duration": 23,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 17,
+          "duration": 58,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 68,
+      "name": "Deepak Jangid",
+      "age": 22,
+      "gender": "female",
+      "occupation": "Engineer",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 5,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 5,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 9,
+          "duration": 23,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 18,
+          "duration": 26,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 69,
+      "name": "Nisha Bhardwaj",
+      "age": 22,
+      "gender": "female",
+      "occupation": "Shopkeeper",
+      "home_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 6,
+          "duration": 47,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 18,
+          "duration": 17,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 70,
+      "name": "Anuj Bhatnagar",
+      "age": 51,
+      "gender": "male",
+      "occupation": "Accountant",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 5,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 4,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 8,
+          "duration": 28,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 21,
+          "duration": 22,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 71,
+      "name": "Payal Gupta",
+      "age": 54,
+      "gender": "female",
+      "occupation": "Journalist",
+      "home_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 1,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 3,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 5,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 8,
+          "duration": 30,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 19,
+          "duration": 48,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 72,
+      "name": "Sachin Sharma",
+      "age": 47,
+      "gender": "female",
+      "occupation": "Photographer",
+      "home_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "work_location": {
+        "lat": 28.7041,
+        "lng": 77.1025,
+        "area": "Rohini"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 1,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 2,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.7041,
+            77.1025
+          ],
+          "time": 6,
+          "duration": 40,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.7041,
+            77.1025
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 21,
+          "duration": 29,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 73,
+      "name": "Anuradha Singh",
+      "age": 47,
+      "gender": "male",
+      "occupation": "Sales Executive",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 4,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.6692,
+          "lng": 77.4538,
+          "area": "Ghaziabad",
+          "frequency": 4,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 3,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 7,
+          "duration": 23,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 21,
+          "duration": 20,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 74,
+      "name": "Vivek Chauhan",
+      "age": 33,
+      "gender": "female",
+      "occupation": "Shopkeeper",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 5,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 1,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 2,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 9,
+          "duration": 24,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 19,
+          "duration": 57,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 75,
+      "name": "Geeta Rani",
+      "age": 50,
+      "gender": "male",
+      "occupation": "Software Engineer",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 2,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 7,
+          "duration": 22,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 18,
+          "duration": 56,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "bus",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 76,
+      "name": "Manoj Chandra",
+      "age": 57,
+      "gender": "male",
+      "occupation": "Designer",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 9,
+          "duration": 74,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 18,
+          "duration": 58,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bus",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 77,
+      "name": "Smriti Iyer",
+      "age": 45,
+      "gender": "male",
+      "occupation": "Chef",
+      "home_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "work_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 1,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 4,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 8,
+          "duration": 66,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 19,
+          "duration": 37,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 78,
+      "name": "Pawan Kumar",
+      "age": 30,
+      "gender": "female",
+      "occupation": "Freelancer",
+      "home_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6517,
+          "lng": 77.2219,
+          "area": "Civil Lines",
+          "frequency": 4,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 1,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 1,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 9,
+          "duration": 15,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 21,
+          "duration": 50,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 79,
+      "name": "Lata Kumari",
+      "age": 44,
+      "gender": "male",
+      "occupation": "Writer",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6304,
+        "lng": 77.2177,
+        "area": "India Gate"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 2,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 1,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6304,
+            77.2177
+          ],
+          "time": 9,
+          "duration": 49,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6304,
+            77.2177
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 20,
+          "duration": 27,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "bike",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 80,
+      "name": "Raman Singh",
+      "age": 46,
+      "gender": "male",
+      "occupation": "Designer",
+      "home_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 1,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 5,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 9,
+          "duration": 59,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 17,
+          "duration": 35,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 81,
+      "name": "Bhavna Jain",
+      "age": 47,
+      "gender": "male",
+      "occupation": "Consultant",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 2,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 1,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 7,
+          "duration": 58,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 21,
+          "duration": 16,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 4,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 82,
+      "name": "Ashish Tomar",
+      "age": 53,
+      "gender": "male",
+      "occupation": "Photographer",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4595,
+          "lng": 77.0266,
+          "area": "Gurgaon",
+          "frequency": 3,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 7,
+          "duration": 48,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 18,
+          "duration": 30,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "auto",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 83,
+      "name": "Rekha Maurya",
+      "age": 56,
+      "gender": "female",
+      "occupation": "Artist",
+      "home_location": {
+        "lat": 28.5355,
+        "lng": 77.391,
+        "area": "Noida"
+      },
+      "work_location": {
+        "lat": 28.6562,
+        "lng": 77.241,
+        "area": "Chandni Chowk"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 2,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 2,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5355,
+            77.391
+          ],
+          "destination": [
+            28.6562,
+            77.241
+          ],
+          "time": 6,
+          "duration": 59,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6562,
+            77.241
+          ],
+          "destination": [
+            28.5355,
+            77.391
+          ],
+          "time": 21,
+          "duration": 47,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 84,
+      "name": "Sunil Pal",
+      "age": 35,
+      "gender": "female",
+      "occupation": "Government Employee",
+      "home_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "work_location": {
+        "lat": 28.5244,
+        "lng": 77.1855,
+        "area": "Greater Kailash"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 4,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 4,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5244,
+            77.1855
+          ],
+          "time": 6,
+          "duration": 30,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5244,
+            77.1855
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 20,
+          "duration": 19,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "walk",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 85,
+      "name": "Madhu Sood",
+      "age": 47,
+      "gender": "female",
+      "occupation": "Freelancer",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 2,
+          "purpose": "family"
+        },
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 5,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 6,
+          "duration": 70,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 19,
+          "duration": 43,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 86,
+      "name": "Rajat Bhalla",
+      "age": 52,
+      "gender": "female",
+      "occupation": "Sales Executive",
+      "home_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "work_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5244,
+          "lng": 77.1855,
+          "area": "Greater Kailash",
+          "frequency": 4,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6328,
+          "lng": 77.2197,
+          "area": "Khan Market",
+          "frequency": 4,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 5,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 9,
+          "duration": 46,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 19,
+          "duration": 43,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 87,
+      "name": "Shilpa Negi",
+      "age": 50,
+      "gender": "male",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 4,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6667,
+          "lng": 77.2167,
+          "area": "North Campus",
+          "frequency": 2,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 6,
+          "duration": 15,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 17,
+          "duration": 27,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 88,
+      "name": "Lokesh Goel",
+      "age": 20,
+      "gender": "female",
+      "occupation": "Journalist",
+      "home_location": {
+        "lat": 28.5706,
+        "lng": 77.3272,
+        "area": "Lajpat Nagar"
+      },
+      "work_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 4,
+          "purpose": "shopping"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5706,
+            77.3272
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 9,
+          "duration": 68,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.5706,
+            77.3272
+          ],
+          "time": 21,
+          "duration": 51,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 89,
+      "name": "Usha Devi",
+      "age": 45,
+      "gender": "female",
+      "occupation": "Architect",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 2,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6304,
+          "lng": 77.2177,
+          "area": "India Gate",
+          "frequency": 1,
+          "purpose": "medical"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 9,
+          "duration": 35,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 21,
+          "duration": 71,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "car",
+        "walk"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 90,
+      "name": "Mahesh Chand",
+      "age": 39,
+      "gender": "male",
+      "occupation": "Freelancer",
+      "home_location": {
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "area": "Rajpath"
+      },
+      "work_location": {
+        "lat": 28.4595,
+        "lng": 77.0266,
+        "area": "Gurgaon"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 4,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 5,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6129,
+            77.2295
+          ],
+          "destination": [
+            28.4595,
+            77.0266
+          ],
+          "time": 7,
+          "duration": 32,
+          "mode": "bus",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4595,
+            77.0266
+          ],
+          "destination": [
+            28.6129,
+            77.2295
+          ],
+          "time": 20,
+          "duration": 52,
+          "mode": "bus",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "bus",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 4,
+        "friday": 4,
+        "saturday": 0,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 91,
+      "name": "Kiran Bala",
+      "age": 48,
+      "gender": "male",
+      "occupation": "Software Engineer",
+      "home_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "work_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4595,
+          "lng": 77.0266,
+          "area": "Gurgaon",
+          "frequency": 4,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 2,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 6,
+          "duration": 74,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 19,
+          "duration": 50,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 92,
+      "name": "Naveen Hooda",
+      "age": 50,
+      "gender": "female",
+      "occupation": "Writer",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.6667,
+        "lng": 77.2167,
+        "area": "North Campus"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.4595,
+          "lng": 77.0266,
+          "area": "Gurgaon",
+          "frequency": 4,
+          "purpose": "medical"
+        },
+        {
+          "lat": 28.4817,
+          "lng": 77.1873,
+          "area": "Mehrauli",
+          "frequency": 3,
+          "purpose": "entertainment"
+        },
+        {
+          "lat": 28.5672,
+          "lng": 77.21,
+          "area": "AIIMS",
+          "frequency": 5,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.6667,
+            77.2167
+          ],
+          "time": 6,
+          "duration": 28,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6667,
+            77.2167
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 21,
+          "duration": 47,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 0,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 93,
+      "name": "Sunita Yadav",
+      "age": 34,
+      "gender": "male",
+      "occupation": "Government Employee",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5494,
+          "lng": 77.1997,
+          "area": "Green Park",
+          "frequency": 5,
+          "purpose": "work"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 5,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 7,
+          "duration": 33,
+          "mode": "car",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 19,
+          "duration": 59,
+          "mode": "car",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "car",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 94,
+      "name": "Jitendra Kumar",
+      "age": 22,
+      "gender": "female",
+      "occupation": "HR Manager",
+      "home_location": {
+        "lat": 28.6271,
+        "lng": 77.1716,
+        "area": "Karol Bagh"
+      },
+      "work_location": {
+        "lat": 28.6139,
+        "lng": 77.209,
+        "area": "Connaught Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6271,
+            77.1716
+          ],
+          "destination": [
+            28.6139,
+            77.209
+          ],
+          "time": 6,
+          "duration": 53,
+          "mode": "walk",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6139,
+            77.209
+          ],
+          "destination": [
+            28.6271,
+            77.1716
+          ],
+          "time": 19,
+          "duration": 22,
+          "mode": "walk",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "walk",
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 3,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 95,
+      "name": "Sangeeta Devi",
+      "age": 54,
+      "gender": "male",
+      "occupation": "Manager",
+      "home_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "work_location": {
+        "lat": 28.4817,
+        "lng": 77.1873,
+        "area": "Mehrauli"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5355,
+          "lng": 77.391,
+          "area": "Noida",
+          "frequency": 1,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6562,
+          "lng": 77.241,
+          "area": "Chandni Chowk",
+          "frequency": 1,
+          "purpose": "family"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.4817,
+            77.1873
+          ],
+          "time": 9,
+          "duration": 25,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.4817,
+            77.1873
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 21,
+          "duration": 19,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "middle",
+      "transport_preference": [
+        "auto"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 2,
+        "wednesday": 4,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 96,
+      "name": "Prakash Raj",
+      "age": 42,
+      "gender": "male",
+      "occupation": "Software Engineer",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.6328,
+        "lng": 77.2197,
+        "area": "Khan Market"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.7041,
+          "lng": 77.1025,
+          "area": "Rohini",
+          "frequency": 2,
+          "purpose": "shopping"
+        },
+        {
+          "lat": 28.6129,
+          "lng": 77.2295,
+          "area": "Rajpath",
+          "frequency": 2,
+          "purpose": "business"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.6328,
+            77.2197
+          ],
+          "time": 8,
+          "duration": 63,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.6328,
+            77.2197
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 17,
+          "duration": 73,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "high",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 2,
+        "friday": 3,
+        "saturday": 2,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 97,
+      "name": "Bharti Kumari",
+      "age": 42,
+      "gender": "female",
+      "occupation": "Financial Analyst",
+      "home_location": {
+        "lat": 28.6517,
+        "lng": 77.2219,
+        "area": "Civil Lines"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5383,
+          "lng": 77.2507,
+          "area": "Saket",
+          "frequency": 2,
+          "purpose": "education"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 3,
+          "purpose": "work"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6517,
+            77.2219
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 6,
+          "duration": 60,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6517,
+            77.2219
+          ],
+          "time": 19,
+          "duration": 27,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro",
+        "bus"
+      ],
+      "weekly_pattern": {
+        "monday": 2,
+        "tuesday": 3,
+        "wednesday": 3,
+        "thursday": 4,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 2
+      }
+    },
+    {
+      "id": 98,
+      "name": "Subhash Kaul",
+      "age": 24,
+      "gender": "male",
+      "occupation": "Insurance Agent",
+      "home_location": {
+        "lat": 28.5494,
+        "lng": 77.1997,
+        "area": "Green Park"
+      },
+      "work_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5706,
+          "lng": 77.3272,
+          "area": "Lajpat Nagar",
+          "frequency": 3,
+          "purpose": "business"
+        },
+        {
+          "lat": 28.6139,
+          "lng": 77.209,
+          "area": "Connaught Place",
+          "frequency": 4,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5494,
+            77.1997
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 6,
+          "duration": 42,
+          "mode": "auto",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5494,
+            77.1997
+          ],
+          "time": 21,
+          "duration": 22,
+          "mode": "auto",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "auto",
+        "car"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 4,
+        "saturday": 1,
+        "sunday": 0
+      }
+    },
+    {
+      "id": 99,
+      "name": "Vidya Sagar",
+      "age": 40,
+      "gender": "female",
+      "occupation": "Data Analyst",
+      "home_location": {
+        "lat": 28.5383,
+        "lng": 77.2507,
+        "area": "Saket"
+      },
+      "work_location": {
+        "lat": 28.5672,
+        "lng": 77.21,
+        "area": "AIIMS"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.6271,
+          "lng": 77.1716,
+          "area": "Karol Bagh",
+          "frequency": 1,
+          "purpose": "entertainment"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.5383,
+            77.2507
+          ],
+          "destination": [
+            28.5672,
+            77.21
+          ],
+          "time": 6,
+          "duration": 51,
+          "mode": "bike",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5672,
+            77.21
+          ],
+          "destination": [
+            28.5383,
+            77.2507
+          ],
+          "time": 18,
+          "duration": 66,
+          "mode": "bike",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "bike",
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 4,
+        "tuesday": 2,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 1,
+        "sunday": 1
+      }
+    },
+    {
+      "id": 100,
+      "name": "Rajeev Ranjan",
+      "age": 19,
+      "gender": "female",
+      "occupation": "Journalist",
+      "home_location": {
+        "lat": 28.6129,
+        "lng": 77.2295,
+        "area": "Rajpath"
+      },
+      "work_location": {
+        "lat": 28.5833,
+        "lng": 77.3167,
+        "area": "Nehru Place"
+      },
+      "common_destinations": [
+        {
+          "lat": 28.5833,
+          "lng": 77.3167,
+          "area": "Nehru Place",
+          "frequency": 4,
+          "purpose": "education"
+        }
+      ],
+      "daily_trips": [
+        {
+          "origin": [
+            28.6129,
+            77.2295
+          ],
+          "destination": [
+            28.5833,
+            77.3167
+          ],
+          "time": 8,
+          "duration": 28,
+          "mode": "metro",
+          "purpose": "work"
+        },
+        {
+          "origin": [
+            28.5833,
+            77.3167
+          ],
+          "destination": [
+            28.6129,
+            77.2295
+          ],
+          "time": 20,
+          "duration": 23,
+          "mode": "metro",
+          "purpose": "home"
+        }
+      ],
+      "income_bracket": "low",
+      "transport_preference": [
+        "metro"
+      ],
+      "weekly_pattern": {
+        "monday": 3,
+        "tuesday": 4,
+        "wednesday": 2,
+        "thursday": 3,
+        "friday": 2,
+        "saturday": 2,
+        "sunday": 0
+      }
+    }
+  ]
+}
