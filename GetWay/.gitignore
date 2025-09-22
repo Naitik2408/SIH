@@ -1,1 +1,23 @@
-node_modules
+# Node modules
+node_modules/
+
+# Expo managed files
+.expo/
+.expo-shared/
+
+# Build output
+dist/
+build/
+web-build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+expo-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+#
