@@ -39,37 +39,16 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getChartData, analyzeUserData } from '../utils/dashboardAnalytics';
 
-// Enhanced dummy data for transportation modes with purple theme
-const modeShareData = [
-    { mode: 'Bus', trips: 2450, percentage: 35, color: '#a28ef9', icon: Bus },
-    { mode: 'Metro', trips: 1820, percentage: 26, color: '#8b7cf6', icon: Train },
-    { mode: 'Car', trips: 1400, percentage: 20, color: '#7c3aed', icon: Car },
-    { mode: 'Auto', trips: 700, percentage: 10, color: '#c084fc', icon: Car },
-    { mode: 'Bike', trips: 420, percentage: 6, color: '#e879f9', icon: Bike },
-    { mode: 'Walk', trips: 210, percentage: 3, color: '#ddd6fe', icon: Footprints }
-];
-
-// Mode usage trend over time (weekly)
-const modeTrendData = [
-    { day: 'Mon', Bus: 380, Metro: 290, Car: 220, Auto: 110, Bike: 65, Walk: 35 },
-    { day: 'Tue', Bus: 390, Metro: 295, Car: 215, Auto: 115, Bike: 68, Walk: 32 },
-    { day: 'Wed', Bus: 385, Metro: 300, Car: 225, Auto: 105, Bike: 70, Walk: 30 },
-    { day: 'Thu', Bus: 395, Metro: 285, Car: 230, Auto: 120, Bike: 65, Walk: 28 },
-    { day: 'Fri', Bus: 410, Metro: 310, Car: 240, Auto: 125, Bike: 75, Walk: 40 },
-    { day: 'Sat', Bus: 280, Metro: 200, Car: 180, Auto: 80, Bike: 45, Walk: 25 },
-    { day: 'Sun', Bus: 210, Metro: 140, Car: 90, Auto: 45, Bike: 32, Walk: 20 }
-];
-
-// Enhanced trip purpose data with purple theme
-const tripPurposeData = [
-    { purpose: 'Work', trips: 2800, percentage: 40, avgDistance: '12.5 km', avgDuration: '35 min', color: '#a28ef9', icon: Briefcase },
-    { purpose: 'Shopping', trips: 1400, percentage: 20, avgDistance: '8.2 km', avgDuration: '25 min', color: '#8b7cf6', icon: ShoppingBag },
-    { purpose: 'Education', trips: 1050, percentage: 15, avgDistance: '6.8 km', avgDuration: '22 min', color: '#7c3aed', icon: GraduationCap },
-    { purpose: 'Leisure', trips: 980, percentage: 14, avgDistance: '15.3 km', avgDuration: '42 min', color: '#c084fc', icon: Coffee },
-    { purpose: 'Health', trips: 490, percentage: 7, avgDistance: '5.4 km', avgDuration: '18 min', color: '#e879f9', icon: Heart },
-    { purpose: 'Other', trips: 280, percentage: 4, avgDistance: '9.1 km', avgDuration: '28 min', color: '#ddd6fe', icon: MapPin }
-];
+// Helper function to generate daily data based on mode share
+const generateDayData = (modeData, multiplier) => {
+    const dayData = {};
+    modeData.forEach(mode => {
+        dayData[mode.mode] = Math.round(mode.trips * multiplier * 0.15); // Scale down for daily view
+    });
+    return dayData;
+};
 
 // Enhanced custom tooltip component
 const CustomTooltip = ({ active, payload, label }) => {
@@ -144,9 +123,91 @@ const EnhancedKPICard = ({ title, value, subtitle, icon: Icon, gradient, badge }
 
 const ModePurpose = () => {
     const [activeTab, setActiveTab] = useState('mode');
+    
+    // Get real data from analytics
+    const { analytics, modeShareData, tripPurposeData } = getChartData();
+    
+    // Create enhanced mode share data with icons and additional info
+    const enhancedModeShareData = modeShareData.map(mode => {
+        const iconMap = {
+            'Bus': Bus,
+            'Metro': Train,
+            'Car': Car,
+            'Auto': Car,
+            'Bike': Bike,
+            'Walk': Footprints,
+            'Cycle': Bike
+        };
+        
+        return {
+            mode: mode.name,
+            trips: mode.value,
+            percentage: Math.round((mode.value / analytics.totalUsers) * 100),
+            color: mode.color,
+            icon: iconMap[mode.name] || Car
+        };
+    });
+    
+    // Create enhanced trip purpose data with icons and metrics
+    const enhancedTripPurposeData = tripPurposeData.map(purpose => {
+        const iconMap = {
+            'Work': Briefcase,
+            'Shopping': ShoppingBag,
+            'Education': GraduationCap,
+            'Home': Coffee,
+            'Family': Heart,
+            'Healthcare': Heart,
+            'Entertainment': Coffee,
+            'Other': MapPin
+        };
+        
+        // Calculate average distance and duration (simulated based on purpose)
+        const avgDistanceMap = {
+            'Work': '12.5 km',
+            'Shopping': '8.2 km', 
+            'Education': '6.8 km',
+            'Home': '12.5 km',
+            'Family': '15.3 km',
+            'Healthcare': '5.4 km',
+            'Entertainment': '18.2 km',
+            'Other': '9.1 km'
+        };
+        
+        const avgDurationMap = {
+            'Work': '35 min',
+            'Shopping': '25 min',
+            'Education': '22 min', 
+            'Home': '35 min',
+            'Family': '42 min',
+            'Healthcare': '18 min',
+            'Entertainment': '48 min',
+            'Other': '28 min'
+        };
+        
+        return {
+            purpose: purpose.name,
+            trips: purpose.trips,
+            percentage: Math.round((purpose.trips / analytics.totalTrips) * 100),
+            avgDistance: avgDistanceMap[purpose.name] || '10.0 km',
+            avgDuration: avgDurationMap[purpose.name] || '30 min',
+            color: purpose.fill,
+            icon: iconMap[purpose.name] || MapPin
+        };
+    });
+    
+    // Generate mode trend data based on real data (simulated weekly patterns)
+    const modeTrendData = [
+        { day: 'Mon', ...generateDayData(enhancedModeShareData, 0.85) },
+        { day: 'Tue', ...generateDayData(enhancedModeShareData, 0.88) },
+        { day: 'Wed', ...generateDayData(enhancedModeShareData, 0.90) },
+        { day: 'Thu', ...generateDayData(enhancedModeShareData, 0.87) },
+        { day: 'Fri', ...generateDayData(enhancedModeShareData, 0.95) },
+        { day: 'Sat', ...generateDayData(enhancedModeShareData, 0.45) },
+        { day: 'Sun', ...generateDayData(enhancedModeShareData, 0.30) }
+    ];
 
-    const totalTrips = modeShareData.reduce((sum, item) => sum + item.trips, 0);
-    const totalPurposeTrips = tripPurposeData.reduce((sum, item) => sum + item.trips, 0);
+    const totalTrips = enhancedModeShareData.reduce((sum, item) => sum + item.trips, 0);
+    const totalPurposeTrips = enhancedTripPurposeData.reduce((sum, item) => sum + item.trips, 0);
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
@@ -182,22 +243,31 @@ const ModePurpose = () => {
                 />
                 <EnhancedKPICard
                     title={`Most Popular ${activeTab === 'mode' ? 'Mode' : 'Purpose'}`}
-                    value={activeTab === 'mode' ? 'Bus' : 'Work'}
-                    subtitle={activeTab === 'mode' ? '35% of all trips' : '40% of all trips'}
+                    value={activeTab === 'mode' ? 
+                        enhancedModeShareData.length > 0 ? enhancedModeShareData[0].mode : 'Metro' : 
+                        enhancedTripPurposeData.length > 0 ? enhancedTripPurposeData[0].purpose : 'Work'
+                    }
+                    subtitle={activeTab === 'mode' ? 
+                        enhancedModeShareData.length > 0 ? `${enhancedModeShareData[0].percentage}% of all trips` : '35% of all trips' :
+                        enhancedTripPurposeData.length > 0 ? `${enhancedTripPurposeData[0].percentage}% of all trips` : '40% of all trips'
+                    }
                     icon={activeTab === 'mode' ? Bus : Briefcase}
                     gradient="from-blue-500 to-blue-600"
-                    badge={activeTab === 'mode' ? '35%' : '40%'}
+                    badge={activeTab === 'mode' ? 
+                        enhancedModeShareData.length > 0 ? `${enhancedModeShareData[0].percentage}%` : '35%' :
+                        enhancedTripPurposeData.length > 0 ? `${enhancedTripPurposeData[0].percentage}%` : '40%'
+                    }
                 />
                 <EnhancedKPICard
                     title="Average Distance"
-                    value={activeTab === 'mode' ? '9.8 km' : '10.2 km'}
+                    value={activeTab === 'mode' ? `${analytics.avgDistance} km` : `${analytics.avgDistance} km`}
                     subtitle="per trip"
                     icon={MapPin}
                     gradient="from-indigo-500 to-indigo-600"
                 />
                 <EnhancedKPICard
                     title="Average Duration"
-                    value={activeTab === 'mode' ? '28 min' : '30 min'}
+                    value={activeTab === 'mode' ? `${analytics.avgDuration} min` : `${analytics.avgDuration} min`}
                     subtitle="per trip"
                     icon={Clock}
                     gradient="from-violet-500 to-violet-600"
@@ -256,7 +326,7 @@ const ModePurpose = () => {
                                         <ResponsiveContainer width="100%" height={350}>
                                             <PieChart>
                                                 <Pie
-                                                    data={modeShareData}
+                                                    data={enhancedModeShareData}
                                                     cx="50%"
                                                     cy="50%"
                                                     labelLine={false}
@@ -268,7 +338,7 @@ const ModePurpose = () => {
                                                     stroke="#fff"
                                                     strokeWidth={2}
                                                 >
-                                                    {modeShareData.map((entry, index) => (
+                                                    {enhancedModeShareData.map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                                     ))}
                                                 </Pie>
@@ -346,7 +416,7 @@ const ModePurpose = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {modeShareData.map((mode, index) => {
+                                                {enhancedModeShareData.map((mode, index) => {
                                                     const Icon = mode.icon;
                                                     const weeklyAvg = Math.round(mode.trips * 7 / 7);
                                                     const growth = Math.random() > 0.5 ? '+' : '-';
@@ -410,7 +480,7 @@ const ModePurpose = () => {
                                     </CardHeader>
                                     <CardContent>
                                         <ResponsiveContainer width="100%" height={350}>
-                                            <BarChart data={tripPurposeData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                            <BarChart data={enhancedTripPurposeData} layout="horizontal" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
                                                 <XAxis 
                                                     type="number" 
@@ -431,7 +501,7 @@ const ModePurpose = () => {
                                                     stroke="#8b7cf6"
                                                     strokeWidth={1}
                                                 >
-                                                    {tripPurposeData.map((entry, index) => (
+                                                    {enhancedTripPurposeData.map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                                     ))}
                                                 </Bar>
@@ -455,7 +525,7 @@ const ModePurpose = () => {
                                         <ResponsiveContainer width="100%" height={350}>
                                             <PieChart>
                                                 <Pie
-                                                    data={tripPurposeData}
+                                                    data={enhancedTripPurposeData}
                                                     cx="50%"
                                                     cy="50%"
                                                     labelLine={false}
@@ -467,7 +537,7 @@ const ModePurpose = () => {
                                                     stroke="#fff"
                                                     strokeWidth={2}
                                                 >
-                                                    {tripPurposeData.map((entry, index) => (
+                                                    {enhancedTripPurposeData.map((entry, index) => (
                                                         <Cell key={`cell-${index}`} fill={entry.color} />
                                                     ))}
                                                 </Pie>
@@ -508,7 +578,7 @@ const ModePurpose = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {tripPurposeData.map((purpose, index) => {
+                                                {enhancedTripPurposeData.map((purpose, index) => {
                                                     const Icon = purpose.icon;
 
                                                     return (
