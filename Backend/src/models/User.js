@@ -28,6 +28,8 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
+        unique: true,
+        sparse: true, // Allow null/undefined values, but ensure uniqueness when present
         trim: true,
         match: [
             /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/,
@@ -46,6 +48,7 @@ const userSchema = new mongoose.Schema({
     organizationId: {
         type: String,
         trim: true,
+        sparse: true, // Allow null/undefined values, but ensure uniqueness when present
         validate: {
             validator: function (v) {
                 // Only required if role is scientist
@@ -152,6 +155,54 @@ userSchema.statics.findByEmailWithPassword = function (email) {
     return this.findOne({ email }).select('+password');
 };
 
+// Static method to find user by email or organizationId with password
+userSchema.statics.findByEmailOrOrgIdWithPassword = function (identifier) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
+    
+    if (emailRegex.test(identifier)) {
+        return this.findOne({ email: identifier }).select('+password');
+    } else if (phoneRegex.test(identifier)) {
+        return this.findOne({ phone: identifier }).select('+password');
+    } else {
+        return this.findOne({ organizationId: identifier }).select('+password');
+    }
+};
+
+// Static method to find user by email, phone, or organizationId with password
+userSchema.statics.findByIdentifierWithPassword = function (identifier) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
+    
+    if (emailRegex.test(identifier)) {
+        return this.findOne({ email: identifier }).select('+password');
+    } else if (phoneRegex.test(identifier)) {
+        return this.findOne({ phone: identifier }).select('+password');
+    } else {
+        return this.findOne({ organizationId: identifier }).select('+password');
+    }
+};
+
+// Static method to check if organizationId is unique
+userSchema.statics.isOrgIdUnique = async function (organizationId, excludeUserId = null) {
+    const query = { organizationId };
+    if (excludeUserId) {
+        query._id = { $ne: excludeUserId };
+    }
+    const existingUser = await this.findOne(query);
+    return !existingUser;
+};
+
+// Static method to check if phone number is unique
+userSchema.statics.isPhoneUnique = async function (phone, excludeUserId = null) {
+    const query = { phone };
+    if (excludeUserId) {
+        query._id = { $ne: excludeUserId };
+    }
+    const existingUser = await this.findOne(query);
+    return !existingUser;
+};
+
 // Static method to get user stats
 userSchema.statics.getUserStats = async function () {
     try {
@@ -197,6 +248,12 @@ userSchema.virtual('isScientist').get(function () {
 userSchema.virtual('isCustomer').get(function () {
     return this.role === 'customer';
 });
+
+// Create unique index for organizationId (sparse to allow null values)
+userSchema.index({ organizationId: 1 }, { unique: true, sparse: true });
+
+// Create unique index for phone number (sparse to allow null values)
+userSchema.index({ phone: 1 }, { unique: true, sparse: true });
 
 // Model creation
 const User = mongoose.model('User', userSchema);

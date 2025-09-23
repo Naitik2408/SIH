@@ -5,9 +5,11 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Eye, EyeOff, User, Mail, Phone, Building, Lock } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -97,20 +99,37 @@ const SignUp = () => {
     }
 
     setIsLoading(true);
+    setErrors({});
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await register(formData);
       
-      // Here you would normally make an API call to register the user
-      console.log('Sign up data:', formData);
-      
-      // On success, redirect to sign in page
-      navigate('/signin', { 
-        state: { 
-          message: 'Account created successfully! Please sign in.' 
+      if (result.success) {
+        // Navigate to sign in page with success message
+        navigate('/signin', { 
+          state: { 
+            message: result.message || 'Account created successfully! Please sign in.'
+          }
+        });
+      } else {
+        // Handle registration errors
+        if (result.errors) {
+          // Handle specific field errors from backend validation
+          const backendErrors = {};
+          if (Array.isArray(result.errors)) {
+            result.errors.forEach(error => {
+              if (error.includes('email')) backendErrors.email = error;
+              else if (error.includes('password')) backendErrors.password = error;
+              else if (error.includes('name')) backendErrors.name = error;
+              else if (error.includes('phone')) backendErrors.mobile = error;
+              else if (error.includes('organization')) backendErrors.orgId = error;
+            });
+          }
+          setErrors(backendErrors);
+        } else {
+          setErrors({ submit: result.message });
         }
-      });
+      }
     } catch (error) {
       console.error('Sign up error:', error);
       setErrors({ submit: 'Registration failed. Please try again.' });

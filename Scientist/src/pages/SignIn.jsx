@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { Eye, EyeOff, Mail, Building, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Building, Lock, Phone } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const SignIn = () => {
@@ -12,14 +12,14 @@ const SignIn = () => {
   const location = useLocation();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
-    emailOrOrgId: '',
+    identifier: '', // Changed back to support both email and orgId
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  const [loginType, setLoginType] = useState('email'); // 'email' or 'orgId'
+  const [loginType, setLoginType] = useState('email'); // 'email', 'phone', or 'orgId'
 
   useEffect(() => {
     // Show success message if coming from signup
@@ -44,26 +44,39 @@ const SignIn = () => {
       }));
     }
 
-    // Auto-detect if input looks like email or org ID
-    if (name === 'emailOrOrgId') {
+    // Auto-detect if input looks like email, phone, or org ID
+    if (name === 'identifier') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      setLoginType(emailRegex.test(value) ? 'email' : 'orgId');
+      const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
+      
+      if (emailRegex.test(value)) {
+        setLoginType('email');
+      } else if (phoneRegex.test(value.replace(/\s+/g, ''))) {
+        setLoginType('phone');
+      } else {
+        setLoginType('orgId');
+      }
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Email or Org ID validation
-    if (!formData.emailOrOrgId.trim()) {
-      newErrors.emailOrOrgId = 'Email or Organization ID is required';
+    // Identifier validation (email, phone, or org ID)
+    if (!formData.identifier.trim()) {
+      newErrors.identifier = 'Email, Phone Number, or Organization ID is required';
     } else if (loginType === 'email') {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.emailOrOrgId)) {
-        newErrors.emailOrOrgId = 'Please enter a valid email address';
+      if (!emailRegex.test(formData.identifier)) {
+        newErrors.identifier = 'Please enter a valid email address';
       }
-    } else if (formData.emailOrOrgId.trim().length < 3) {
-      newErrors.emailOrOrgId = 'Organization ID must be at least 3 characters';
+    } else if (loginType === 'phone') {
+      const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/;
+      if (!phoneRegex.test(formData.identifier.replace(/\s+/g, ''))) {
+        newErrors.identifier = 'Please enter a valid Indian phone number';
+      }
+    } else if (formData.identifier.trim().length < 3) {
+      newErrors.identifier = 'Organization ID must be at least 3 characters';
     }
 
     // Password validation
@@ -88,30 +101,21 @@ const SignIn = () => {
     setErrors({});
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const result = await login({
+        identifier: formData.identifier,
+        password: formData.password
+      });
       
-      // Here you would normally make an API call to authenticate the user
-      console.log('Sign in data:', { ...formData, loginType });
-      
-      // Mock user data
-      const userData = {
-        id: '1',
-        name: 'Dr. John Scientist',
-        email: loginType === 'email' ? formData.emailOrOrgId : 'john.scientist@example.com',
-        orgId: loginType === 'orgId' ? formData.emailOrOrgId : 'SCI001',
-        role: 'scientist'
-      };
-      
-      // Use auth context to login
-      login(userData);
-      
-      // Redirect to the intended page or dashboard
-      const from = location.state?.from?.pathname || '/';
-      navigate(from, { replace: true });
+      if (result.success) {
+        // Redirect to the intended page or dashboard
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, { replace: true });
+      } else {
+        setErrors({ submit: result.message });
+      }
     } catch (error) {
       console.error('Sign in error:', error);
-      setErrors({ submit: 'Invalid credentials. Please try again.' });
+      setErrors({ submit: 'Login failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -140,41 +144,46 @@ const SignIn = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email or Organization ID Field */}
+            {/* Email, Phone, or Organization ID Field */}
             <div className="space-y-2">
-              <Label htmlFor="emailOrOrgId" className="text-sm font-semibold text-slate-700">
-                Email Address or Organization ID
+              <Label htmlFor="identifier" className="text-sm font-semibold text-slate-700">
+                Email, Phone Number, or Organization ID
               </Label>
               <div className="relative">
                 {loginType === 'email' ? (
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
+                ) : loginType === 'phone' ? (
+                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 ) : (
                   <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
                 )}
                 <Input
-                  id="emailOrOrgId"
-                  name="emailOrOrgId"
+                  id="identifier"
+                  name="identifier"
                   type="text"
-                  placeholder="Enter email or organization ID"
-                  value={formData.emailOrOrgId}
+                  placeholder="Enter email, phone number, or organization ID"
+                  value={formData.identifier}
                   onChange={handleInputChange}
                   className={`pl-11 h-12 border-2 transition-all duration-200 focus:ring-2 focus:ring-blue-500/20 ${
-                    errors.emailOrOrgId 
+                    errors.identifier 
                       ? 'border-red-400 focus:border-red-500 bg-red-50' 
                       : 'border-slate-200 focus:border-blue-400 hover:border-slate-300'
                   }`}
                 />
               </div>
-              {errors.emailOrOrgId && (
-                <p className="text-sm text-red-600 font-medium">{errors.emailOrOrgId}</p>
+              {errors.identifier && (
+                <p className="text-sm text-red-600 font-medium">{errors.identifier}</p>
               )}
               <div className="flex items-center mt-2">
                 <div className={`w-2 h-2 rounded-full mr-2 ${
-                  loginType === 'email' ? 'bg-blue-500' : 'bg-purple-500'
+                  loginType === 'email' ? 'bg-blue-500' : 
+                  loginType === 'phone' ? 'bg-green-500' : 'bg-purple-500'
                 }`}></div>
                 <p className="text-xs text-slate-500 font-medium">
                   {loginType === 'email' 
                     ? 'Detected as email address' 
+                    : loginType === 'phone'
+                    ? 'Detected as phone number'
                     : 'Detected as organization ID'
                   }
                 </p>
