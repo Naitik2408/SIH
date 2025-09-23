@@ -28,7 +28,14 @@
             "favicon": "./assets/favicon.png"
         },
         "plugins": [
-            "expo-dev-client"
+            "expo-dev-client",
+            [
+                "expo-image-picker",
+                {
+                    "photosPermission": "The app accesses your photos to let you share them with your posts.",
+                    "cameraPermission": "The app accesses your camera to let you take photos for your posts."
+                }
+            ]
         ],
         "extra": {
             "eas": {

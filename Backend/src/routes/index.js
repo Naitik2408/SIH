@@ -3,6 +3,8 @@ const express = require('express');
 const authRoutes = require('./authRoutes');
 const ownerRoutes = require('./ownerRoutes');
 const userRoutes = require('./userRoutes');
+const postsRoutes = require('./postsRoutes');
+const journeyRoutes = require('./journeyRoutes');
 
 const router = express.Router();
 
@@ -10,6 +12,8 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/owner', ownerRoutes);
 router.use('/users', userRoutes);
+router.use('/posts', postsRoutes);
+router.use('/journeys', journeyRoutes);
 
 // API info route
 router.get('/', (req, res) => {
@@ -36,6 +40,17 @@ router.get('/', (req, res) => {
                 disapproveScientist: 'POST /api/owner/disapprove-scientist/:id',
                 pendingScientists: 'GET /api/owner/pending-scientists',
                 organizationScientists: 'GET /api/owner/scientists'
+            },
+            posts: {
+                getAllPosts: 'GET /api/posts',
+                getPostById: 'GET /api/posts/:id',
+                createPost: 'POST /api/posts (with optional image)',
+                updatePost: 'PUT /api/posts/:id',
+                deletePost: 'DELETE /api/posts/:id',
+                likePost: 'POST /api/posts/:id/like',
+                commentPost: 'POST /api/posts/:id/comment',
+                getTrending: 'GET /api/posts/trending',
+                getMyPosts: 'GET /api/posts/user/my-posts'
             },
             upcoming: {
                 reports: '/api/reports (coming soon)',

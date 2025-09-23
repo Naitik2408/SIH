@@ -58,15 +58,36 @@ export const apiRequest = async <T = any>(
 
     try {
         const url = `${API_CONFIG.BASE_URL}${endpoint}`;
-        const headers = await getHeaders(includeAuth);
-
+        
         const config: RequestInit = {
             method,
-            headers,
         };
 
-        if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-            config.body = JSON.stringify(body);
+        // Handle headers and body based on content type
+        if (body instanceof FormData) {
+            // For FormData (file uploads), don't set Content-Type
+            // Let the browser set it with the boundary
+            const headers: Record<string, string> = {
+                'Accept': 'application/json',
+            };
+
+            if (includeAuth) {
+                const token = await AsyncStorage.getItem(STORAGE_KEYS.TOKEN);
+                if (token) {
+                    headers.Authorization = `Bearer ${token}`;
+                }
+            }
+
+            config.headers = headers;
+            config.body = body;
+        } else {
+            // For JSON data
+            const headers = await getHeaders(includeAuth);
+            config.headers = headers;
+
+            if (body && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
+                config.body = JSON.stringify(body);
+            }
         }
 
         // Create timeout controller
@@ -156,4 +177,203 @@ export const TokenManager = {
             STORAGE_KEYS.REFRESH_TOKEN,
         ]);
     },
+};
+
+// Posts API interface
+export interface PostData {
+    id: string;
+    title: string;
+    content: string;
+    category: 'travel-tips' | 'route-updates' | 'community' | 'safety' | 'experiences';
+    author: string;
+    authorRole: string;
+    keywords: string[];
+    image?: string;
+    likes: number;
+    comments: number;
+    views: number;
+    isNew?: boolean;
+    hasImage?: boolean;
+    imageUrl?: string;
+    date: string;
+    createdAt: string;
+    isPinned?: boolean;
+    isLikedByUser?: boolean;
+}
+
+export interface CreatePostData {
+    title: string;
+    content: string;
+    category: 'travel-tips' | 'route-updates' | 'community' | 'safety' | 'experiences';
+    keywords?: string[];
+    image?: any; // File object or FormData
+}
+
+export interface PostsResponse {
+    posts: PostData[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        pages: number;
+        hasNext: boolean;
+        hasPrev: boolean;
+    };
+}
+
+// Posts API functions
+export const PostsAPI = {
+    // Get all posts with optional filters
+    async getPosts(params?: {
+        page?: number;
+        limit?: number;
+        category?: string;
+        keywords?: string[];
+        sortBy?: string;
+        sortOrder?: 'asc' | 'desc';
+        author?: string;
+    }): Promise<PostsResponse> {
+        const queryParams = new URLSearchParams();
+        
+        if (params?.page) queryParams.append('page', params.page.toString());
+        if (params?.limit) queryParams.append('limit', params.limit.toString());
+        if (params?.category) queryParams.append('category', params.category);
+        if (params?.keywords && params.keywords.length > 0) {
+            queryParams.append('keywords', params.keywords.join(','));
+        }
+        if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+        if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+        if (params?.author) queryParams.append('author', params.author);
+
+        const queryString = queryParams.toString();
+        const endpoint = `/posts${queryString ? `?${queryString}` : ''}`;
+
+        const response = await apiRequest<{ posts: PostData[]; pagination: any }>(endpoint, {
+            method: 'GET',
+            includeAuth: false // Posts can be viewed without authentication
+        });
+
+        return response.data!;
+    },
+
+    // Get a single post by ID
+    async getPostById(id: string): Promise<PostData> {
+        const response = await apiRequest<{ post: PostData }>(`/posts/${id}`, {
+            method: 'GET',
+            includeAuth: true // May need auth for like status
+        });
+
+        return response.data!.post;
+    },
+
+    // Create a new post
+    async createPost(postData: CreatePostData, imageAsset?: any): Promise<PostData> {
+        const formData = new FormData();
+        
+        formData.append('title', postData.title);
+        formData.append('content', postData.content);
+        formData.append('category', postData.category);
+        
+        if (postData.keywords && postData.keywords.length > 0) {
+            postData.keywords.forEach(keyword => {
+                formData.append('keywords[]', keyword);
+            });
+        }
+
+        // Handle image upload from ImagePicker
+        if (imageAsset && imageAsset.uri) {
+            const imageFile = {
+                uri: imageAsset.uri,
+                type: imageAsset.type || 'image/jpeg',
+                name: imageAsset.fileName || `image_${Date.now()}.jpg`,
+            };
+            
+            // For React Native, append the file object directly
+            formData.append('image', imageFile as any);
+        }
+
+        const response = await apiRequest<{ post: PostData }>('/posts', {
+            method: 'POST',
+            body: formData,
+            includeAuth: true
+        });
+
+        return response.data!.post;
+    },
+
+    // Update a post
+    async updatePost(id: string, updates: Partial<CreatePostData>): Promise<PostData> {
+        const response = await apiRequest<{ post: PostData }>(`/posts/${id}`, {
+            method: 'PUT',
+            body: updates,
+            includeAuth: true
+        });
+
+        return response.data!.post;
+    },
+
+    // Delete a post
+    async deletePost(id: string): Promise<void> {
+        await apiRequest(`/posts/${id}`, {
+            method: 'DELETE',
+            includeAuth: true
+        });
+    },
+
+    // Toggle like on a post
+    async toggleLike(id: string): Promise<{ isLiked: boolean; likeCount: number }> {
+        const response = await apiRequest<{ isLiked: boolean; likeCount: number }>(`/posts/${id}/like`, {
+            method: 'POST',
+            includeAuth: true
+        });
+
+        return response.data!;
+    },
+
+    // Add comment to a post
+    async addComment(id: string, content: string): Promise<{ commentCount: number }> {
+        const response = await apiRequest<{ commentCount: number }>(`/posts/${id}/comment`, {
+            method: 'POST',
+            body: { content },
+            includeAuth: true
+        });
+
+        return response.data!;
+    },
+
+    // Get trending posts
+    async getTrendingPosts(limit?: number): Promise<PostData[]> {
+        const queryParams = limit ? `?limit=${limit}` : '';
+        const response = await apiRequest<{ posts: PostData[] }>(`/posts/trending${queryParams}`, {
+            method: 'GET',
+            includeAuth: false
+        });
+
+        return response.data!.posts;
+    },
+
+    // Get current user's posts
+    async getMyPosts(params?: {
+        page?: number;
+        limit?: number;
+        sortBy?: string;
+        sortOrder?: 'asc' | 'desc';
+    }): Promise<PostsResponse> {
+        const queryParams = new URLSearchParams();
+        
+        if (params?.page) queryParams.append('page', params.page.toString());
+        if (params?.limit) queryParams.append('limit', params.limit.toString());
+        if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
+        if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
+
+        const queryString = queryParams.toString();
+        const endpoint = `/posts/user/my-posts${queryString ? `?${queryString}` : ''}`;
+
+        const response = await apiRequest<{ posts: PostData[]; pagination: any }>(endpoint, {
+            method: 'GET',
+            includeAuth: true
+        });
+
+        return response.data!;
+    }
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -6,91 +6,93 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
+    RefreshControl,
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, FONTS } from '../../constants';
-
-interface Post {
-    id: string;
-    title: string;
-    content: string;
-    author: string;
-    date: string;
-    likes: number;
-    comments: number;
-    category: 'travel-tips' | 'route-updates' | 'community' | 'safety' | 'experiences';
-    isNew?: boolean;
-    hasImage?: boolean;
-    imageUrl?: string;
-}
-
-const mockPosts: Post[] = [
-    {
-        id: '1',
-        title: 'Best Metro Routes During Rush Hour',
-        content: 'Just discovered this amazing route from Andheri to BKC that saves 15 minutes during peak hours! Take the Western Line to Bandra, then switch to the new connector.',
-        author: 'Priya Sharma',
-        date: '2025-09-18',
-        likes: 24,
-        comments: 8,
-        category: 'travel-tips',
-        isNew: true,
-        hasImage: true,
-        imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80'
-    },
-    {
-        id: '2',
-        title: 'Metro Line 4 Delays Today',
-        content: 'Heads up everyone! Metro Line 4 is experiencing 10-15 minute delays due to technical issues. Plan accordingly for your evening commute.',
-        author: 'Mumbai Metro Updates',
-        date: '2025-09-18',
-        likes: 45,
-        comments: 12,
-        category: 'route-updates'
-    },
-    {
-        id: '3',
-        title: 'Found a Lost Wallet at Churchgate',
-        content: 'Found a brown leather wallet near platform 3 at Churchgate station. Has some ID cards. If it\'s yours, please DM me with details!',
-        author: 'Rajesh Kumar',
-        date: '2025-09-17',
-        likes: 18,
-        comments: 6,
-        category: 'community',
-        hasImage: true,
-        imageUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-    },
-    {
-        id: '4',
-        title: 'Safety Tips for Late Night Travel',
-        content: 'Traveling late? Here are some safety tips: Stay in well-lit areas, inform someone about your route, keep emergency contacts handy, and trust your instincts.',
-        author: 'SafeCommute Team',
-        date: '2025-09-16',
-        likes: 67,
-        comments: 23,
-        category: 'safety',
-        hasImage: true,
-        imageUrl: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80'
-    },
-    {
-        id: '5',
-        title: 'My Daily Commute Transformation',
-        content: 'Switched from driving to public transport 3 months ago. Not only am I saving ₹5000/month, but also contributing to a cleaner environment. Highly recommend!',
-        author: 'Sneha Patel',
-        date: '2025-09-15',
-        likes: 92,
-        comments: 31,
-        category: 'experiences',
-        hasImage: true,
-        imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1469&q=80'
-    },
-];
+import { PostsAPI, PostData } from '../../services/api';
 
 interface CustomerPostsProps {
     onNavigateToCreatePost?: () => void;
+    onPostCreated?: () => void;
 }
 
 const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost }) => {
+    const [posts, setPosts] = useState<PostData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Load posts on component mount
+    useEffect(() => {
+        loadPosts();
+    }, []);
+
+    const loadPosts = async (isRefresh = false) => {
+        try {
+            if (!isRefresh) {
+                setLoading(true);
+            }
+            setError(null);
+
+            const response = await PostsAPI.getPosts({
+                page: 1,
+                limit: 20,
+                sortBy: 'createdAt',
+                sortOrder: 'desc'
+            });
+
+            setPosts(response.posts);
+        } catch (error: any) {
+            console.error('Error loading posts:', error);
+            
+            let errorMessage = 'Failed to load posts. Please try again.';
+            if (error.code === 'NETWORK_ERROR') {
+                errorMessage = 'No internet connection. Please check your network.';
+            }
+            
+            setError(errorMessage);
+            
+            // If this is initial load and there's an error, show the error
+            if (!isRefresh) {
+                Alert.alert('Error', errorMessage);
+            }
+        } finally {
+            setLoading(false);
+            if (isRefresh) {
+                setRefreshing(false);
+            }
+        }
+    };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await loadPosts(true);
+    }, []);
+
+    const handleLikePost = async (postId: string) => {
+        try {
+            const result = await PostsAPI.toggleLike(postId);
+            
+            // Update the local state
+            setPosts(prevPosts => 
+                prevPosts.map(post => 
+                    post.id === postId 
+                        ? { 
+                            ...post, 
+                            likes: result.likeCount,
+                            isLikedByUser: result.isLiked 
+                          }
+                        : post
+                )
+            );
+        } catch (error: any) {
+            console.error('Error liking post:', error);
+            Alert.alert('Error', 'Failed to like post. Please try again.');
+        }
+    };
 
     const getCategoryIcon = (category: string) => {
         switch (category) {
@@ -122,7 +124,7 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
         });
     };
 
-    const renderPostItem = (item: Post) => {
+    const renderPostItem = (item: PostData) => {
         const categoryColor = getCategoryColor(item.category);
         const categoryIcon = getCategoryIcon(item.category);
 
@@ -173,8 +175,15 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                     </View>
 
                     <View style={styles.engagementContainer}>
-                        <TouchableOpacity style={styles.engagementButton}>
-                            <Ionicons name="heart-outline" size={16} color={COLORS.textQuaternary} />
+                        <TouchableOpacity 
+                            style={styles.engagementButton}
+                            onPress={() => handleLikePost(item.id)}
+                        >
+                            <Ionicons 
+                                name={item.isLikedByUser ? "heart" : "heart-outline"} 
+                                size={16} 
+                                color={item.isLikedByUser ? "#ef4444" : COLORS.textQuaternary} 
+                            />
                             <Text style={styles.engagementText}>{item.likes}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.engagementButton}>
@@ -211,16 +220,61 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                 </TouchableOpacity>
             </View>
 
-            {/* Posts List */}
-            <ScrollView
-                style={styles.contentContainer}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                <View style={styles.postsList}>
-                    {mockPosts.map(renderPostItem)}
+            {/* Loading State */}
+            {loading && (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color={COLORS.primary} />
+                    <Text style={styles.loadingText}>Loading posts...</Text>
                 </View>
-            </ScrollView>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+                <View style={styles.errorContainer}>
+                    <Ionicons name="alert-circle-outline" size={48} color={COLORS.textQuaternary} />
+                    <Text style={styles.errorText}>{error}</Text>
+                    <TouchableOpacity style={styles.retryButton} onPress={() => loadPosts()}>
+                        <Text style={styles.retryButtonText}>Try Again</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {/* Posts List */}
+            {!loading && !error && (
+                <ScrollView
+                    style={styles.contentContainer}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLORS.primary]}
+                            tintColor={COLORS.primary}
+                        />
+                    }
+                >
+                    <View style={styles.postsList}>
+                        {posts.length === 0 ? (
+                            <View style={styles.emptyState}>
+                                <Ionicons name="chatbubbles-outline" size={64} color={COLORS.textQuaternary} />
+                                <Text style={styles.emptyStateTitle}>No posts yet</Text>
+                                <Text style={styles.emptyStateSubtitle}>
+                                    Be the first to share your travel experience!
+                                </Text>
+                                <TouchableOpacity 
+                                    style={styles.createPostButton} 
+                                    onPress={onNavigateToCreatePost}
+                                >
+                                    <Text style={styles.createPostButtonText}>Create Post</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            posts.map(renderPostItem)
+                        )}
+                    </View>
+                </ScrollView>
+            )}
         </View>
     );
 };
@@ -412,6 +466,78 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.regular,
         color: COLORS.textQuaternary, // Supporting information - less important
         marginLeft: 'auto', // Push to the right
+    },
+    // Loading state styles
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    loadingText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.regular,
+        color: COLORS.textSecondary,
+        marginTop: 16,
+    },
+    // Error state styles
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    errorText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.regular,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
+        marginTop: 16,
+        marginBottom: 20,
+    },
+    retryButton: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    retryButtonText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.semiBold,
+        color: COLORS.white,
+    },
+    // Empty state styles
+    emptyState: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 60,
+    },
+    emptyStateTitle: {
+        fontSize: SIZES.subheading,
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    emptyStateSubtitle: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.regular,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
+        marginBottom: 24,
+    },
+    createPostButton: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    createPostButtonText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.semiBold,
+        color: COLORS.white,
     },
 });
 

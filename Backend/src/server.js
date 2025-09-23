@@ -6,6 +6,9 @@ const connectDB = require('./config/db');
 // Load environment variables
 dotenv.config();
 
+// Initialize Cloudinary (imported for side effects)
+require('./config/cloudinary');
+
 // Create Express app
 const app = express();
 
@@ -96,6 +99,7 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
+console.log("Starting server...", PORT);
 
 const server = app.listen(PORT, () => {
     console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
