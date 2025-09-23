@@ -7,9 +7,13 @@ import {
     TouchableOpacity,
     ScrollView,
     Alert,
+    Image,
+    Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { COLORS, SIZES, FONTS } from '../../../../constants';
+import { PostsAPI, CreatePostData } from '../../../../services/api';
 
 interface CreatePostProps {
     onBack: () => void;
@@ -30,7 +34,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
     const [selectedCategory, setSelectedCategory] = useState<PostCategory | null>(null);
     const [heading, setHeading] = useState('');
     const [description, setDescription] = useState('');
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -92,11 +96,93 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
     };
 
     const pickImage = async () => {
-        Alert.alert(
-            'Add Image',
-            'Image upload feature will be available in the next update. For now, you can create posts without images.',
-            [{ text: 'OK', style: 'default' }]
-        );
+        try {
+            // Request permission to access media library
+            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            
+            if (permissionResult.granted === false) {
+                Alert.alert(
+                    'Permission Required',
+                    'Permission to access gallery is required to add images to your posts.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
+
+            // Show action sheet to choose between camera and gallery
+            Alert.alert(
+                'Select Image',
+                'Choose how you want to add an image',
+                [
+                    {
+                        text: 'Camera',
+                        onPress: () => openCamera(),
+                    },
+                    {
+                        text: 'Gallery',
+                        onPress: () => openImageLibrary(),
+                    },
+                    {
+                        text: 'Cancel',
+                        style: 'cancel',
+                    },
+                ],
+                { cancelable: true }
+            );
+        } catch (error) {
+            console.error('Error requesting permissions:', error);
+            Alert.alert('Error', 'Failed to access image picker. Please try again.');
+        }
+    };
+
+    const openCamera = async () => {
+        try {
+            // Request camera permission
+            const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+            
+            if (cameraPermission.granted === false) {
+                Alert.alert(
+                    'Camera Permission Required',
+                    'Permission to access camera is required to take photos.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
+
+            const result = await ImagePicker.launchCameraAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [16, 9],
+                quality: 0.8,
+                base64: false,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setSelectedImage(result.assets[0]);
+            }
+        } catch (error) {
+            console.error('Error opening camera:', error);
+            Alert.alert('Error', 'Failed to open camera. Please try again.');
+        }
+    };
+
+    const openImageLibrary = async () => {
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [16, 9],
+                quality: 0.8,
+                base64: false,
+            });
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                setSelectedImage(result.assets[0]);
+            }
+        } catch (error) {
+            console.error('Error opening image library:', error);
+            Alert.alert('Error', 'Failed to open gallery. Please try again.');
+        }
     };
 
     const removeImage = () => {
@@ -133,21 +219,22 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
         setIsSubmitting(true);
         
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // Log the post data (for demonstration)
-            console.log('Creating post:', {
-                category: selectedCategory,
-                heading,
-                description,
-                keywords: selectedKeywords,
-                timestamp: new Date().toISOString()
-            });
+            // Prepare post data
+            const postData: CreatePostData = {
+                title: heading.trim(),
+                content: description.trim(),
+                category: selectedCategory!,
+                keywords: selectedKeywords
+            };
+
+            console.log('Creating post:', postData);
+
+            // Create the post using API with image if selected
+            const createdPost = await PostsAPI.createPost(postData, selectedImage);
             
             Alert.alert(
                 'Post Created!',
-                `Your post has been successfully created and will be visible to the community.${selectedKeywords.length > 0 ? `\n\nKeywords: ${selectedKeywords.join(', ')}` : ''}`,
+                `Your post "${createdPost.title}" has been successfully created and will be visible to the community.${selectedKeywords.length > 0 ? `\n\nKeywords: ${selectedKeywords.join(', ')}` : ''}`,
                 [
                     {
                         text: 'OK',
@@ -158,8 +245,22 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                     }
                 ]
             );
-        } catch (error) {
-            Alert.alert('Error', 'Failed to create post. Please try again.');
+        } catch (error: any) {
+            console.error('Create post error:', error);
+            
+            let errorMessage = 'Failed to create post. Please try again.';
+            
+            if (error.message) {
+                errorMessage = error.message;
+            } else if (error.code === 'NETWORK_ERROR') {
+                errorMessage = 'No internet connection. Please check your network and try again.';
+            } else if (error.status === 401) {
+                errorMessage = 'Please login again to create a post.';
+            } else if (error.status === 400) {
+                errorMessage = 'Please check your post details and try again.';
+            }
+            
+            Alert.alert('Error', errorMessage);
         } finally {
             setIsSubmitting(false);
         }
@@ -296,10 +397,22 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                     <Text style={styles.sectionTitle}>Add Image (Optional)</Text>
                     <Text style={styles.sectionSubtitle}>Images help make your post more engaging</Text>
                     
-                    <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-                        <Ionicons name="camera-outline" size={32} color={COLORS.textQuaternary} />
-                        <Text style={styles.imagePickerText}>Tap to add an image (Coming Soon)</Text>
-                    </TouchableOpacity>
+                    {selectedImage ? (
+                        <View style={styles.selectedImageContainer}>
+                            <Image source={{ uri: selectedImage.uri }} style={styles.selectedImage} />
+                            <TouchableOpacity style={styles.removeImageButton} onPress={removeImage}>
+                                <Ionicons name="close" size={20} color={COLORS.white} />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.changeImageButton} onPress={pickImage}>
+                                <Text style={styles.changeImageText}>Change Image</Text>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
+                            <Ionicons name="camera-outline" size={32} color={COLORS.textQuaternary} />
+                            <Text style={styles.imagePickerText}>Tap to add an image</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Keywords Section */}
@@ -343,7 +456,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                 </View>
 
                 {/* Preview Section */}
-                {(selectedCategory || heading || description || selectedKeywords.length > 0) && (
+                {(selectedCategory || heading || description || selectedImage || selectedKeywords.length > 0) && (
                     <View style={styles.section}>
                         <Text style={styles.sectionTitle}>Preview</Text>
                         <View style={styles.previewCard}>
@@ -369,6 +482,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                             )}
                             {heading && <Text style={styles.previewHeading}>{heading}</Text>}
                             {description && <Text style={styles.previewDescription}>{description}</Text>}
+                            {selectedImage && (
+                                <View style={styles.previewImageContainer}>
+                                    <Image source={{ uri: selectedImage.uri }} style={styles.previewImage} />
+                                </View>
+                            )}
                             {selectedKeywords.length > 0 && (
                                 <View style={styles.previewKeywords}>
                                     {selectedKeywords.map((keyword) => (
@@ -539,6 +657,41 @@ const styles = StyleSheet.create({
         color: COLORS.textQuaternary,
         marginTop: 8,
     },
+    selectedImageContainer: {
+        position: 'relative',
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+    selectedImage: {
+        width: '100%',
+        height: 200,
+        borderRadius: 12,
+    },
+    removeImageButton: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    changeImageButton: {
+        position: 'absolute',
+        bottom: 8,
+        left: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    },
+    changeImageText: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.semiBold,
+        color: COLORS.white,
+    },
     keywordsContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -613,6 +766,16 @@ const styles = StyleSheet.create({
         color: COLORS.textTertiary,
         lineHeight: 20,
         marginBottom: 12,
+    },
+    previewImageContainer: {
+        marginBottom: 12,
+        borderRadius: 8,
+        overflow: 'hidden',
+    },
+    previewImage: {
+        width: '100%',
+        height: 120,
+        backgroundColor: '#f3f4f6',
     },
     previewKeywords: {
         flexDirection: 'row',
