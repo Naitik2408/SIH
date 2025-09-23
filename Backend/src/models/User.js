@@ -68,6 +68,54 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    // Profile Information (for customers)
+    profile: {
+        age: {
+            type: Number,
+            min: [1, 'Age must be at least 1'],
+            max: [120, 'Age cannot exceed 120']
+        },
+        gender: {
+            type: String,
+            enum: ['male', 'female', 'other', 'prefer-not-to-say'],
+            lowercase: true
+        },
+        occupation: {
+            type: String,
+            enum: ['student', 'employee', 'homemaker', 'retired', 'self-employed', 'unemployed', 'other'],
+            lowercase: true
+        },
+        householdSize: {
+            type: Number,
+            min: [1, 'Household size must be at least 1'],
+            max: [50, 'Household size cannot exceed 50']
+        },
+        vehicleOwnership: {
+            cars: {
+                type: Number,
+                default: 0,
+                min: [0, 'Cannot have negative vehicles']
+            },
+            twoWheelers: {
+                type: Number,
+                default: 0,
+                min: [0, 'Cannot have negative vehicles']
+            },
+            cycles: {
+                type: Number,
+                default: 0,
+                min: [0, 'Cannot have negative vehicles']
+            }
+        },
+        usesPublicTransport: {
+            type: Boolean
+        },
+        incomeRange: {
+            type: String,
+            enum: ['below-25k', '25k-50k', '50k-100k', '100k-200k', '200k-500k', 'above-500k', 'prefer-not-to-say'],
+            lowercase: true
+        }
+    },
     // Account status
     isActive: {
         type: Boolean,
@@ -79,7 +127,7 @@ const userSchema = new mongoose.Schema({
     },
     isApproved: {
         type: Boolean,
-        default: function() {
+        default: function () {
             // Auto-approve customers, require approval for scientists
             return this.role === 'customer';
         }

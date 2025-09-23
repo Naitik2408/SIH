@@ -64,4 +64,10 @@ export const DEMO_USERS = {
         name: 'Admin Owner',
         role: 'owner' as const,
     },
+    scientist: {
+        email: 'scientist@getway.com',
+        password: 'scientist123',
+        name: 'Dr. Jane Scientist',
+        role: 'scientist' as const,
+    },
 };

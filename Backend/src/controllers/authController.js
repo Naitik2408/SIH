@@ -7,7 +7,17 @@ const { generateToken } = require('../utils/generateToken');
  */
 const register = async (req, res) => {
     try {
-        const { name, email, password, phone, role = 'customer', organizationId } = req.body;
+        console.log('Registration request body:', JSON.stringify(req.body, null, 2));
+
+        const {
+            name,
+            email,
+            password,
+            phone,
+            role = 'customer',
+            organizationId,
+            profile
+        } = req.body;
 
         // Validation
         if (!name || !email || !password) {
@@ -68,6 +78,28 @@ const register = async (req, res) => {
         if (phone) userData.phone = phone.trim();
         if (organizationId) userData.organizationId = organizationId.trim();
 
+        // Add profile data for customers
+        if (role === 'customer' && profile) {
+            userData.profile = {};
+
+            // Add profile fields if they exist
+            if (profile.age !== undefined) userData.profile.age = parseInt(profile.age);
+            if (profile.gender) userData.profile.gender = profile.gender.toLowerCase();
+            if (profile.occupation) userData.profile.occupation = profile.occupation.toLowerCase();
+            if (profile.householdSize !== undefined) userData.profile.householdSize = parseInt(profile.householdSize);
+            if (profile.usesPublicTransport !== undefined) userData.profile.usesPublicTransport = profile.usesPublicTransport;
+            if (profile.incomeRange) userData.profile.incomeRange = profile.incomeRange.toLowerCase();
+
+            // Handle vehicle ownership
+            if (profile.vehicleOwnership) {
+                userData.profile.vehicleOwnership = {
+                    cars: parseInt(profile.vehicleOwnership.cars) || 0,
+                    twoWheelers: parseInt(profile.vehicleOwnership.twoWheelers) || 0,
+                    cycles: parseInt(profile.vehicleOwnership.cycles) || 0
+                };
+            }
+        }
+
         // Create new user
         const user = new User(userData);
         await user.save();
@@ -92,7 +124,7 @@ const register = async (req, res) => {
         } else {
             // Customers are auto-approved, generate token
             const token = generateToken(user._id, user.role);
-            
+
             return res.status(201).json({
                 status: 'success',
                 message: 'Registration successful',
@@ -102,7 +134,8 @@ const register = async (req, res) => {
                         name: user.name,
                         email: user.email,
                         role: user.role,
-                        isApproved: user.isApproved
+                        isApproved: user.isApproved,
+                        profile: user.profile || null
                     },
                     token
                 }
@@ -111,7 +144,7 @@ const register = async (req, res) => {
 
     } catch (error) {
         console.error('Registration error:', error);
-        
+
         // Handle validation errors
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
@@ -200,7 +233,8 @@ const login = async (req, res) => {
                     role: user.role,
                     organizationId: user.organizationId,
                     isApproved: user.isApproved,
-                    lastLogin: user.lastLogin
+                    lastLogin: user.lastLogin,
+                    profile: user.profile || null
                 },
                 token
             }
@@ -223,7 +257,7 @@ const logout = async (req, res) => {
     try {
         // Note: With JWT, logout is handled client-side by removing the token
         // In a more advanced setup, you could maintain a blacklist of tokens
-        
+
         return res.status(200).json({
             status: 'success',
             message: 'Logout successful. Please remove the token from client storage.'
