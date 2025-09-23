@@ -44,6 +44,28 @@ const register = async (req, res) => {
             });
         }
 
+        // Check if organizationId is unique (for scientists)
+        if (role === 'scientist' && organizationId) {
+            const isOrgIdUnique = await User.isOrgIdUnique(organizationId.trim());
+            if (!isOrgIdUnique) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: 'Organization ID already exists. Please choose a different one.'
+                });
+            }
+        }
+
+        // Check if phone number is unique (if provided)
+        if (phone) {
+            const isPhoneUnique = await User.isPhoneUnique(phone.trim());
+            if (!isPhoneUnique) {
+                return res.status(409).json({
+                    status: 'error',
+                    message: 'Phone number already exists. Please use a different phone number.'
+                });
+            }
+        }
+
         // Create user data
         const userData = {
             name: name.trim(),
@@ -146,22 +168,25 @@ const register = async (req, res) => {
  */
 const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, identifier } = req.body;
+        
+        // Support both old format (email) and new format (identifier)
+        const loginIdentifier = identifier || email;
 
         // Validation
-        if (!email || !password) {
+        if (!loginIdentifier || !password) {
             return res.status(400).json({
                 status: 'error',
-                message: 'Email and password are required'
+                message: 'Email/Phone/Organization ID and password are required'
             });
         }
 
-        // Find user with password field
-        const user = await User.findByEmailWithPassword(email.toLowerCase());
+        // Find user with password field (supports email, phone, and organizationId)
+        const user = await User.findByIdentifierWithPassword(loginIdentifier.toLowerCase());
         if (!user) {
             return res.status(401).json({
                 status: 'error',
-                message: 'Invalid email or password'
+                message: 'Invalid email/phone/organization ID or password'
             });
         }
 
