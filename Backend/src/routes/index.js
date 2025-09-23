@@ -4,6 +4,7 @@ const authRoutes = require('./authRoutes');
 const ownerRoutes = require('./ownerRoutes');
 const userRoutes = require('./userRoutes');
 const postsRoutes = require('./postsRoutes');
+const journeyRoutes = require('./journeyRoutes');
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.use('/auth', authRoutes);
 router.use('/owner', ownerRoutes);
 router.use('/users', userRoutes);
 router.use('/posts', postsRoutes);
+router.use('/journeys', journeyRoutes);
 
 // API info route
 router.get('/', (req, res) => {

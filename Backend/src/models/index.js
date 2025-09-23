@@ -1,10 +1,12 @@
 // Export all models from this directory
 const User = require('./User');
 const Post = require('./Post');
+const Journey = require('./Journey');
 
 module.exports = {
     User,
-    Post
+    Post,
+    Journey
 };
 
 /*

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -11,9 +11,17 @@ import {
     Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 import { COLORS, SIZES, FONTS } from '../../../../constants';
 import { PostsAPI, CreatePostData } from '../../../../services/api';
+
+// Type for image asset
+interface ImageAsset {
+    uri: string;
+    width?: number;
+    height?: number;
+    type?: string;
+    fileName?: string | null;
+}
 
 interface CreatePostProps {
     onBack: () => void;
@@ -34,9 +42,39 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
     const [selectedCategory, setSelectedCategory] = useState<PostCategory | null>(null);
     const [heading, setHeading] = useState('');
     const [description, setDescription] = useState('');
-    const [selectedImage, setSelectedImage] = useState<ImagePicker.ImagePickerAsset | null>(null);
+    const [selectedImage, setSelectedImage] = useState<ImageAsset | null>(null);
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [imagePickerAvailable, setImagePickerAvailable] = useState(false);
+
+    // Load ImagePicker module asynchronously
+    useEffect(() => {
+        const loadImagePicker = async () => {
+            try {
+                const ImagePickerModule = await import('expo-image-picker');
+                // Check if the module has the expected functions
+                if (ImagePickerModule && typeof ImagePickerModule.requestMediaLibraryPermissionsAsync === 'function') {
+                    // Test if the function actually works (not just defined)
+                    try {
+                        await ImagePickerModule.getMediaLibraryPermissionsAsync();
+                        setImagePickerAvailable(true);
+                        console.log('✅ expo-image-picker is available and functional');
+                    } catch (testError) {
+                        console.warn('expo-image-picker functions exist but are not functional:', testError);
+                        setImagePickerAvailable(false);
+                    }
+                } else {
+                    console.warn('expo-image-picker functions not available');
+                    setImagePickerAvailable(false);
+                }
+            } catch (error) {
+                console.warn('expo-image-picker not available:', error);
+                setImagePickerAvailable(false);
+            }
+        };
+        
+        loadImagePicker();
+    }, []);
 
     const categories: CategoryOption[] = [
         {
@@ -97,8 +135,20 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
 
     const pickImage = async () => {
         try {
+            if (!imagePickerAvailable) {
+                Alert.alert(
+                    'Image Picker Unavailable',
+                    'Image picker is not available in this environment. Please use the Expo Go app or a development build.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
+
+            // Dynamic import of ImagePicker
+            const ImagePickerModule = await import('expo-image-picker');
+            
             // Request permission to access media library
-            const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            const permissionResult = await ImagePickerModule.requestMediaLibraryPermissionsAsync();
             
             if (permissionResult.granted === false) {
                 Alert.alert(
@@ -131,14 +181,22 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
             );
         } catch (error) {
             console.error('Error requesting permissions:', error);
-            Alert.alert('Error', 'Failed to access image picker. Please try again.');
+            Alert.alert('Error', 'Failed to access image picker. Please make sure you are using Expo Go app or restart the app.');
         }
     };
 
     const openCamera = async () => {
         try {
+            if (!imagePickerAvailable) {
+                Alert.alert('Camera Unavailable', 'Camera functionality is not available in this environment.');
+                return;
+            }
+
+            // Dynamic import of ImagePicker
+            const ImagePickerModule = await import('expo-image-picker');
+
             // Request camera permission
-            const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+            const cameraPermission = await ImagePickerModule.requestCameraPermissionsAsync();
             
             if (cameraPermission.granted === false) {
                 Alert.alert(
@@ -149,8 +207,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                 return;
             }
 
-            const result = await ImagePicker.launchCameraAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            const result = await ImagePickerModule.launchCameraAsync({
+                mediaTypes: ImagePickerModule.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [16, 9],
                 quality: 0.8,
@@ -168,8 +226,16 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
 
     const openImageLibrary = async () => {
         try {
-            const result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            if (!imagePickerAvailable) {
+                Alert.alert('Gallery Unavailable', 'Gallery functionality is not available in this environment.');
+                return;
+            }
+
+            // Dynamic import of ImagePicker
+            const ImagePickerModule = await import('expo-image-picker');
+
+            const result = await ImagePickerModule.launchImageLibraryAsync({
+                mediaTypes: ImagePickerModule.MediaTypeOptions.Images,
                 allowsEditing: true,
                 aspect: [16, 9],
                 quality: 0.8,
@@ -408,9 +474,27 @@ const CreatePost: React.FC<CreatePostProps> = ({ onBack, onPostCreated }) => {
                             </TouchableOpacity>
                         </View>
                     ) : (
-                        <TouchableOpacity style={styles.imagePickerButton} onPress={pickImage}>
-                            <Ionicons name="camera-outline" size={32} color={COLORS.textQuaternary} />
-                            <Text style={styles.imagePickerText}>Tap to add an image</Text>
+                        <TouchableOpacity 
+                            style={[styles.imagePickerButton, !imagePickerAvailable && styles.imagePickerButtonDisabled]} 
+                            onPress={pickImage}
+                            disabled={!imagePickerAvailable}
+                        >
+                            <Ionicons 
+                                name="camera-outline" 
+                                size={32} 
+                                color={imagePickerAvailable ? COLORS.textQuaternary : COLORS.textDisabled} 
+                            />
+                            <Text style={[
+                                styles.imagePickerText,
+                                !imagePickerAvailable && styles.imagePickerTextDisabled
+                            ]}>
+                                {imagePickerAvailable ? 'Tap to add an image' : 'Image picker not available in this build'}
+                            </Text>
+                            {!imagePickerAvailable && (
+                                <Text style={styles.buildInfoText}>
+                                    Rebuild with expo-image-picker plugin to enable images
+                                </Text>
+                            )}
                         </TouchableOpacity>
                     )}
                 </View>
@@ -651,11 +735,27 @@ const styles = StyleSheet.create({
         borderColor: COLORS.lightGray,
         borderStyle: 'dashed',
     },
+    imagePickerButtonDisabled: {
+        backgroundColor: '#f9f9f9',
+        borderColor: COLORS.textDisabled,
+        opacity: 0.6,
+    },
     imagePickerText: {
         fontSize: SIZES.body,
         fontFamily: FONTS.regular,
         color: COLORS.textQuaternary,
         marginTop: 8,
+    },
+    imagePickerTextDisabled: {
+        color: COLORS.textDisabled,
+    },
+    buildInfoText: {
+        fontSize: SIZES.caption,
+        fontFamily: FONTS.regular,
+        color: COLORS.textDisabled,
+        textAlign: 'center',
+        marginTop: 4,
+        fontStyle: 'italic',
     },
     selectedImageContainer: {
         position: 'relative',
