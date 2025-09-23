@@ -15,6 +15,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../constants';
 import Toast from '../components/Toast';
+import authService from '../services/authService';
+import { ErrorHandler, ValidationUtils } from '../utils/errorHandler';
 
 const { width } = Dimensions.get('window');
 
@@ -150,6 +152,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
     const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
     const [screenWidth, setScreenWidth] = useState(width);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [signupData, setSignupData] = useState<SignupData>({
         emailOrPhone: '',
         password: '',
@@ -175,14 +179,14 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
         if (showCarousel && scrollViewRef.current && screenWidth > 0 && !isScrolling) {
             const scrollX = currentStep * screenWidth;
             setIsScrolling(true);
-            
+
             // Use requestAnimationFrame for smoother scrolling
             requestAnimationFrame(() => {
                 scrollViewRef.current?.scrollTo({
                     x: scrollX,
                     animated: true,
                 });
-                
+
                 // Reset scrolling flag after animation
                 setTimeout(() => {
                     setIsScrolling(false);
@@ -198,22 +202,45 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
     };
 
     const validateInitialForm = () => {
+        // Only validate email/phone, password, and confirm password for the initial form
+        // Name and other details will be collected in the carousel
+
         if (!signupData.emailOrPhone.trim()) {
             showToastMessage('Please enter email or phone number', 'error');
             return false;
         }
+
+        // Check if it's an email or phone
+        const isEmail = signupData.emailOrPhone.includes('@');
+
+        if (isEmail) {
+            if (!ValidationUtils.isValidEmail(signupData.emailOrPhone)) {
+                showToastMessage('Please enter a valid email address', 'error');
+                return false;
+            }
+        } else {
+            if (!ValidationUtils.isValidPhone(signupData.emailOrPhone)) {
+                showToastMessage('Please enter a valid phone number', 'error');
+                return false;
+            }
+        }
+
         if (!signupData.password.trim()) {
             showToastMessage('Please enter password', 'error');
             return false;
         }
+
+        const passwordValidation = ValidationUtils.isValidPassword(signupData.password);
+        if (!passwordValidation.valid) {
+            showToastMessage(passwordValidation.message!, 'error');
+            return false;
+        }
+
         if (signupData.password !== signupData.confirmPassword) {
             showToastMessage('Passwords do not match', 'error');
             return false;
         }
-        if (signupData.password.length < 6) {
-            showToastMessage('Password must be at least 6 characters', 'error');
-            return false;
-        }
+
         return true;
     };
 
@@ -226,7 +253,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
     const handleStepInput = (value: any, fieldName?: keyof SignupData) => {
         const step = carouselSteps[currentStep];
         const targetField = fieldName || step.field;
-        
+
         setSignupData(prev => ({
             ...prev,
             [targetField]: value
@@ -237,7 +264,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
         setSignupData(prev => {
             const currentCount = parseInt(prev.vehicleOwnership[vehicleType]) || 0;
             const newCount = increment ? currentCount + 1 : Math.max(0, currentCount - 1);
-            
+
             return {
                 ...prev,
                 vehicleOwnership: {
@@ -251,14 +278,14 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
     const validateCurrentStep = () => {
         const currentStepData = carouselSteps[currentStep];
         const currentValue = signupData[currentStepData.field];
-        
+
         if (currentStepData.required) {
             if (currentStepData.type === 'text' || currentStepData.type === 'number') {
                 if (!currentValue || (currentValue as string).trim() === '') {
                     showToastMessage(`Please enter ${currentStepData.title.toLowerCase()}`, 'error');
                     return false;
                 }
-                
+
                 // Additional validation for age
                 if (currentStepData.field === 'age') {
                     const age = parseInt(currentValue as string);
@@ -267,7 +294,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         return false;
                     }
                 }
-                
+
                 // Additional validation for household size
                 if (currentStepData.field === 'householdSize') {
                     const size = parseInt(currentValue as string);
@@ -276,7 +303,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         return false;
                     }
                 }
-                
+
                 // Additional validation for name
                 if (currentStepData.field === 'name') {
                     if ((currentValue as string).trim().length < 2) {
@@ -285,28 +312,28 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                     }
                 }
             }
-            
+
             if (currentStepData.type === 'select' || currentStepData.type === 'income') {
                 if (!currentValue || currentValue === '') {
                     showToastMessage(`Please select ${currentStepData.title.toLowerCase()}`, 'error');
                     return false;
                 }
             }
-            
+
             if (currentStepData.type === 'boolean') {
                 if (currentValue === null || currentValue === undefined) {
                     showToastMessage(`Please answer ${currentStepData.title.toLowerCase()}`, 'error');
                     return false;
                 }
             }
-            
+
             if (currentStepData.type === 'vehicles') {
                 // Vehicle ownership can be 0, so we don't need to validate
                 // The field is always valid as it has default values
                 return true;
             }
         }
-        
+
         return true;
     };
 
@@ -322,13 +349,13 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
     const isCurrentStepValid = () => {
         const currentStepData = carouselSteps[currentStep];
         const currentValue = signupData[currentStepData.field];
-        
+
         if (currentStepData.required) {
             if (currentStepData.type === 'text' || currentStepData.type === 'number') {
                 if (!currentValue || (currentValue as string).trim() === '') {
                     return false;
                 }
-                
+
                 // Additional validation for age
                 if (currentStepData.field === 'age') {
                     const age = parseInt(currentValue as string);
@@ -336,7 +363,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         return false;
                     }
                 }
-                
+
                 // Additional validation for household size
                 if (currentStepData.field === 'householdSize') {
                     const size = parseInt(currentValue as string);
@@ -344,7 +371,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         return false;
                     }
                 }
-                
+
                 // Additional validation for name
                 if (currentStepData.field === 'name') {
                     if ((currentValue as string).trim().length < 2) {
@@ -352,20 +379,20 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                     }
                 }
             }
-            
+
             if (currentStepData.type === 'select' || currentStepData.type === 'income') {
                 if (!currentValue || currentValue === '') {
                     return false;
                 }
             }
-            
+
             if (currentStepData.type === 'boolean') {
                 if (currentValue === null || currentValue === undefined) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     };
 
@@ -376,22 +403,88 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
         }
     };
 
-    const handleSignup = () => {
-        // Validate required fields
+    const handleSignup = async () => {
+        // Validate required fields from carousel steps
         const requiredSteps = carouselSteps.filter(step => step.required);
         for (const step of requiredSteps) {
             const value = signupData[step.field];
-            if (!value || value === '' || value === null) {
-                showToastMessage(`Please fill in ${step.title.toLowerCase()}`, 'error');
-                return;
+
+            // Special handling for different field types
+            if (step.type === 'boolean') {
+                if (value === null || value === undefined) {
+                    showToastMessage(`Please answer: ${step.title.toLowerCase()}`, 'error');
+                    return;
+                }
+            } else if (step.type === 'vehicles') {
+                // Vehicle ownership is always valid (can be 0)
+                continue;
+            } else {
+                if (!value || value === '') {
+                    showToastMessage(`Please fill in: ${step.title.toLowerCase()}`, 'error');
+                    return;
+                }
             }
         }
 
-        // Show success toast and redirect
-        showToastMessage('🎉 Account created successfully!', 'success');
-        setTimeout(() => {
-            onSignupSuccess();
-        }, 1500);
+        // Validate initial form fields
+        if (!signupData.emailOrPhone.trim()) {
+            showToastMessage('Please provide email or phone number', 'error');
+            return;
+        }
+
+        if (!signupData.password.trim()) {
+            showToastMessage('Please provide password', 'error');
+            return;
+        }
+
+        try {
+            showToastMessage('Creating your account...', 'info');
+
+            // Determine if email or phone was provided
+            const isEmail = signupData.emailOrPhone.includes('@');
+
+            // Prepare registration data
+            const registrationData = {
+                name: signupData.name,
+                email: isEmail ? signupData.emailOrPhone : '',
+                phone: !isEmail ? signupData.emailOrPhone : undefined,
+                password: signupData.password,
+                role: 'customer' as const,
+                age: signupData.age,
+                gender: signupData.gender || undefined,
+                occupation: signupData.occupation || undefined,
+                householdSize: signupData.householdSize,
+                vehicleOwnership: signupData.vehicleOwnership,
+                usesPublicTransport: signupData.usesPublicTransport ?? undefined,
+                incomeRange: signupData.incomeRange || undefined,
+            };
+
+            // If phone was provided but no email, we need an email for the backend
+            if (!isEmail) {
+                showToastMessage('Please provide an email address for account creation', 'error');
+                return;
+            }
+
+            // Validate email format
+            if (!ValidationUtils.isValidEmail(signupData.emailOrPhone)) {
+                showToastMessage('Please provide a valid email address', 'error');
+                return;
+            }
+
+            // Call the registration API
+            await authService.register(registrationData);
+
+            // Show success toast and redirect
+            showToastMessage('🎉 Account created successfully!', 'success');
+            setTimeout(() => {
+                onSignupSuccess();
+            }, 1500);
+
+        } catch (error: any) {
+            console.error('Registration error:', error);
+            const errorMessage = ErrorHandler.handle(error, false);
+            showToastMessage(errorMessage, 'error');
+        }
     };
 
     const renderStepContent = (step: CarouselStep, index: number) => {
@@ -489,10 +582,10 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                             ]}
                             onPress={() => handleStepInput(true, step.field)}
                         >
-                            <Ionicons 
-                                name="checkmark-circle" 
-                                size={24} 
-                                color={currentValue === true ? COLORS.white : COLORS.primary} 
+                            <Ionicons
+                                name="checkmark-circle"
+                                size={24}
+                                color={currentValue === true ? COLORS.white : COLORS.primary}
                             />
                             <Text style={[
                                 styles.booleanText,
@@ -508,10 +601,10 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                             ]}
                             onPress={() => handleStepInput(false, step.field)}
                         >
-                            <Ionicons 
-                                name="close-circle" 
-                                size={24} 
-                                color={currentValue === false ? COLORS.white : '#ef4444'} 
+                            <Ionicons
+                                name="close-circle"
+                                size={24}
+                                color={currentValue === false ? COLORS.white : '#ef4444'}
                             />
                             <Text style={[
                                 styles.booleanText,
@@ -592,8 +685,8 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
 
     if (!showCarousel) {
         return (
-            <KeyboardAvoidingView 
-                style={styles.container} 
+            <KeyboardAvoidingView
+                style={styles.container}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -605,7 +698,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                             </TouchableOpacity>
                         )}
                         <Text style={styles.title}>Create Account</Text>
-                        <Text style={styles.subtitle}>Join GetWay and start your journey</Text>
+                        <Text style={styles.subtitle}>Enter your credentials, then we'll ask some questions to personalize your experience</Text>
                     </View>
 
                     <View style={styles.formContainer}>
@@ -613,11 +706,12 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                             <Ionicons name="mail-outline" size={20} color={COLORS.gray} style={styles.inputIcon} />
                             <TextInput
                                 style={styles.input}
-                                placeholder="Email or Phone Number"
+                                placeholder="Email address (required for account)"
                                 value={signupData.emailOrPhone}
                                 onChangeText={(text) => setSignupData(prev => ({ ...prev, emailOrPhone: text }))}
                                 keyboardType="email-address"
                                 autoCapitalize="none"
+                                autoComplete="email"
                             />
                         </View>
 
@@ -628,8 +722,19 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                                 placeholder="Password"
                                 value={signupData.password}
                                 onChangeText={(text) => setSignupData(prev => ({ ...prev, password: text }))}
-                                secureTextEntry
+                                secureTextEntry={!showPassword}
+                                autoCapitalize="none"
                             />
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                                style={styles.eyeIcon}
+                            >
+                                <Ionicons
+                                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                                    size={20}
+                                    color={COLORS.gray}
+                                />
+                            </TouchableOpacity>
                         </View>
 
                         <View style={styles.inputContainer}>
@@ -639,12 +744,27 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                                 placeholder="Confirm Password"
                                 value={signupData.confirmPassword}
                                 onChangeText={(text) => setSignupData(prev => ({ ...prev, confirmPassword: text }))}
-                                secureTextEntry
+                                secureTextEntry={!showConfirmPassword}
+                                autoCapitalize="none"
                             />
+                            <TouchableOpacity
+                                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                                style={styles.eyeIcon}
+                            >
+                                <Ionicons
+                                    name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
+                                    size={20}
+                                    color={COLORS.gray}
+                                />
+                            </TouchableOpacity>
                         </View>
 
+                        <Text style={styles.helperText}>
+                            Password must be at least 6 characters long
+                        </Text>
+
                         <TouchableOpacity style={styles.continueButton} onPress={handleContinue}>
-                            <Text style={styles.continueButtonText}>Continue</Text>
+                            <Text style={styles.continueButtonText}>Continue to Profile Setup</Text>
                             <Ionicons name="arrow-forward" size={20} color={COLORS.white} />
                         </TouchableOpacity>
                     </View>
@@ -663,21 +783,21 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
         <View style={styles.container}>
             <View style={styles.carouselHeader}>
                 <TouchableOpacity onPress={goToPrevStep} disabled={currentStep === 0}>
-                    <Ionicons 
-                        name="chevron-back" 
-                        size={24} 
-                        color={currentStep === 0 ? COLORS.gray : COLORS.black} 
+                    <Ionicons
+                        name="chevron-back"
+                        size={24}
+                        color={currentStep === 0 ? COLORS.gray : COLORS.black}
                     />
                 </TouchableOpacity>
-                
+
                 <View style={styles.progressContainer}>
                     <Text style={styles.progressText}>{currentStep + 1} of {carouselSteps.length}</Text>
                     <View style={styles.progressBar}>
-                        <View 
+                        <View
                             style={[
-                                styles.progressFill, 
+                                styles.progressFill,
                                 { width: `${((currentStep + 1) / carouselSteps.length) * 100}%` }
-                            ]} 
+                            ]}
                         />
                     </View>
                 </View>
@@ -699,7 +819,7 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                 onLayout={(event) => {
                     const { width: layoutWidth } = event.nativeEvent.layout;
                     setScreenWidth(layoutWidth);
-                    
+
                     // Ensure we're on the correct step after layout
                     if (currentStep > 0) {
                         requestAnimationFrame(() => {
@@ -725,11 +845,11 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         <Ionicons name="checkmark" size={20} color={COLORS.white} />
                     </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[
-                            styles.nextButton, 
+                            styles.nextButton,
                             !isCurrentStepValid() && styles.disabledButton
-                        ]} 
+                        ]}
                         onPress={goToNextStep}
                         disabled={!isCurrentStepValid()}
                     >
@@ -739,10 +859,10 @@ const SignupScreen: React.FC<SignupScreenProps> = ({ onSignupSuccess, onBack }) 
                         ]}>
                             Next
                         </Text>
-                        <Ionicons 
-                            name="arrow-forward" 
-                            size={20} 
-                            color={isCurrentStepValid() ? COLORS.white : '#9ca3af'} 
+                        <Ionicons
+                            name="arrow-forward"
+                            size={20}
+                            color={isCurrentStepValid() ? COLORS.white : '#9ca3af'}
                         />
                     </TouchableOpacity>
                 )}
@@ -818,6 +938,17 @@ const styles = StyleSheet.create({
         paddingVertical: SIZES.md,
         fontSize: SIZES.md,
         color: COLORS.black,
+    },
+    eyeIcon: {
+        padding: SIZES.xs,
+        marginLeft: SIZES.xs,
+    },
+    helperText: {
+        fontSize: SIZES.sm,
+        color: COLORS.gray,
+        textAlign: 'center',
+        marginTop: SIZES.md,
+        fontStyle: 'italic',
     },
     continueButton: {
         flexDirection: 'row',
