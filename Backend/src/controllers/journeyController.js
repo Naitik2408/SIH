@@ -17,7 +17,7 @@ const createJourney = async (req, res) => {
         const totalPoints = basePoints + surveyBonus + gpsBonus;
 
         const journey = new Journey({
-            userId: req.user.userId,
+            userId: req.user.id, // Fixed: changed from req.user.userId to req.user.id
             surveyData,
             tripDetails,
             gpsTrackingData,
@@ -32,7 +32,7 @@ const createJourney = async (req, res) => {
 
         // Update user's total points
         await User.findByIdAndUpdate(
-            req.user.userId,
+            req.user.id, // Fixed: changed from req.user.userId to req.user.id
             { $inc: { 'rewards.totalPoints': totalPoints } }
         );
 
@@ -56,7 +56,7 @@ const getUserJourneys = async (req, res) => {
     try {
         const { page = 1, limit = 20, startDate, endDate } = req.query;
         
-        const filter = { userId: req.user.userId };
+        const filter = { userId: req.user.id }; // Fixed: changed from req.user.userId to req.user.id
         
         // Add date filtering if provided
         if (startDate || endDate) {
@@ -297,7 +297,7 @@ const deleteJourney = async (req, res) => {
 
         const journey = await Journey.findOneAndDelete({
             _id: journeyId,
-            userId: req.user.userId
+            userId: req.user.id // Fixed: changed from req.user.userId to req.user.id
         });
 
         if (!journey) {

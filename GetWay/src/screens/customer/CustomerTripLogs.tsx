@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     ScrollView,
     TouchableOpacity,
+    RefreshControl,
+    Alert,
+    ActivityIndicator,
 } from 'react-native';
 import { COLORS, SIZES, FONTS } from '../../constants';
+import { journeyAPI, JourneyData, TokenManager } from '../../services/api';
 
 interface TripItem {
     id: string;
@@ -14,29 +18,146 @@ interface TripItem {
     endTime: string;
     origin: string;
     destination: string;
-    transport: 'bus' | 'train' | 'auto' | 'walk' | 'car';
-    purpose: 'work' | 'study' | 'shopping' | 'health' | 'leisure';
+    transport: 'bus' | 'train' | 'auto' | 'walk' | 'car' | 'metro' | 'bike';
+    purpose: 'work' | 'study' | 'shopping' | 'health' | 'leisure' | 'personal';
     status: 'completed' | 'upcoming' | 'in-progress';
     date: string; // Date in YYYY-MM-DD format
+    duration: string;
+    satisfaction?: string;
 }
 
-const mockTripData: TripItem[] = [
-    // Today's trips
-    { id: '1', startTime: '8:30 AM', endTime: '9:15 AM', origin: 'Home', destination: 'Office', transport: 'bus', purpose: 'work', status: 'completed', date: new Date().toISOString().split('T')[0] },
-    { id: '2', startTime: '9:30 AM', endTime: '10:00 AM', origin: 'Office', destination: 'Client Meeting', transport: 'auto', purpose: 'work', status: 'completed', date: new Date().toISOString().split('T')[0] },
-    { id: '3', startTime: '12:00 PM', endTime: '12:45 PM', origin: 'Office', destination: 'Restaurant', transport: 'walk', purpose: 'leisure', status: 'in-progress', date: new Date().toISOString().split('T')[0] },
-    { id: '4', startTime: '2:15 PM', endTime: '3:00 PM', origin: 'Restaurant', destination: 'Shopping Mall', transport: 'auto', purpose: 'shopping', status: 'upcoming', date: new Date().toISOString().split('T')[0] },
-
-    // Yesterday's trips
-    { id: '5', startTime: '4:30 PM', endTime: '5:15 PM', origin: 'Shopping Mall', destination: 'Gym', transport: 'bus', purpose: 'health', status: 'completed', date: new Date(Date.now() - 86400000).toISOString().split('T')[0] },
-    { id: '6', startTime: '6:00 PM', endTime: '6:45 PM', origin: 'Gym', destination: 'Home', transport: 'train', purpose: 'leisure', status: 'completed', date: new Date(Date.now() - 86400000).toISOString().split('T')[0] },
-
-    // Day before yesterday
-    { id: '7', startTime: '8:00 PM', endTime: '8:30 PM', origin: 'Home', destination: 'Friends Place', transport: 'car', purpose: 'leisure', status: 'completed', date: new Date(Date.now() - 172800000).toISOString().split('T')[0] },
-    { id: '8', startTime: '10:00 AM', endTime: '10:45 AM', origin: 'Home', destination: 'Market', transport: 'walk', purpose: 'shopping', status: 'completed', date: new Date(Date.now() - 172800000).toISOString().split('T')[0] },
-];
-
 const TripLogsScreen: React.FC = () => {
+    const [tripData, setTripData] = useState<TripItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    // Convert API journey data to TripItem format
+    const convertJourneyToTripItem = (journey: JourneyData): TripItem => {
+        // Convert transport mode to match interface
+        const transportMap: { [key: string]: TripItem['transport'] } = {
+            'Bus': 'bus',
+            'Train': 'train',
+            'Auto/Taxi': 'auto',
+            'Walking': 'walk',
+            'Personal Vehicle': 'car',
+            'Car': 'car',
+            'Metro': 'metro',
+            'Bike': 'bike'
+        };
+
+        // Convert journey purpose to match interface
+        const purposeMap: { [key: string]: TripItem['purpose'] } = {
+            'Work/Office': 'work',
+            'Education': 'study',
+            'Shopping': 'shopping',
+            'Healthcare': 'health',
+            'Leisure/Entertainment': 'leisure',
+            'Personal': 'personal'
+        };
+
+        const startTime = new Date(journey.tripDetails.startTime);
+        const endTime = journey.tripDetails.endTime ? new Date(journey.tripDetails.endTime) : null;
+
+        return {
+            id: journey._id,
+            startTime: startTime.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            }),
+            endTime: endTime ? endTime.toLocaleTimeString('en-US', { 
+                hour: 'numeric', 
+                minute: '2-digit', 
+                hour12: true 
+            }) : 'In Progress',
+            origin: journey.tripDetails.startLocation?.address || 'Unknown',
+            destination: journey.tripDetails.endLocation?.address || 'Unknown',
+            transport: transportMap[journey.surveyData.transportMode] || 'bus',
+            purpose: purposeMap[journey.surveyData.journeyPurpose] || 'personal',
+            status: journey.status === 'completed' ? 'completed' : 
+                   journey.status === 'in_progress' ? 'in-progress' : 'upcoming',
+            date: new Date(journey.tripDetails.startTime).toISOString().split('T')[0],
+            duration: journey.tripDetails.actualDurationFormatted || '0 min',
+            satisfaction: journey.surveyData.routeSatisfaction
+        };
+    };
+
+    // Fetch user journeys from API
+    const fetchJourneys = async (showRefreshIndicator = false) => {
+        try {
+            if (showRefreshIndicator) {
+                setRefreshing(true);
+            } else {
+                setLoading(true);
+            }
+            setError(null);
+
+            console.log('🚗 Fetching user journeys...');
+            
+            const response = await journeyAPI.getUserJourneys({
+                limit: 50 // Get recent 50 trips
+            });
+
+            if (!response || !response.journeys) {
+                console.error('❌ Invalid response format:', response);
+                throw new Error('Invalid response format from server');
+            }
+
+            const convertedTrips = response.journeys.map(convertJourneyToTripItem);
+            setTripData(convertedTrips);
+            
+            console.log('✅ Successfully loaded', convertedTrips.length, 'trips');
+
+        } catch (err: any) {
+            console.error('❌ Error fetching journeys:', err);
+            console.error('❌ Error details:', {
+                message: err.message,
+                status: err.status,
+                code: err.code,
+                name: err.name
+            });
+            
+            // More detailed error message
+            let errorMessage = 'Failed to load your trips. Please try again.';
+            
+            if (err.status === 401) {
+                errorMessage = 'Authentication failed. Please log in again.';
+            } else if (err.status === 403) {
+                errorMessage = 'Access denied. You don\'t have permission to view trips.';
+            } else if (err.status === 404) {
+                errorMessage = 'Trips endpoint not found. Please update the app.';
+            } else if (err.status >= 500) {
+                errorMessage = 'Server error. Please try again later.';
+            } else if (err.code === 'NETWORK_ERROR' || err.code === 'TIMEOUT_ERROR') {
+                errorMessage = 'Network error. Please check your internet connection.';
+            } else if (err.message?.includes('Invalid response')) {
+                errorMessage = 'Server returned invalid data format';
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
+            setError(errorMessage);
+            Alert.alert(
+                'Error Loading Trips',
+                errorMessage,
+                [{ text: 'OK' }]
+            );
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
+        }
+    };
+
+    // Load data on component mount
+    useEffect(() => {
+        fetchJourneys();
+    }, []);
+
+    // Handle pull to refresh
+    const onRefresh = () => {
+        fetchJourneys(true);
+    };
 
     // Group trips by date
     const groupTripsByDate = (trips: TripItem[]) => {
@@ -83,6 +204,8 @@ const TripLogsScreen: React.FC = () => {
             case 'auto': return '🛺';
             case 'walk': return '🚶';
             case 'car': return '🚗';
+            case 'metro': return '🚇';
+            case 'bike': return '🚴';
             default: return '🚌';
         }
     };
@@ -94,6 +217,7 @@ const TripLogsScreen: React.FC = () => {
             case 'shopping': return '#f59e0b';
             case 'health': return '#10b981';
             case 'leisure': return '#ef4444';
+            case 'personal': return '#6b7280';
             default: return '#6b7280';
         }
     };
@@ -164,27 +288,61 @@ const TripLogsScreen: React.FC = () => {
             </View>
 
             {/* Trip List */}
-            <ScrollView style={styles.scheduleContainer} showsVerticalScrollIndicator={false}>
-                <View style={styles.scheduleList}>
-                    {groupTripsByDate(mockTripData).map(({ date, trips }, index) => (
-                        <View key={date}>
-                            <View style={[
-                                styles.dateSectionContainer,
-                                index === 0 && { marginTop: 8 } // Less margin for first section
-                            ]}>
-                                <Text style={[
-                                    styles.dateSectionText,
-                                    // Adjust spacing for Today/Yesterday vs dates
-                                    (formatDateLabel(date) === 'Today' || formatDateLabel(date) === 'Yesterday')
-                                        ? { marginRight: 8 } // Less space for short labels
-                                        : { marginRight: 12 } // Normal space for longer date labels
-                                ]}>{formatDateLabel(date)}</Text>
-                                <View style={styles.dateSectionLine} />
+            <ScrollView 
+                style={styles.scheduleContainer} 
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[COLORS.primary]}
+                        tintColor={COLORS.primary}
+                    />
+                }
+            >
+                {loading ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="large" color={COLORS.primary} />
+                        <Text style={styles.loadingText}>Loading your trips...</Text>
+                    </View>
+                ) : error ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
+                        <TouchableOpacity 
+                            style={styles.retryButton} 
+                            onPress={() => fetchJourneys()}
+                        >
+                            <Text style={styles.retryButtonText}>Try Again</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : tripData.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyIcon}>🗺️</Text>
+                        <Text style={styles.emptyTitle}>No trips yet</Text>
+                        <Text style={styles.emptySubtitle}>Start your first journey to see your trip history here.</Text>
+                    </View>
+                ) : (
+                    <View style={styles.scheduleList}>
+                        {groupTripsByDate(tripData).map(({ date, trips }, index) => (
+                            <View key={date}>
+                                <View style={[
+                                    styles.dateSectionContainer,
+                                    index === 0 && { marginTop: 8 } // Less margin for first section
+                                ]}>
+                                    <Text style={[
+                                        styles.dateSectionText,
+                                        // Adjust spacing for Today/Yesterday vs dates
+                                        (formatDateLabel(date) === 'Today' || formatDateLabel(date) === 'Yesterday')
+                                            ? { marginRight: 8 } // Less space for short labels
+                                            : { marginRight: 12 } // Normal space for longer date labels
+                                    ]}>{formatDateLabel(date)}</Text>
+                                    <View style={styles.dateSectionLine} />
+                                </View>
+                                {trips.map((trip) => renderTripItem(trip))}
                             </View>
-                            {trips.map(renderTripItem)}
-                        </View>
-                    ))}
-                </View>
+                        ))}
+                    </View>
+                )}
             </ScrollView>
 
 
@@ -196,7 +354,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f8f9fa',
-        paddingBottom: 20, // Minimal padding - content will be visible behind transparent navbar
+        paddingBottom: 0, // Remove bottom padding from container, let ScrollView handle it
     },
     header: {
         paddingHorizontal: 20,
@@ -214,7 +372,7 @@ const styles = StyleSheet.create({
         paddingTop: 16,
     },
     scheduleList: {
-        paddingBottom: 20,
+        paddingBottom: 100, // Increased padding to account for bottom tab bar
     },
     tripItem: {
         flexDirection: 'row',
@@ -321,6 +479,70 @@ const styles = StyleSheet.create({
         height: 1,
         backgroundColor: COLORS.textDisabled, // Subtle line color
         opacity: 0.3,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 60,
+    },
+    loadingText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.medium,
+        color: COLORS.textTertiary,
+        marginTop: 12,
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 60,
+        paddingHorizontal: 20,
+        paddingBottom: 100, // Account for bottom tab bar
+    },
+    errorText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.medium,
+        color: COLORS.error || '#ef4444',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    retryButton: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 8,
+    },
+    retryButtonText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.semiBold,
+        color: COLORS.white,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 80,
+        paddingHorizontal: 40,
+        paddingBottom: 100, // Account for bottom tab bar
+    },
+    emptyIcon: {
+        fontSize: 64,
+        marginBottom: 16,
+    },
+    emptyTitle: {
+        fontSize: SIZES.heading,
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: 8,
+        textAlign: 'center',
+    },
+    emptySubtitle: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.regular,
+        color: COLORS.textTertiary,
+        textAlign: 'center',
+        lineHeight: 22,
     },
 });
 

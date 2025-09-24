@@ -377,3 +377,134 @@ export const PostsAPI = {
         return response.data!;
     }
 };
+
+// Journey API functions
+export interface JourneyData {
+    _id: string;
+    tripId: string;
+    userId: string;
+    status: 'in_progress' | 'completed';
+    surveyData: {
+        transportMode: string;
+        journeyPurpose: string;
+        routeSatisfaction: string;
+        timeOfDay: string;
+        travelCompanions: string;
+    };
+    tripDetails: {
+        startTime: string;
+        endTime?: string;
+        actualDuration: number;
+        actualDurationFormatted: string;
+        startLocation?: {
+            lat: number;
+            lng: number;
+            address: string;
+            timestamp: string;
+        };
+        endLocation?: {
+            lat: number;
+            lng: number;
+            address: string;
+            timestamp: string;
+        };
+    };
+    gpsTrackingData?: Array<{
+        lat: number;
+        lng: number;
+        timestamp: string;
+        speed: number;
+        accuracy: number;
+        heading?: number;
+    }>;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface JourneyResponse {
+    journeys: JourneyData[];
+    totalPages: number;
+    currentPage: number;
+    total: number;
+}
+
+export const journeyAPI = {
+    // Get user's journey history
+    async getUserJourneys(params?: {
+        page?: number;
+        limit?: number;
+        startDate?: string;
+        endDate?: string;
+    }): Promise<JourneyResponse> {
+        const queryParams = new URLSearchParams();
+        
+        if (params?.page) queryParams.append('page', params.page.toString());
+        if (params?.limit) queryParams.append('limit', params.limit.toString());
+        if (params?.startDate) queryParams.append('startDate', params.startDate);
+        if (params?.endDate) queryParams.append('endDate', params.endDate);
+
+        const queryString = queryParams.toString();
+        const endpoint = `/journeys/my-journeys${queryString ? `?${queryString}` : ''}`;
+
+        // The apiRequest returns the raw JSON response from the server
+        const response: any = await apiRequest(endpoint, {
+            method: 'GET',
+            includeAuth: true
+        });
+
+        console.log('🚗 Journey API Raw Response:', JSON.stringify(response, null, 2)); // Pretty debug log
+
+        // Backend returns: { success: true, data: { journeys: [...], totalPages: 4, ... } }
+        if (response && response.success && response.data) {
+            console.log('🚗 Journey API Data:', response.data);
+            console.log('🚗 Number of journeys found:', response.data.journeys?.length || 0);
+            return response.data;
+        } 
+        
+        // Fallback: if response has journeys directly
+        else if (response && response.journeys) {
+            console.log('🚗 Direct journeys response found:', response.journeys.length);
+            return response;
+        } 
+        
+        // Another fallback: if response.data has journeys directly
+        else if (response && response.data && response.data.journeys) {
+            console.log('🚗 Nested data.journeys found:', response.data.journeys.length);
+            return response.data;
+        }
+        
+        else {
+            console.error('❌ Invalid response structure:', response);
+            console.error('❌ Response keys:', response ? Object.keys(response) : 'No response');
+            console.error('❌ Response type:', typeof response);
+            throw new Error('Invalid response format from server');
+        }
+    },
+
+    // Create a new journey
+    async createJourney(journeyData: any): Promise<JourneyData> {
+        const response = await apiRequest<JourneyData>(
+            '/journeys',
+            {
+                method: 'POST',
+                body: journeyData,
+                includeAuth: true
+            }
+        );
+
+        return response.data!;
+    },
+
+    // Delete a journey
+    async deleteJourney(journeyId: string): Promise<{ message: string }> {
+        const response = await apiRequest<{ message: string }>(
+            `/journeys/${journeyId}`,
+            {
+                method: 'DELETE',
+                includeAuth: true
+            }
+        );
+
+        return response.data!;
+    }
+};
