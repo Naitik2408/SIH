@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   PieChart,
   Pie,
@@ -38,7 +38,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getChartData, getPerformanceMetrics } from '../utils/dashboardAnalytics';
+import { getChartData, getPerformanceMetrics, analyzeUserData } from '../utils/dashboardAnalytics';
+
+
 
 // Custom Tooltip Component for better styling
 const CustomTooltip = ({ active, payload, label }) => {
@@ -88,39 +90,110 @@ const EnhancedKPICard = ({ title, value, change, icon: Icon, gradient, descripti
 );
 
 const Dashboard = () => {
-  // Get real data from analytics
-  const { 
-    analytics, 
-    modeShareData, 
-    tripPurposeData, 
-    ageData, 
-    incomeData, 
-    hourlyTrafficData, 
-    dailyTripsData 
-  } = getChartData();
-  
-  const performanceMetrics = getPerformanceMetrics();
+  // State for async data
+  const [chartData, setChartData] = useState({
+    ageData: [],
+    transportData: [],
+    hourlyData: [],
+    purposeData: [],
+    dailyTrends: [],
+    totalJourneys: 0,
+    totalUsers: 0
+  });
+  const [performanceMetrics, setPerformanceMetrics] = useState({
+    totalTrips: 0,
+    uniqueUsers: 0,
+    avgSatisfaction: 0,
+    popularMode: 'Unknown',
+    avgDuration: 0,
+    avgDistance: 0,
+    peakHour: 9,
+    peakTraffic: 0,
+    dataQuality: 'Loading...',
+    lastUpdated: new Date().toISOString()
+  });
+  const [loading, setLoading] = useState(true);
 
-  // Updated alerts with Delhi-specific data
+  // Load data on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        const [chartResult, metricsResult] = await Promise.all([
+          getChartData(),
+          getPerformanceMetrics()
+        ]);
+        
+        setChartData(chartResult);
+        setPerformanceMetrics(metricsResult);
+      } catch (error) {
+        console.error('❌ Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadData();
+  }, []);
+
+  // Destructure data for backward compatibility
+  const { 
+    ageData, 
+    transportData: modeShareData, 
+    purposeData: tripPurposeData, 
+    hourlyData: hourlyTrafficData,
+    dailyTrends,
+    totalJourneys,
+    totalUsers
+  } = chartData;
+
+
+
+  // Destructure performance metrics for KPI cards
+  const {
+    avgSatisfaction,
+    avgDuration,
+    avgDistance,
+    peakHour,
+    peakTraffic
+  } = performanceMetrics;
+
+
+
+  // Create mock data for missing fields to maintain compatibility
+  const incomeData = [
+    { name: 'Low Income', value: Math.floor(totalUsers * 0.3), color: '#8884d8' },
+    { name: 'Middle Income', value: Math.floor(totalUsers * 0.5), color: '#82ca9d' },
+    { name: 'High Income', value: Math.floor(totalUsers * 0.2), color: '#ffc658' }
+  ];
+  
+  // Use real daily trends data instead of mock data
+  const dailyTripsData = dailyTrends.length > 0 ? dailyTrends : Array.from({ length: 7 }, (_, i) => ({
+    day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
+    trips: Math.floor(totalJourneys / 7) + Math.floor(Math.random() * 20),
+    users: Math.floor(totalUsers / 7) + Math.floor(Math.random() * 10)
+  }));
+
+  // Updated alerts with Kerala-specific data
   const alerts = [
     {
       id: 1,
       type: 'High Traffic',
-      message: 'Heavy congestion on Delhi-Noida route during peak hours',
+      message: 'Heavy congestion on Kochi-Thiruvananthapuram route during peak hours',
       severity: 'high',
       time: '1 hour ago'
     },
     {
       id: 2,
-      type: 'Service Disruption',
-      message: 'Metro Blue Line experiencing minor delays',
+      type: 'Service Update',
+      message: 'New bus routes added in Kozhikode district for better connectivity',
       severity: 'medium',
       time: '3 hours ago'
     },
     {
       id: 3,
       type: 'Route Optimization',
-      message: 'New optimal route found for Ghaziabad-CP corridor',
+      message: 'Improved travel time on Ernakulam-Alappuzha corridor',
       severity: 'low',
       time: '5 hours ago'
     }
@@ -139,8 +212,19 @@ const Dashboard = () => {
     }
   };
 
+
+
   return (
     <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
+      {loading && (
+        <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading Kerala transportation data...</p>
+          </div>
+        </div>
+      )}
+      
       {/* Enhanced Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
@@ -165,23 +249,23 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <EnhancedKPICard
           title="Total Trips"
-          value={analytics.totalTrips.toLocaleString()}
+          value={totalJourneys.toLocaleString()}
           change={12.5}
           icon={Navigation}
           gradient="from-purple-500 to-purple-600"
-          description="from 100 users"
+          description="from Kerala users"
         />
         <EnhancedKPICard
           title="Active Users"
-          value={analytics.totalUsers.toLocaleString()}
+          value={totalUsers.toLocaleString()}
           change={8.3}
           icon={Users}
           gradient="from-blue-500 to-blue-600"
-          description="Delhi NCR"
+          description="Kerala region"
         />
         <EnhancedKPICard
           title="Avg Duration"
-          value={`${analytics.avgDuration} min`}
+          value={avgDuration ? `${avgDuration} min` : '0 min'}
           change={-3.2}
           icon={Clock}
           gradient="from-indigo-500 to-indigo-600"
@@ -189,7 +273,7 @@ const Dashboard = () => {
         />
         <EnhancedKPICard
           title="Avg Distance"
-          value={`${analytics.avgDistance} km`}
+          value={avgDistance ? `${avgDistance} km` : '0 km'}
           change={5.8}
           icon={MapPin}
           gradient="from-violet-500 to-violet-600"
@@ -197,11 +281,11 @@ const Dashboard = () => {
         />
         <EnhancedKPICard
           title="Peak Traffic"
-          value={`${analytics.peakHour}:00`}
+          value={peakHour ? `${peakHour}:00` : 'N/A'}
           change={15.4}
           icon={TrendingUp}
           gradient="from-pink-500 to-pink-600"
-          description={`${analytics.peakTraffic} trips`}
+          description={peakTraffic ? `${peakTraffic} trips` : 'No data'}
         />
       </div>
 
@@ -348,28 +432,56 @@ const Dashboard = () => {
               Performance Metrics
             </CardTitle>
             <CardDescription className="text-gray-600">
-              Key performance indicators
+              Key performance indicators from Kerala transportation data
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {performanceMetrics.map((metric, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-700">{metric.name}</span>
-                    <span className="text-sm font-bold text-gray-900">{metric.value}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-1000 ease-out"
-                      style={{
-                        width: `${metric.value}%`,
-                        background: `linear-gradient(90deg, ${metric.fill}, ${metric.fill}dd)`
-                      }}
-                    ></div>
-                  </div>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Data Quality</span>
+                  <span className="text-sm font-bold text-gray-900">{performanceMetrics.dataQuality}</span>
                 </div>
-              ))}
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-green-500 to-green-600"
+                    style={{
+                      width: `${performanceMetrics.dataQuality === 'Good' ? 85 : performanceMetrics.dataQuality === 'Limited' ? 60 : 30}%`
+                    }}
+                  ></div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">User Satisfaction</span>
+                  <span className="text-sm font-bold text-gray-900">{avgSatisfaction}/5.0</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-blue-500 to-blue-600"
+                    style={{
+                      width: `${(avgSatisfaction / 5) * 100}%`
+                    }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Most Popular Mode</span>
+                  <span className="text-sm font-bold text-gray-900">{performanceMetrics.popularMode}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-medium text-gray-700">Last Updated</span>
+                  <span className="text-xs text-gray-600">
+                    {new Date(performanceMetrics.lastUpdated).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
