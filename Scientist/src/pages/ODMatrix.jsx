@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker, Popup } from 'react-leaflet';
 import {
     LineChart,
@@ -54,19 +54,52 @@ const ODMatrix = () => {
     const [hoveredCell, setHoveredCell] = useState(null);
     const [showInfo, setShowInfo] = useState(false);
     const [matrixView, setMatrixView] = useState('absolute'); // 'absolute' or 'percentage'
+    
+    // State for async data loading
+    const [odMatrix, setOdMatrix] = useState({});
+    const [zones, setZones] = useState([]);
+    const [topCorridors, setTopCorridors] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Use real data from user analytics
-    const { matrix: odMatrix, zones } = useMemo(() => generateRealODMatrix(), []);
-    const topCorridors = useMemo(() => getRealTopCorridors(odMatrix, zones), [odMatrix, zones]);
+    // Load data on component mount
+    useEffect(() => {
+        const loadODData = async () => {
+            setLoading(true);
+            try {
+                const { matrix, zones } = await generateRealODMatrix();
+                const corridorsResult = await getRealTopCorridors(matrix, zones);
+                
+                setOdMatrix(matrix);
+                setZones(zones);
+                setTopCorridors(corridorsResult);
+            } catch (error) {
+                console.error('Error loading OD matrix data:', error);
+                // Set empty defaults to prevent crashes
+                setOdMatrix({});
+                setZones([]);
+                setTopCorridors([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        loadODData();
+    }, []);    // Use real data from user analytics - REPLACED WITH ASYNC LOADING
+    // const { matrix: odMatrix, zones } = useMemo(() => generateRealODMatrix(), []);
+    // const topCorridors = useMemo(() => getRealTopCorridors(odMatrix, zones), [odMatrix, zones]);
 
     // Calculate total trips for percentage view
     const totalTrips = useMemo(() => {
         let total = 0;
-        Object.keys(odMatrix).forEach(origin => {
-            Object.keys(odMatrix[origin]).forEach(destination => {
-                total += odMatrix[origin][destination];
+        if (odMatrix && typeof odMatrix === 'object') {
+            Object.keys(odMatrix).forEach(origin => {
+                if (odMatrix[origin] && typeof odMatrix[origin] === 'object') {
+                    Object.keys(odMatrix[origin]).forEach(destination => {
+                        total += odMatrix[origin][destination] || 0;
+                    });
+                }
             });
-        });
+        }
         return total;
     }, [odMatrix]);
 
@@ -94,6 +127,15 @@ const ODMatrix = () => {
 
     return (
         <div className="p-4 md:p-6 space-y-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
+            {loading && (
+                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Loading Kerala OD Matrix data...</p>
+                    </div>
+                </div>
+            )}
+            
             {/* Enhanced Header with Info */}
             <div className="bg-white rounded-2xl shadow-lg border-0 p-6 md:p-8 bg-gradient-to-r from-blue-50 via-white to-purple-50">
                 <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
@@ -104,7 +146,7 @@ const ODMatrix = () => {
                             </div>
                             <div>
                                 <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                                    Delhi NCR OD Matrix
+                                    Kerala OD Matrix
                                 </h1>
                                 <p className="text-slate-600 text-lg">Real travel patterns from {zones.length} zones based on user data</p>
                             </div>
@@ -204,7 +246,7 @@ const ODMatrix = () => {
                                                 </div>
                                             </td>
                                             {zones.map(destZone => {
-                                                const trips = odMatrix[originZone.id][destZone.id];
+                                                const trips = (odMatrix[originZone.id] && odMatrix[originZone.id][destZone.id]) || 0;
                                                 const percentage = totalTrips > 0 ? ((trips / totalTrips) * 100).toFixed(1) : 0;
                                                 const displayValue = matrixView === 'absolute' ? trips : `${percentage}%`;
                                                 const isSelected = selectedCorridor?.origin === originZone.id && selectedCorridor?.destination === destZone.id;

@@ -1,48 +1,98 @@
 // OD Matrix Analytics Utility
-// Processes user data for Origin-Destination matrix analysis
+// Processes real journey data for Origin-Destination matrix analysis
 
-import usersData from '../data/usersData.json';
+import { fetchJourneyData } from '../services/apiService';
 
-// Define zones based on actual user locations
-const getZoneFromLocation = (lat, lng, area) => {
-  // Define zone mapping based on Delhi NCR areas
+// Define zones based on Kerala locations
+const getZoneFromLocation = (lat, lng, address) => {
+  // Define Kerala zone mapping 
   const zoneMapping = {
-    'Connaught Place': { id: 'CP', name: 'Connaught Place' },
-    'Noida': { id: 'NOI', name: 'Noida' },
-    'Ghaziabad': { id: 'GHZ', name: 'Ghaziabad' },
-    'AIIMS': { id: 'AIM', name: 'AIIMS' },
-    'Khan Market': { id: 'KHM', name: 'Khan Market' },
-    'Civil Lines': { id: 'CVL', name: 'Civil Lines' },
-    'Dwarka': { id: 'DWK', name: 'Dwarka' },
-    'Gurgaon': { id: 'GGN', name: 'Gurgaon' },
-    'Vasant Kunj': { id: 'VAS', name: 'Vasant Kunj' },
-    'Rajouri Garden': { id: 'RKP', name: 'Rajouri Garden' },
-    'Lajpat Nagar': { id: 'LJN', name: 'Lajpat Nagar' },
-    'Karol Bagh': { id: 'KLK', name: 'Karol Bagh' },
-    'Rohini': { id: 'ROH', name: 'Rohini' },
-    'Janakpuri': { id: 'JNK', name: 'Janakpuri' },
-    'Pitampura': { id: 'PIT', name: 'Pitampura' },
-    'Saket': { id: 'SAK', name: 'Saket' },
-    'Green Park': { id: 'GRP', name: 'Green Park' },
-    'Nehru Place': { id: 'NHP', name: 'Nehru Place' },
-    'Indraprastha': { id: 'IND', name: 'Indraprastha' },
-    'Mayur Vihar': { id: 'MAY', name: 'Mayur Vihar' }
+    'Thiruvananthapuram': { id: 'TRV', name: 'Thiruvananthapuram' },
+    'Technopark': { id: 'TRV', name: 'Thiruvananthapuram' },
+    'Kovalam': { id: 'TRV', name: 'Thiruvananthapuram' },
+    'Kochi': { id: 'COK', name: 'Kochi' },
+    'Marine Drive': { id: 'COK', name: 'Kochi' },
+    'Infopark': { id: 'COK', name: 'Kochi' },
+    'Fort Kochi': { id: 'COK', name: 'Kochi' },
+    'Kozhikode': { id: 'KZD', name: 'Kozhikode' },
+    'Cyberpark': { id: 'KZD', name: 'Kozhikode' },
+    'Thrissur': { id: 'TSR', name: 'Thrissur' },
+    'Kollam': { id: 'KLM', name: 'Kollam' },
+    'Alappuzha': { id: 'ALP', name: 'Alappuzha' },
+    'Kottayam': { id: 'KTM', name: 'Kottayam' },
+    'Palakkad': { id: 'PKD', name: 'Palakkad' },
+    'Malappuram': { id: 'MPM', name: 'Malappuram' },
+    'Kannur': { id: 'KNR', name: 'Kannur' }
   };
 
-  // First try exact area match
-  if (zoneMapping[area]) {
-    return zoneMapping[area];
+  // Try to match by address first
+  if (address) {
+    for (const [key, zone] of Object.entries(zoneMapping)) {
+      if (address.includes(key)) {
+        return { ...zone, coords: [lat || 0, lng || 0] };
+      }
+    }
   }
-
-  // Fallback to coordinate-based mapping for major zones
-  if (lat >= 28.65 && lng >= 77.4) return { id: 'GHZ', name: 'Ghaziabad' };
-  if (lat >= 28.5 && lat <= 28.6 && lng >= 77.35) return { id: 'NOI', name: 'Noida' };
-  if (lat >= 28.4 && lat <= 28.5 && lng <= 77.1) return { id: 'GGN', name: 'Gurgaon' };
-  if (lat <= 28.6 && lng <= 77.1) return { id: 'DWK', name: 'Dwarka' };
-  if (lat >= 28.6 && lat <= 28.7 && lng >= 77.2 && lng <= 77.25) return { id: 'CP', name: 'Connaught Place' };
   
-  // Default to CP for central Delhi areas
-  return { id: 'CP', name: 'Connaught Place' };
+  // Default to coordinate-based mapping for Kerala
+  if (lat && lng) {
+    // Basic coordinate ranges for Kerala cities
+    if (lat >= 8.4 && lat <= 8.6 && lng >= 76.8 && lng <= 77.1) {
+      return { ...zoneMapping['Thiruvananthapuram'], coords: [lat, lng] };
+    } else if (lat >= 9.8 && lat <= 10.1 && lng >= 76.2 && lng <= 76.4) {
+      return { ...zoneMapping['Kochi'], coords: [lat, lng] };
+    } else if (lat >= 11.2 && lat <= 11.3 && lng >= 75.7 && lng <= 75.9) {
+      return { ...zoneMapping['Kozhikode'], coords: [lat, lng] };
+    }
+  }
+  
+  return { id: 'OTH', name: 'Other Kerala', coords: [lat || 0, lng || 0] };
+};
+
+// Extract zones from journey data
+const extractZonesFromJourneyData = async () => {
+  try {
+    const response = await fetchJourneyData();
+    const journeys = response.data || [];
+    
+    const zoneSet = new Set();
+    const zoneCoords = {};
+
+    journeys.forEach(journey => {
+      // Add start location zone
+      const startLoc = journey.tripData?.startLocation;
+      if (startLoc) {
+        const startZone = getZoneFromLocation(
+          startLoc.latitude, 
+          startLoc.longitude, 
+          startLoc.address
+        );
+        zoneSet.add(startZone.id);
+        if (!zoneCoords[startZone.id]) {
+          zoneCoords[startZone.id] = startZone;
+        }
+      }
+
+      // Add end location zone
+      const endLoc = journey.tripData?.endLocation;
+      if (endLoc) {
+        const endZone = getZoneFromLocation(
+          endLoc.latitude, 
+          endLoc.longitude, 
+          endLoc.address
+        );
+        zoneSet.add(endZone.id);
+        if (!zoneCoords[endZone.id]) {
+          zoneCoords[endZone.id] = endZone;
+        }
+      }
+    });
+
+    return Object.values(zoneCoords);
+  } catch (error) {
+    console.error('Error extracting zones from journey data:', error);
+    return [];
+  }
 };
 
 // Extract unique zones from user data
@@ -95,135 +145,122 @@ const extractZonesFromUserData = () => {
   return Object.values(zoneCoords);
 };
 
-// Generate real OD matrix from user data
-const generateRealODMatrix = () => {
-  const matrix = {};
-  const zones = extractZonesFromUserData();
-  
-  // Initialize matrix
-  zones.forEach(origin => {
-    matrix[origin.id] = {};
-    zones.forEach(destination => {
-      matrix[origin.id][destination.id] = 0;
-    });
-  });
-
-  // Process user trips
-  usersData.users.forEach(user => {
-    // Process daily trips
-    user.daily_trips.forEach(trip => {
-      const originZone = getZoneFromLocation(trip.origin[0], trip.origin[1], '');
-      const destZone = getZoneFromLocation(trip.destination[0], trip.destination[1], '');
-      
-      if (matrix[originZone.id] && matrix[originZone.id][destZone.id] !== undefined) {
-        matrix[originZone.id][destZone.id] += 1;
-      }
-    });
-
-    // Process common destinations with frequency
-    user.common_destinations?.forEach(dest => {
-      const homeZone = getZoneFromLocation(
-        user.home_location.lat, 
-        user.home_location.lng, 
-        user.home_location.area
-      );
-      const destZone = getZoneFromLocation(dest.lat, dest.lng, dest.area);
-      
-      if (matrix[homeZone.id] && matrix[homeZone.id][destZone.id] !== undefined) {
-        matrix[homeZone.id][destZone.id] += dest.frequency || 1;
-      }
-      // Return trips
-      if (matrix[destZone.id] && matrix[destZone.id][homeZone.id] !== undefined) {
-        matrix[destZone.id][homeZone.id] += dest.frequency || 1;
-      }
-    });
-
-    // Add work commute patterns
-    const homeZone = getZoneFromLocation(
-      user.home_location.lat, 
-      user.home_location.lng, 
-      user.home_location.area
-    );
-    const workZone = getZoneFromLocation(
-      user.work_location.lat, 
-      user.work_location.lng, 
-      user.work_location.area
-    );
-
-    // Add weekly pattern multiplier
-    const weeklyTrips = Object.values(user.weekly_pattern || {}).reduce((sum, trips) => sum + trips, 0);
+// Generate real OD matrix from journey data
+const generateRealODMatrix = async () => {
+  try {
+    const response = await fetchJourneyData();
+    const journeys = response.data || [];
+    const matrix = {};
+    const zones = await extractZonesFromJourneyData();
     
-    if (matrix[homeZone.id] && matrix[homeZone.id][workZone.id] !== undefined) {
-      matrix[homeZone.id][workZone.id] += weeklyTrips;
-    }
-    if (matrix[workZone.id] && matrix[workZone.id][homeZone.id] !== undefined) {
-      matrix[workZone.id][homeZone.id] += weeklyTrips;
-    }
-  });
+    // Initialize matrix
+    zones.forEach(origin => {
+      matrix[origin.id] = {};
+      zones.forEach(destination => {
+        matrix[origin.id][destination.id] = 0;
+      });
+    });
 
-  return { matrix, zones };
+    // Process journey trips
+    journeys.forEach(journey => {
+      const startLoc = journey.tripData?.startLocation;
+      const endLoc = journey.tripData?.endLocation;
+      
+      if (startLoc && endLoc) {
+        const originZone = getZoneFromLocation(
+          startLoc.latitude, 
+          startLoc.longitude, 
+          startLoc.address
+        );
+        const destZone = getZoneFromLocation(
+          endLoc.latitude, 
+          endLoc.longitude, 
+          endLoc.address
+        );
+        
+        if (matrix[originZone.id] && matrix[originZone.id][destZone.id] !== undefined) {
+          matrix[originZone.id][destZone.id] += 1;
+        }
+      }
+    });
+
+    return { matrix, zones };
+  } catch (error) {
+    console.error('Error generating OD matrix:', error);
+    return { matrix: {}, zones: [] };
+  }
 };
 
-// Generate corridor analysis data from real user data
-const generateRealCorridorData = (originId, destinationId) => {
-  const relevantUsers = usersData.users.filter(user => {
-    const homeZone = getZoneFromLocation(
-      user.home_location.lat, 
-      user.home_location.lng, 
-      user.home_location.area
-    );
-    const workZone = getZoneFromLocation(
-      user.work_location.lat, 
-      user.work_location.lng, 
-      user.work_location.area
-    );
+// Generate corridor analysis data from real journey data
+const generateRealCorridorData = async (originId, destinationId) => {
+  try {
+    const response = await fetchJourneyData();
+    const journeys = response.data || [];
     
-    return (homeZone.id === originId && workZone.id === destinationId) ||
-           (workZone.id === originId && homeZone.id === destinationId);
-  });
-
-  // Generate daily trips from weekly patterns
-  const dailyTrips = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
-    const dayKey = day.toLowerCase() + 'day';
-    const trips = relevantUsers.reduce((sum, user) => {
-      return sum + (user.weekly_pattern[dayKey] || 0);
-    }, 0);
-    return { day, trips };
-  });
-
-  // Generate mode data from user preferences
-  const modeCount = {};
-  relevantUsers.forEach(user => {
-    user.daily_trips.forEach(trip => {
-      modeCount[trip.mode] = (modeCount[trip.mode] || 0) + 1;
+    const relevantJourneys = journeys.filter(journey => {
+      const startLoc = journey.tripData?.startLocation;
+      const endLoc = journey.tripData?.endLocation;
+      
+      if (!startLoc || !endLoc) return false;
+      
+      const originZone = getZoneFromLocation(
+        startLoc.latitude, 
+        startLoc.longitude, 
+        startLoc.address
+      );
+      const destZone = getZoneFromLocation(
+        endLoc.latitude, 
+        endLoc.longitude, 
+        endLoc.address
+      );
+      
+      return (originZone.id === originId && destZone.id === destinationId) ||
+             (destZone.id === originId && originZone.id === destinationId);
     });
-    user.transport_preference.forEach(mode => {
+
+    // Generate mode data from journey transport modes
+    const modeCount = {};
+    relevantJourneys.forEach(journey => {
+      const mode = journey.tripData?.transportMode || 'Unknown';
       modeCount[mode] = (modeCount[mode] || 0) + 1;
     });
-  });
 
-  const modeData = Object.entries(modeCount).map(([mode, count]) => ({
-    mode: mode.charAt(0).toUpperCase() + mode.slice(1),
-    trips: count
-  }));
+    const modeData = Object.entries(modeCount).map(([mode, count]) => ({
+      mode: mode.charAt(0).toUpperCase() + mode.slice(1),
+      trips: count
+    }));
 
-  // Generate peak hours from user trip times
-  const hourlyTrips = new Array(24).fill(0);
-  relevantUsers.forEach(user => {
-    user.daily_trips.forEach(trip => {
-      if (trip.time >= 0 && trip.time < 24) {
-        hourlyTrips[trip.time] += 1;
+    // Generate hourly patterns from timestamps
+    const hourlyTrips = new Array(24).fill(0);
+    relevantJourneys.forEach(journey => {
+      const timestamp = journey.tripData?.timestamp;
+      if (timestamp) {
+        const hour = new Date(timestamp).getHours();
+        if (hour >= 0 && hour < 24) {
+          hourlyTrips[hour] += 1;
+        }
       }
     });
-  });
 
-  const peakHours = hourlyTrips.map((trips, hour) => ({ hour, trips }));
+    const peakHours = hourlyTrips.map((trips, hour) => ({ hour, trips }));
 
-  return { dailyTrips, modeData, peakHours };
+    // Generate daily trips (mock data for now since we don't have weekly patterns)
+    const dailyTrips = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => ({
+      day,
+      trips: Math.floor(relevantJourneys.length / 7) // Distribute evenly
+    }));
+
+    return { dailyTrips, modeData, peakHours };
+  } catch (error) {
+    console.error('Error generating corridor data:', error);
+    return { dailyTrips: [], modeData: [], peakHours: [] };
+  }
 };
 
+;
+
 // Get top corridors from real data
-const getRealTopCorridors = (matrix, zones) => {
+const getRealTopCorridors = async (matrix, zones) => {
   const corridors = [];
   Object.keys(matrix).forEach(origin => {
     Object.keys(matrix[origin]).forEach(destination => {
@@ -243,8 +280,10 @@ const getRealTopCorridors = (matrix, zones) => {
   return corridors.sort((a, b) => b.trips - a.trips).slice(0, 10);
 };
 
+// Export functions with Journey data compatibility
 export {
-  extractZonesFromUserData,
+  extractZonesFromJourneyData,
+  extractZonesFromJourneyData as extractZonesFromUserData, // Backward compatibility
   generateRealODMatrix,
   generateRealCorridorData,
   getRealTopCorridors,

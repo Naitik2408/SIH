@@ -255,12 +255,14 @@ const getScientistData = async (req, res) => {
             tripData: {
                 startLocation: journey.tripDetails.startLocation,
                 endLocation: journey.tripDetails.endLocation,
-                distance: journey.tripDetails.distance,
-                duration: journey.tripDetails.duration,
+                distance: journey.metadata?.totalDistance,
+                duration: journey.tripDetails.actualDuration,
                 transportMode: journey.surveyData.transportMode,
-                purpose: journey.surveyData.purpose,
-                satisfaction: journey.surveyData.satisfaction,
-                timestamp: journey.createdAt
+                journeyPurpose: journey.surveyData.journeyPurpose,
+                routeSatisfaction: journey.surveyData.routeSatisfaction,
+                timeOfDay: journey.surveyData.timeOfDay,
+                travelCompanions: journey.surveyData.travelCompanions,
+                timestamp: journey.tripDetails.startTime || journey.createdAt
             },
             gpsData: journey.gpsTrackingData?.coordinates || [],
             metadata: {

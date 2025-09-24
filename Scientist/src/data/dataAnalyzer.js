@@ -1,154 +1,182 @@
-// Sample Data Viewer for usersData.json
-// This demonstrates the structure and content of our 100-user dataset
+// Backend Journey Data Analyzer
+// Processes real journey data from database using Journey model structure
 
-import usersData from './usersData.json';
+import { fetchJourneyData } from '../services/apiService';
 
-// Example usage and data analysis functions
-export const analyzeUserData = () => {
-  const users = usersData.users;
+// Kerala cities mapping for location analysis
+const KERALA_CITIES = {
+  'Thiruvananthapuram': 'Thiruvananthapuram',
+  'Technopark': 'Thiruvananthapuram', 
+  'Kovalam': 'Thiruvananthapuram',
+  'Kochi': 'Kochi',
+  'Marine Drive': 'Kochi',
+  'Infopark': 'Kochi',
+  'Fort Kochi': 'Kochi',
+  'Kozhikode': 'Kozhikode',
+  'Cyberpark': 'Kozhikode',
+  'Thrissur': 'Thrissur',
+  'Kollam': 'Kollam',
+  'Alappuzha': 'Alappuzha',
+  'Kottayam': 'Kottayam',
+  'Palakkad': 'Palakkad',
+  'Malappuram': 'Malappuram',
+  'Kannur': 'Kannur'
+};
+
+// Get city from location address
+const getCityFromLocation = (address) => {
+  if (!address) return 'Unknown';
   
-  console.log('=== USER DATA ANALYSIS ===');
-  console.log(`Total Users: ${users.length}`);
-  
-  // Age distribution
-  const ageGroups = users.reduce((acc, user) => {
-    if (user.age < 30) acc.young++;
-    else if (user.age < 50) acc.middle++;
-    else acc.senior++;
-    return acc;
-  }, { young: 0, middle: 0, senior: 0 });
-  
-  console.log('Age Distribution:', ageGroups);
-  
-  // Transport preferences
-  const transportCounts = {};
-  users.forEach(user => {
-    user.transport_preference.forEach(mode => {
+  for (const [key, city] of Object.entries(KERALA_CITIES)) {
+    if (address.includes(key)) {
+      return city;
+    }
+  }
+  return 'Other Kerala';
+};
+
+// Analyze real journey data from backend
+export const analyzeJourneyData = async () => {
+  try {
+    const response = await fetchJourneyData();
+    const journeys = response.data || [];
+    
+    console.log('=== JOURNEY DATA ANALYSIS ===');
+    console.log(`Total Journeys: ${journeys.length}`);
+    
+    // User demographics analysis
+    const ageGroups = journeys.reduce((acc, journey) => {
+      const age = journey.age || 25;
+      if (age < 30) acc.young++;
+      else if (age < 50) acc.middle++;
+      else acc.senior++;
+      return acc;
+    }, { young: 0, middle: 0, senior: 0 });
+    
+    const genderDistribution = journeys.reduce((acc, journey) => {
+      const gender = journey.gender || 'unknown';
+      acc[gender] = (acc[gender] || 0) + 1;
+      return acc;
+    }, {});
+    
+    // Transport mode analysis from Journey surveyData
+    const transportCounts = {};
+    journeys.forEach(journey => {
+      const mode = journey.tripData?.transportMode || 'Unknown';
       transportCounts[mode] = (transportCounts[mode] || 0) + 1;
     });
-  });
-  
-  console.log('Transport Preferences:', transportCounts);
-  
-  // Income distribution
-  const incomeDistribution = users.reduce((acc, user) => {
-    acc[user.income_bracket]++;
-    return acc;
-  }, { low: 0, middle: 0, high: 0 });
-  
-  console.log('Income Distribution:', incomeDistribution);
-  
-  // Most common areas
-  const areas = {};
-  users.forEach(user => {
-    areas[user.home_location.area] = (areas[user.home_location.area] || 0) + 1;
-    areas[user.work_location.area] = (areas[user.work_location.area] || 0) + 1;
-  });
-  
-  const topAreas = Object.entries(areas)
-    .sort(([,a], [,b]) => b - a)
-    .slice(0, 10);
-  
-  console.log('Top 10 Areas:', topAreas);
-  
-  // Sample user profiles
-  console.log('\n=== SAMPLE USER PROFILES ===');
-  users.slice(0, 3).forEach(user => {
-    console.log(`\nUser ${user.id}: ${user.name}`);
-    console.log(`- Age: ${user.age}, Gender: ${user.gender}`);
-    console.log(`- Occupation: ${user.occupation}`);
-    console.log(`- Income: ${user.income_bracket}`);
-    console.log(`- Home: ${user.home_location.area}`);
-    console.log(`- Work: ${user.work_location.area}`);
-    console.log(`- Transport: ${user.transport_preference.join(', ')}`);
-    console.log(`- Daily trips: ${user.daily_trips.length}`);
-    console.log(`- Common destinations: ${user.common_destinations.length}`);
-  });
-  
-  return {
-    totalUsers: users.length,
-    ageGroups,
-    transportCounts,
-    incomeDistribution,
-    topAreas
-  };
-};
-
-// Generate heatmap data points from user data
-export const generateVisualizationData = () => {
-  const heatmapPoints = [];
-  const odFlows = [];
-  
-  usersData.users.forEach((user, index) => {
-    // Add home location
-    heatmapPoints.push({
-      id: `home_${index}`,
-      lat: user.home_location.lat,
-      lng: user.home_location.lng,
-      intensity: user.weekly_pattern.monday + user.weekly_pattern.tuesday + 
-                user.weekly_pattern.wednesday + user.weekly_pattern.thursday + 
-                user.weekly_pattern.friday,
-      type: 'residential',
-      area: user.home_location.area,
-      user_info: {
-        name: user.name,
-        age: user.age,
-        occupation: user.occupation,
-        income: user.income_bracket
+    
+    // Journey purpose analysis
+    const purposeCounts = {};
+    journeys.forEach(journey => {
+      const purpose = journey.tripData?.purpose || 'Other';
+      purposeCounts[purpose] = (purposeCounts[purpose] || 0) + 1;
+    });
+    
+    // Location analysis
+    const startCities = {};
+    const endCities = {};
+    journeys.forEach(journey => {
+      const startAddr = journey.tripData?.startLocation?.address;
+      const endAddr = journey.tripData?.endLocation?.address;
+      
+      if (startAddr) {
+        const startCity = getCityFromLocation(startAddr);
+        startCities[startCity] = (startCities[startCity] || 0) + 1;
+      }
+      
+      if (endAddr) {
+        const endCity = getCityFromLocation(endAddr);
+        endCities[endCity] = (endCities[endCity] || 0) + 1;
       }
     });
     
-    // Add work location
-    heatmapPoints.push({
-      id: `work_${index}`,
-      lat: user.work_location.lat,
-      lng: user.work_location.lng,
-      intensity: user.weekly_pattern.monday + user.weekly_pattern.tuesday + 
-                user.weekly_pattern.wednesday + user.weekly_pattern.thursday + 
-                user.weekly_pattern.friday,
-      type: 'commercial',
-      area: user.work_location.area,
-      user_info: {
-        name: user.name,
-        age: user.age,
-        occupation: user.occupation,
-        income: user.income_bracket
-      }
-    });
+    // Distance and duration analysis
+    const distances = journeys
+      .map(j => j.tripData?.distance)
+      .filter(d => d && d > 0);
+    const durations = journeys
+      .map(j => j.tripData?.duration)
+      .filter(d => d && d > 0);
+      
+    const avgDistance = distances.length ? 
+      (distances.reduce((sum, d) => sum + d, 0) / distances.length).toFixed(2) : 0;
+    const avgDuration = durations.length ? 
+      Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length) : 0;
     
-    // Add OD flows
-    user.daily_trips.forEach((trip, tripIndex) => {
-      odFlows.push({
-        id: `trip_${index}_${tripIndex}`,
-        origin: trip.origin,
-        destination: trip.destination,
-        trips: user.weekly_pattern.monday + user.weekly_pattern.tuesday + 
-               user.weekly_pattern.wednesday + user.weekly_pattern.thursday + 
-               user.weekly_pattern.friday,
-        mode: trip.mode,
-        purpose: trip.purpose,
-        time: trip.time,
-        duration: trip.duration,
-        user_info: {
-          name: user.name,
-          age: user.age,
-          occupation: user.occupation,
-          income: user.income_bracket
-        }
-      });
-    });
-  });
-  
-  return { heatmapPoints, odFlows };
+    // Satisfaction analysis
+    const satisfactionScores = journeys
+      .map(j => j.tripData?.satisfaction)
+      .filter(s => s !== undefined && s !== null);
+    const avgSatisfaction = satisfactionScores.length ?
+      (satisfactionScores.reduce((sum, s) => sum + s, 0) / satisfactionScores.length).toFixed(1) : 0;
+    
+    const analysis = {
+      totalJourneys: journeys.length,
+      uniqueUsers: new Set(journeys.map(j => j.userId)).size,
+      ageGroups,
+      genderDistribution,
+      transportCounts,
+      purposeCounts,
+      startCities,
+      endCities,
+      avgDistance: parseFloat(avgDistance),
+      avgDuration,
+      avgSatisfaction: parseFloat(avgSatisfaction),
+      dataSource: 'backend-database',
+      lastUpdated: new Date().toISOString()
+    };
+    
+    console.log('Analysis Results:', analysis);
+    return analysis;
+    
+  } catch (error) {
+    console.error('Error analyzing journey data:', error);
+    return {
+      totalJourneys: 0,
+      uniqueUsers: 0,
+      ageGroups: { young: 0, middle: 0, senior: 0 },
+      genderDistribution: {},
+      transportCounts: {},
+      purposeCounts: {},
+      startCities: {},
+      endCities: {},
+      avgDistance: 0,
+      avgDuration: 0,
+      avgSatisfaction: 0,
+      error: error.message,
+      dataSource: 'backend-database-error'
+    };
+  }
 };
 
-// Example: Run analysis
-if (typeof window !== 'undefined') {
-  // Browser environment
-  console.log('User Data Analysis Ready!');
-  window.analyzeUserData = analyzeUserData;
-  window.generateVisualizationData = generateVisualizationData;
-} else {
-  // Node environment
-  analyzeUserData();
-}
+// Get sample journey data for inspection
+export const getSampleJourneyData = async (limit = 5) => {
+  try {
+    const response = await fetchJourneyData();
+    const journeys = response.data || [];
+    
+    return journeys.slice(0, limit).map(journey => ({
+      id: journey.id,
+      user: journey.name,
+      transport: journey.tripData?.transportMode,
+      from: journey.tripData?.startLocation?.address,
+      to: journey.tripData?.endLocation?.address,
+      distance: journey.tripData?.distance,
+      duration: journey.tripData?.duration,
+      timestamp: journey.tripData?.timestamp
+    }));
+  } catch (error) {
+    console.error('Error getting sample data:', error);
+    return [];
+  }
+};
+
+// Compatibility export for existing code
+export const analyzeUserData = analyzeJourneyData;
+
+export default {
+  analyzeJourneyData,
+  getSampleJourneyData,
+  analyzeUserData
+};

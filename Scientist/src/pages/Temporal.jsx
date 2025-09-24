@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     LineChart,
     Line,
@@ -31,105 +31,19 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-// Generate dummy heatmap data (24 hours x 7 days)
-const generateHeatmapData = () => {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const hours = Array.from({ length: 24 }, (_, i) => i);
-    const data = [];
-
-    days.forEach((day, dayIndex) => {
-        hours.forEach(hour => {
-            let intensity;
-            // Simulate rush hours and weekend patterns
-            if (dayIndex < 5) { // Weekdays
-                if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19)) {
-                    intensity = Math.floor(Math.random() * 30) + 70; // Rush hours
-                } else if (hour >= 10 && hour <= 16) {
-                    intensity = Math.floor(Math.random() * 20) + 40; // Daytime
-                } else if (hour >= 20 && hour <= 23) {
-                    intensity = Math.floor(Math.random() * 15) + 25; // Evening
-                } else {
-                    intensity = Math.floor(Math.random() * 10) + 5; // Night/Early morning
-                }
-            } else { // Weekends
-                if (hour >= 10 && hour <= 14) {
-                    intensity = Math.floor(Math.random() * 25) + 50; // Weekend peak
-                } else if (hour >= 15 && hour <= 20) {
-                    intensity = Math.floor(Math.random() * 20) + 35; // Weekend evening
-                } else if (hour >= 21 && hour <= 23) {
-                    intensity = Math.floor(Math.random() * 15) + 30; // Weekend night
-                } else {
-                    intensity = Math.floor(Math.random() * 10) + 5; // Other times
-                }
-            }
-
-            data.push({
-                day,
-                hour,
-                dayIndex,
-                intensity,
-                trips: intensity * 10 + Math.floor(Math.random() * 100)
-            });
-        });
-    });
-
-    return data;
-};
-
-// Generate peak hours data
-const generatePeakHoursData = () => {
-    return Array.from({ length: 24 }, (_, hour) => {
-        let trips;
-        if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19)) {
-            trips = Math.floor(Math.random() * 300) + 700; // Rush hours
-        } else if (hour >= 10 && hour <= 16) {
-            trips = Math.floor(Math.random() * 200) + 400; // Daytime
-        } else if (hour >= 20 && hour <= 23) {
-            trips = Math.floor(Math.random() * 150) + 200; // Evening
-        } else {
-            trips = Math.floor(Math.random() * 100) + 50; // Night/Early morning
-        }
-
-        return {
-            hour: `${hour.toString().padStart(2, '0')}:00`,
-            hourNum: hour,
-            trips,
-            avgDuration: Math.floor(Math.random() * 20) + 15 // 15-35 minutes
-        };
-    });
-};
-
-// Generate weekday vs weekend data
-const generateWeekdayWeekendData = () => {
-    const hours = Array.from({ length: 24 }, (_, i) => i);
-    return hours.map(hour => {
-        let weekdayTrips, weekendTrips;
-
-        if ((hour >= 7 && hour <= 9) || (hour >= 17 && hour <= 19)) {
-            weekdayTrips = Math.floor(Math.random() * 300) + 600;
-            weekendTrips = Math.floor(Math.random() * 150) + 200;
-        } else if (hour >= 10 && hour <= 16) {
-            weekdayTrips = Math.floor(Math.random() * 200) + 350;
-            weekendTrips = Math.floor(Math.random() * 250) + 400;
-        } else if (hour >= 20 && hour <= 23) {
-            weekdayTrips = Math.floor(Math.random() * 100) + 150;
-            weekendTrips = Math.floor(Math.random() * 200) + 300;
-        } else {
-            weekdayTrips = Math.floor(Math.random() * 80) + 40;
-            weekendTrips = Math.floor(Math.random() * 60) + 30;
-        }
-
-        return {
-            hour: `${hour.toString().padStart(2, '0')}:00`,
-            weekday: weekdayTrips,
-            weekend: weekendTrips
-        };
-    });
-};
+import { generateHeatmapData, generatePeakHoursData, generateWeekdayWeekendData, getTemporalMetrics } from '../utils/temporalAnalytics';
 
 // Enhanced custom heatmap cell component
 const HeatmapCell = ({ data, maxIntensity }) => {
+    // Handle undefined or missing data
+    if (!data || data.intensity === undefined) {
+        return (
+            <div className="w-9 h-7 flex items-center justify-center text-xs bg-gray-100 text-gray-400 rounded-md">
+                0
+            </div>
+        );
+    }
+
     const getIntensityColor = (intensity) => {
         const ratio = intensity / maxIntensity;
         if (ratio < 0.2) return 'bg-gradient-to-br from-purple-100 to-purple-200';
@@ -147,7 +61,7 @@ const HeatmapCell = ({ data, maxIntensity }) => {
     return (
         <div
             className={`w-9 h-7 flex items-center justify-center text-xs ${getIntensityColor(data.intensity)} ${getTextColor(data.intensity)} cursor-pointer hover:scale-110 transition-all duration-300 rounded-md shadow-sm hover:shadow-md border border-white/20`}
-            title={`${data.day} ${data.hour}:00 - ${data.trips} trips (${data.intensity}% intensity)`}
+            title={`${data.day} ${data.hour}:00 - ${data.trips || 0} trips (${data.intensity}% intensity)`}
         >
             {data.intensity}
         </div>
@@ -214,22 +128,70 @@ const EnhancedKPICard = ({ title, value, subtitle, icon: Icon, gradient, badge, 
 
 const Temporal = () => {
     const [timePeriod, setTimePeriod] = useState('7days');
+    
+    // State for async data
+    const [heatmapData, setHeatmapData] = useState([]);
+    const [peakHoursData, setPeakHoursData] = useState([]);
+    const [weekdayWeekendData, setWeekdayWeekendData] = useState([]);
+    const [temporalMetrics, setTemporalMetrics] = useState({
+        totalTrips: 0,
+        peakHour: '08:00',
+        peakHourTrips: 0,
+        avgDuration: 0,
+        rushHourImpact: 0,
+        lastUpdated: new Date().toISOString()
+    });
+    const [loading, setLoading] = useState(true);
 
-    const heatmapData = useMemo(() => generateHeatmapData(), []);
-    const peakHoursData = useMemo(() => generatePeakHoursData(), []);
-    const weekdayWeekendData = useMemo(() => generateWeekdayWeekendData(), []);
+    // Load data on component mount
+    useEffect(() => {
+        const loadTemporalData = async () => {
+            setLoading(true);
+            try {
+                console.log('🔄 Loading temporal data...');
+                const [heatmap, peaks, weekdayWeekend, metrics] = await Promise.all([
+                    generateHeatmapData(),
+                    generatePeakHoursData(),
+                    generateWeekdayWeekendData(),
+                    getTemporalMetrics()
+                ]);
+                
+                console.log('✅ Temporal data loaded successfully');
+                setHeatmapData(heatmap);
+                setPeakHoursData(peaks);
+                setWeekdayWeekendData(weekdayWeekend);
+                setTemporalMetrics(metrics);
+            } catch (error) {
+                console.error('❌ Error loading temporal data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        loadTemporalData();
+    }, []);
 
-    const maxIntensity = Math.max(...heatmapData.map(d => d.intensity));
+    const maxIntensity = Math.max(...heatmapData.map(d => d.intensity), 1); // Ensure minimum 1
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const hours = Array.from({ length: 24 }, (_, i) => i);
 
-    // Get total trips for summary
-    const totalTrips = peakHoursData.reduce((sum, item) => sum + item.trips, 0);
-    const peakHour = peakHoursData.reduce((max, item) => item.trips > max.trips ? item : max);
-    const avgDuration = Math.round(peakHoursData.reduce((sum, item) => sum + item.avgDuration, 0) / peakHoursData.length);
+    // Use metrics from API data
+    const { totalTrips, peakHour, avgDuration, rushHourImpact } = temporalMetrics;
+    
+    // Find peak hour data for display
+    const peakHourData = peakHoursData.find(h => h.hour === peakHour) || { trips: 0 };
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
+            {loading && (
+                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Loading Kerala temporal transportation data...</p>
+                    </div>
+                </div>
+            )}
+            
             {/* Enhanced Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -270,15 +232,15 @@ const Temporal = () => {
                 <EnhancedKPICard
                     title="Total Daily Trips"
                     value={totalTrips.toLocaleString()}
-                    subtitle="across all time periods"
+                    subtitle="from Kerala data"
                     icon={Activity}
                     gradient="from-purple-500 to-purple-600"
                     change={12.5}
                 />
                 <EnhancedKPICard
                     title="Peak Hour"
-                    value={peakHour.hour}
-                    subtitle={`${peakHour.trips} trips`}
+                    value={peakHour}
+                    subtitle={`${peakHourData.trips} trips`}
                     icon={TrendingUp}
                     gradient="from-blue-500 to-blue-600"
                     badge="Peak"
@@ -293,7 +255,7 @@ const Temporal = () => {
                 />
                 <EnhancedKPICard
                     title="Rush Hour Impact"
-                    value="+285%"
+                    value={`+${rushHourImpact}%`}
                     subtitle="vs off-peak hours"
                     icon={Clock}
                     gradient="from-pink-500 to-pink-600"
@@ -315,17 +277,25 @@ const Temporal = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="overflow-x-auto">
-                            <div className="min-w-fit">
-                                {/* Enhanced Hour labels */}
-                                <div className="flex mb-3">
-                                    <div className="w-14"></div>
-                                    {hours.map(hour => (
-                                        <div key={hour} className="w-9 text-center text-xs text-gray-600 font-semibold">
-                                            {hour % 4 === 0 ? `${hour}h` : ''}
-                                        </div>
-                                    ))}
+                        {heatmapData.length === 0 ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                                    <p className="text-gray-600">Loading heatmap data...</p>
                                 </div>
+                            </div>
+                        ) : (
+                            <div className="overflow-x-auto">
+                                <div className="min-w-fit">
+                                    {/* Enhanced Hour labels */}
+                                    <div className="flex mb-3">
+                                        <div className="w-14"></div>
+                                        {hours.map(hour => (
+                                            <div key={hour} className="w-9 text-center text-xs text-gray-600 font-semibold">
+                                                {hour % 4 === 0 ? `${hour}h` : ''}
+                                            </div>
+                                        ))}
+                                    </div>
 
                                 {/* Enhanced Heatmap grid */}
                                 {days.map((day, dayIndex) => (
@@ -356,6 +326,7 @@ const Temporal = () => {
                                 </div>
                             </div>
                         </div>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -371,7 +342,15 @@ const Temporal = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ResponsiveContainer width="100%" height={350}>
+                        {peakHoursData.length === 0 ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-4"></div>
+                                    <p className="text-gray-600">Loading peak hours data...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={350}>
                             <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
                                 <XAxis
@@ -396,6 +375,7 @@ const Temporal = () => {
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -414,7 +394,15 @@ const Temporal = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ResponsiveContainer width="100%" height={350}>
+                        {weekdayWeekendData.length === 0 ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                                    <p className="text-gray-600">Loading weekday/weekend data...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={350}>
                             <BarChart data={weekdayWeekendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
                                 <XAxis
@@ -447,6 +435,7 @@ const Temporal = () => {
                                 />
                             </BarChart>
                         </ResponsiveContainer>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -462,7 +451,15 @@ const Temporal = () => {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <ResponsiveContainer width="100%" height={350}>
+                        {peakHoursData.length === 0 ? (
+                            <div className="flex items-center justify-center h-64">
+                                <div className="text-center">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                                    <p className="text-gray-600">Loading duration data...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <ResponsiveContainer width="100%" height={350}>
                             <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
                                 <XAxis
@@ -488,6 +485,7 @@ const Temporal = () => {
                                 />
                             </AreaChart>
                         </ResponsiveContainer>
+                        )}
                     </CardContent>
                 </Card>
             </div>
@@ -521,7 +519,7 @@ const Temporal = () => {
                                 <p className="text-sm text-purple-700 leading-relaxed">
                                     Peak traffic occurs between 8-9 AM with an average of{' '}
                                     <span className="font-bold text-purple-900">
-                                        {Math.max(...peakHoursData.slice(8, 10).map(h => h.trips))}
+                                        {peakHoursData.length > 9 ? Math.max(...peakHoursData.slice(8, 10).map(h => h.trips)) : peakHourData.trips}
                                     </span>{' '}
                                     trips per hour, representing the highest daily activity.
                                 </p>

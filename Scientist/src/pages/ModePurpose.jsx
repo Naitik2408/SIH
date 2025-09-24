@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     PieChart,
     Pie,
@@ -123,12 +123,54 @@ const EnhancedKPICard = ({ title, value, subtitle, icon: Icon, gradient, badge }
 
 const ModePurpose = () => {
     const [activeTab, setActiveTab] = useState('mode');
+    const [loading, setLoading] = useState(true);
+    const [chartData, setChartData] = useState({
+        transportData: [],
+        purposeData: [],
+        analytics: {
+            totalUsers: 0,
+            totalTrips: 0,
+            avgDuration: 0
+        }
+    });
+
+    // Load data on component mount
+    useEffect(() => {
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                const data = await getChartData();
+                // Transform data to expected structure
+                setChartData({
+                    transportData: data.transportData || [],
+                    purposeData: data.purposeData || [],
+                    analytics: {
+                        totalUsers: data.totalUsers || 0,
+                        totalTrips: data.totalJourneys || 0,
+                        avgDuration: 30 // Default value, can be enhanced later
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading ModePurpose data:', error);
+                // Set empty defaults to prevent crashes
+                setChartData({
+                    transportData: [],
+                    purposeData: [],
+                    analytics: { totalUsers: 0, totalTrips: 0, avgDuration: 0 }
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        loadData();
+    }, []);
     
-    // Get real data from analytics
-    const { analytics, modeShareData, tripPurposeData } = getChartData();
+    // Get data from state
+    const { transportData: modeShareData, purposeData: tripPurposeData, analytics } = chartData;
     
     // Create enhanced mode share data with icons and additional info
-    const enhancedModeShareData = modeShareData.map(mode => {
+    const enhancedModeShareData = (modeShareData || []).map(mode => {
         const iconMap = {
             'Bus': Bus,
             'Metro': Train,
@@ -142,14 +184,14 @@ const ModePurpose = () => {
         return {
             mode: mode.name,
             trips: mode.value,
-            percentage: Math.round((mode.value / analytics.totalUsers) * 100),
+            percentage: Math.round((mode.value / (analytics?.totalTrips || 1)) * 100),
             color: mode.color,
             icon: iconMap[mode.name] || Car
         };
     });
     
     // Create enhanced trip purpose data with icons and metrics
-    const enhancedTripPurposeData = tripPurposeData.map(purpose => {
+    const enhancedTripPurposeData = (tripPurposeData || []).map(purpose => {
         const iconMap = {
             'Work': Briefcase,
             'Shopping': ShoppingBag,
@@ -187,7 +229,7 @@ const ModePurpose = () => {
         return {
             purpose: purpose.name,
             trips: purpose.trips,
-            percentage: Math.round((purpose.trips / analytics.totalTrips) * 100),
+            percentage: Math.round((purpose.trips / (analytics?.totalTrips || 1)) * 100),
             avgDistance: avgDistanceMap[purpose.name] || '10.0 km',
             avgDuration: avgDurationMap[purpose.name] || '30 min',
             color: purpose.fill,
@@ -211,6 +253,15 @@ const ModePurpose = () => {
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
+            {loading && (
+                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Loading transportation mode and purpose data...</p>
+                    </div>
+                </div>
+            )}
+            
             {/* Enhanced Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -260,14 +311,14 @@ const ModePurpose = () => {
                 />
                 <EnhancedKPICard
                     title="Average Distance"
-                    value={activeTab === 'mode' ? `${analytics.avgDistance} km` : `${analytics.avgDistance} km`}
+                    value={`${analytics?.avgDistance || 15} km`}
                     subtitle="per trip"
                     icon={MapPin}
                     gradient="from-indigo-500 to-indigo-600"
                 />
                 <EnhancedKPICard
                     title="Average Duration"
-                    value={activeTab === 'mode' ? `${analytics.avgDuration} min` : `${analytics.avgDuration} min`}
+                    value={`${analytics?.avgDuration || 30} min`}
                     subtitle="per trip"
                     icon={Clock}
                     gradient="from-violet-500 to-violet-600"
