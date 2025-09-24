@@ -32,6 +32,11 @@ const MainLayout = () => {
     const [selectedMode, setSelectedMode] = useState('');
     const location = useLocation();
     
+    // Debug route changes
+    useEffect(() => {
+        console.log('🛣️ Route changed to:', location.pathname);
+    }, [location.pathname]);
+    
     // Refs for date inputs
     const startDateRef = useRef(null);
     const endDateRef = useRef(null);
@@ -61,7 +66,7 @@ const MainLayout = () => {
         { name: 'Reports', path: '/reports', icon: FileText },
         { name: 'Alerts', path: '/alerts', icon: AlertTriangle },
         { name: 'Users', path: '/users', icon: User },
-        { name: 'Admin', path: '/admin', icon: Settings },
+        // { name: 'Admin', path: '/admin', icon: Settings },
     ];
 
     const isActivePath = (path) => {
@@ -111,7 +116,8 @@ const MainLayout = () => {
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
-                                    onClick={() => {
+                                    onClick={(e) => {
+                                        console.log('🔗 Navigation clicked:', item.name, '→', item.path);
                                         // Close sidebar on mobile after navigation
                                         if (window.innerWidth < 768) {
                                             setSidebarOpen(false);
