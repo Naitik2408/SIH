@@ -53,8 +53,8 @@ export const SIZES = {
 
 export const DEMO_USERS = {
     customer: {
-        email: 'customer@getway.com',
-        password: 'customer123',
+        email: 'shivam@user.com',
+        password: 'shivam123',
         name: 'John Customer',
         role: 'customer' as const,
     },
@@ -63,11 +63,5 @@ export const DEMO_USERS = {
         password: 'owner123',
         name: 'Admin Owner',
         role: 'owner' as const,
-    },
-    scientist: {
-        email: 'scientist@getway.com',
-        password: 'scientist123',
-        name: 'Dr. Jane Scientist',
-        role: 'scientist' as const,
-    },
+    }
 };

@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS, SIZES, FONTS } from '../../constants';
 import { User } from '../../types';
+import { journeyAPI } from '../../services/api';
 
 interface CustomerHomeProps {
     user: User;
@@ -207,6 +208,11 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
     const [currentBenefitIndex, setCurrentBenefitIndex] = React.useState(0);
     const benefitFlatListRef = React.useRef<FlatList>(null);
 
+    // Dynamic stats states
+    const [totalTrips, setTotalTrips] = React.useState(0);
+    const [totalPoints, setTotalPoints] = React.useState(0);
+    const [isLoadingStats, setIsLoadingStats] = React.useState(true);
+
     // ScrollView ref for smooth scrolling
     const scrollViewRef = React.useRef<ScrollView>(null);
 
@@ -220,6 +226,11 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 clearInterval(locationWatcher);
             }
         };
+    }, []);
+
+    // Fetch user stats on component mount
+    React.useEffect(() => {
+        fetchUserStats();
     }, []);
 
     // Animation for End Journey button
@@ -277,6 +288,30 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
         } catch (error) {
             console.error('Error reverse geocoding:', error);
             return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        }
+    };
+
+    // Fetch user statistics from API
+    const fetchUserStats = async (): Promise<void> => {
+        try {
+            setIsLoadingStats(true);
+            const response = await journeyAPI.getUserJourneys();
+            const journeys = response.journeys || [];
+            
+            // Calculate dynamic stats
+            const completedTrips = journeys.filter((journey: any) => journey.status === 'completed');
+            const tripsLogged = completedTrips.length;
+            const pointsEarned = tripsLogged * 7; // 7 coins per trip
+            
+            setTotalTrips(tripsLogged);
+            setTotalPoints(pointsEarned);
+            
+            console.log(`📊 Updated Stats: ${tripsLogged} trips, ${pointsEarned} points`);
+        } catch (error) {
+            console.error('Error fetching user stats:', error);
+            // Keep default values (0) on error
+        } finally {
+            setIsLoadingStats(false);
         }
     };
 
@@ -648,8 +683,8 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 timestamp: endTime,
             } : null;
 
-            // Calculate rewards based on journey
-            const pointsEarned = Math.max(10, Math.floor(elapsedTime / 60) * 2); // 2 points per minute
+            // Calculate rewards based on journey - fixed 7 points per trip
+            const pointsEarned = 7; // Fixed 7 coins per trip
             const badges = [];
             if (elapsedTime >= 1800) badges.push('Long Distance Traveler'); // 30+ minutes
             if (currentJourney.surveyData.transportMode === 'Bus' || currentJourney.surveyData.transportMode === 'Train') {
@@ -671,7 +706,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 rewards: {
                     pointsEarned,
                     badgesUnlocked: badges,
-                    milestoneReached: pointsEarned >= 50,
+                    milestoneReached: pointsEarned === 7, // First trip milestone
                 },
                 updatedAt: endTime,
             };
@@ -681,6 +716,9 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
 
             // Save completed journey
             await saveJourneyToStorage(completedJourney);
+
+            // Refresh user stats to reflect the new journey
+            await fetchUserStats();
 
             // Reset states
             setJourneyStarted(false);
@@ -698,9 +736,8 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             // Show completion message
             Alert.alert(
                 'Journey Completed! 🎉',
-                `Great job! You've earned ${pointsEarned} points for this journey.${badges.length > 0 ? `\n\nNew badges unlocked: ${badges.join(', ')}` : ''}\n\nTrip ID: ${completedJourney.tripId}\nDuration: ${completedJourney.tripDetails.actualDurationFormatted}\n\nCheck console for detailed journey data that would be added to journeyLogs.json!`,
+                `Great job! You've earned 7 points for this journey!${badges.length > 0 ? `\n\nNew badges unlocked: ${badges.join(', ')}` : ''}\n\nTrip ID: ${completedJourney.tripId}\nDuration: ${completedJourney.tripDetails.actualDurationFormatted}\n\nYour stats will be updated automatically.`,
                 [
-                    { text: 'View Logs', onPress: showCurrentJourneyLogs },
                     { text: 'Awesome!' }
                 ]
             );
@@ -819,23 +856,20 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                     <View style={styles.statIconContainer}>
                         <Ionicons name="bus-outline" size={18} color={COLORS.primary} />
                     </View>
-                    <Text style={styles.statNumber}>15</Text>
+                    <Text style={styles.statNumber}>
+                        {isLoadingStats ? '...' : totalTrips}
+                    </Text>
                     <Text style={styles.statLabel}>Trips Logged</Text>
                 </View>
                 <View style={styles.statCard}>
                     <View style={styles.statIconContainer}>
                         <Ionicons name="trophy-outline" size={18} color="#f59e0b" />
                     </View>
-                    <Text style={styles.statNumber}>250</Text>
+                    <Text style={styles.statNumber}>
+                        {isLoadingStats ? '...' : totalPoints}
+                    </Text>
                     <Text style={styles.statLabel}>Points Earned</Text>
                 </View>
-                <TouchableOpacity style={styles.statCard} onPress={showCurrentJourneyLogs}>
-                    <View style={styles.statIconContainer}>
-                        <Ionicons name="document-text-outline" size={18} color="#10b981" />
-                    </View>
-                    <Text style={styles.statNumber}>📂</Text>
-                    <Text style={styles.statLabel}>View Logs</Text>
-                </TouchableOpacity>
             </View>
 
             {/* Benefits Carousel */}
