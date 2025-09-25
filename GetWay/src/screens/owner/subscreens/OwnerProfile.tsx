@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -6,11 +6,12 @@ import {
     TouchableOpacity,
     ScrollView,
     Alert,
-    Switch,
+    ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { COLORS, SIZES } from '../../../constants';
+import { COLORS, SIZES, FONTS } from '../../../constants';
 import { User } from '../../../types';
+import { ownerAPI } from '../../../services/api';
 
 interface OwnerProfileProps {
     user: User;
@@ -18,84 +19,96 @@ interface OwnerProfileProps {
 }
 
 const OwnerProfile: React.FC<OwnerProfileProps> = ({ user, onLogout }) => {
-    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-    const [autoApprovalEnabled, setAutoApprovalEnabled] = useState(false);
-    const [dataAnalyticsEnabled, setDataAnalyticsEnabled] = useState(true);
-    const [maintenanceModeEnabled, setMaintenanceModeEnabled] = useState(false);
+    const [activeScientists, setActiveScientists] = useState(0);
+    const [loading, setLoading] = useState(true);
 
-    const adminStats = [
-        { label: 'Years as Admin', value: '3', icon: 'time', color: '#3b82f6' },
-        { label: 'Total Decisions', value: '1,247', icon: 'checkmark-done', color: '#10b981' },
-        { label: 'Active Scientists', value: '45', icon: 'people', color: '#f59e0b' },
-        { label: 'Data Quality', value: '98.5%', icon: 'analytics', color: '#8b5cf6' },
-    ];
+    // Fetch real admin data from backend
+    useEffect(() => {
+        const fetchAdminData = async () => {
+            try {
+                const response = await ownerAPI.getAllScientists();
+                
+                // Count active scientists only
+                const activeCount = response.scientists.filter(
+                    scientist => scientist.isActive && scientist.isApproved
+                ).length;
+                
+                setActiveScientists(activeCount);
+            } catch (error) {
+                console.error('Error fetching admin data:', error);
+                setActiveScientists(0); // Default to 0 on error
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const profileSections = [
-        {
-            title: 'Account Management',
-            items: [
-                { id: 'personal', label: 'Personal Information', icon: 'person-outline', hasArrow: true },
-                { id: 'security', label: 'Security Settings', icon: 'shield-outline', hasArrow: true },
-                { id: 'permissions', label: 'Admin Permissions', icon: 'key-outline', hasArrow: true },
-                { id: 'backup', label: 'Account Backup', icon: 'cloud-download-outline', hasArrow: true },
-            ]
-        },
-        {
-            title: 'System Configuration',
-            items: [
-                { id: 'users', label: 'User Management', icon: 'people-outline', hasArrow: true },
-                { id: 'data', label: 'Data Management', icon: 'server-outline', hasArrow: true },
-                { id: 'api', label: 'API Configuration', icon: 'code-outline', hasArrow: true },
-                { id: 'logs', label: 'System Logs', icon: 'list-outline', hasArrow: true },
-            ]
-        },
-        {
-            title: 'Platform Analytics',
-            items: [
-                { id: 'reports', label: 'Generate Reports', icon: 'bar-chart-outline', hasArrow: true },
-                { id: 'insights', label: 'Data Insights', icon: 'analytics-outline', hasArrow: true },
-                { id: 'performance', label: 'Performance Metrics', icon: 'speedometer-outline', hasArrow: true },
-                { id: 'export', label: 'Export Data', icon: 'download-outline', hasArrow: true },
-            ]
-        },
-        {
-            title: 'Help & Support',
-            items: [
-                { id: 'docs', label: 'Admin Documentation', icon: 'book-outline', hasArrow: true },
-                { id: 'support', label: 'Technical Support', icon: 'help-buoy-outline', hasArrow: true },
-                { id: 'feedback', label: 'Send Feedback', icon: 'chatbubble-outline', hasArrow: true },
-                { id: 'about', label: 'About GetWay Admin', icon: 'information-circle-outline', hasArrow: true },
-            ]
-        }
-    ];
+        fetchAdminData();
+    }, []);
 
+    // Handle section navigation
     const handleSectionPress = (sectionId: string) => {
         switch (sectionId) {
             case 'personal':
-                Alert.alert('Personal Information', 'Edit personal details and contact information.');
+                Alert.alert(
+                    'Personal Information',
+                    'Personal Information Settings:\n\n• Edit admin profile details\n• Update contact information\n• Change profile picture\n• Update admin credentials\n• Set display preferences\n\nKeep your admin profile up to date for better system management.',
+                    [{ text: 'OK' }]
+                );
                 break;
             case 'security':
-                Alert.alert('Security Settings', 'Manage password, 2FA, and security preferences.');
+                Alert.alert(
+                    'Security Settings',
+                    'Admin Security Management:\n\n🔒 Two-Factor Authentication\n🔑 Password Management\n🛡️ Login Activity Monitoring\n📱 Device Management\n⚠️ Security Alerts\n\n🚨 Admin Security Features:\n• Enhanced encryption\n• IP whitelisting\n• Session management\n• Audit logs\n\nYour admin account has enhanced security protocols.',
+                    [{ text: 'OK' }]
+                );
                 break;
-            case 'permissions':
-                Alert.alert('Admin Permissions', 'View and manage admin access levels.');
+            case 'privacy':
+                Alert.alert(
+                    'Privacy Settings',
+                    'Admin Privacy Controls:\n\n• Data Access Permissions\n• Scientist Data Handling\n• System Logs Privacy\n• Analytics Data Usage\n• Admin Activity Tracking\n\n🔐 Admin Privacy Features:\n• Encrypted communications\n• Secure data storage\n• Privacy-compliant operations\n• GDPR compliance tools\n\nManage how admin data is collected and used.',
+                    [{ text: 'OK' }]
+                );
                 break;
-            case 'users':
-                Alert.alert('User Management', 'Manage user accounts and permissions.');
+            case 'help':
+                Alert.alert(
+                    'Admin Help & Support',
+                    'Admin Support Resources:\n\n📧 Admin Support: admin@getway.app\n📞 Priority Line: +91 9876543210\n🕒 24/7 Admin Support Available\n\n📖 Admin Resources:\n• Admin documentation\n• System management guides\n• API documentation\n• Troubleshooting guides\n• Video tutorials\n\n🚀 Training Resources:\n• Admin best practices\n• Security protocols\n• Data management\n• User support guidelines',
+                    [
+                        { text: 'OK' },
+                        { text: 'Contact Admin Support', onPress: () => alert('Opening admin support...') }
+                    ]
+                );
                 break;
-            case 'data':
-                Alert.alert('Data Management', 'Configure data collection and storage settings.');
-                break;
-            case 'reports':
-                Alert.alert('Generate Reports', 'Create and download platform reports.');
-                break;
-            case 'logs':
-                Alert.alert('System Logs', 'View system activity and error logs.');
+            case 'about':
+                Alert.alert(
+                    'About GetWay Admin',
+                    'GetWay Admin Panel v2.1.0\n\n🏢 Administrative Control Center\n\nPowerful admin tools for managing the GetWay platform and scientist community.\n\n👨‍💼 Admin Features:\n• Scientist approval system\n• Data management tools\n• Analytics dashboard\n• System monitoring\n• User support tools\n\n🛠️ Admin Capabilities:\n• Real-time system status\n• Advanced reporting\n• Bulk operations\n• Security management\n\n© 2024 GetWay Admin. Enterprise Edition.',
+                    [{ text: 'OK' }]
+                );
                 break;
             default:
-                Alert.alert('Coming Soon', `${sectionId} feature is under development.`);
+                break;
         }
     };
+
+    // Updated admin stats with real backend data
+    const adminStats = [
+        { 
+            label: 'Active Scientists', 
+            value: loading ? '...' : activeScientists.toString(), 
+            icon: 'people', 
+            color: '#10b981' 
+        },
+    ];
+
+    // Simplified profile sections matching CustomerProfile style
+    const profileSections = [
+        { id: 'personal', label: 'Personal Information', icon: 'person-outline' },
+        { id: 'security', label: 'Security Settings', icon: 'shield-outline' },
+        { id: 'privacy', label: 'Privacy Settings', icon: 'lock-closed-outline' },
+        { id: 'help', label: 'Help & Support', icon: 'help-circle-outline' },
+        { id: 'about', label: 'About Admin Panel', icon: 'information-circle-outline' },
+    ];
 
     const handleLogout = () => {
         Alert.alert(
@@ -108,35 +121,11 @@ const OwnerProfile: React.FC<OwnerProfileProps> = ({ user, onLogout }) => {
         );
     };
 
-    const handleDeleteAccount = () => {
-        Alert.alert(
-            'Delete Account',
-            'This action cannot be undone. Are you absolutely sure?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                { 
-                    text: 'Delete', 
-                    style: 'destructive', 
-                    onPress: () => {
-                        Alert.alert('Account Deleted', 'Admin account has been permanently deleted.');
-                    }
-                }
-            ]
-        );
-    };
-
     return (
         <View style={styles.container}>
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>Admin Profile</Text>
-                <TouchableOpacity style={styles.settingsButton}>
-                    <Ionicons
-                        name="settings-outline"
-                        size={24}
-                        color={COLORS.white}
-                    />
-                </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -151,149 +140,64 @@ const OwnerProfile: React.FC<OwnerProfileProps> = ({ user, onLogout }) => {
                             <Text style={styles.avatarText}>{user.name.charAt(0).toUpperCase()}</Text>
                         </View>
                         <View style={styles.adminBadge}>
-                            <Ionicons name="shield-checkmark" size={16} color={COLORS.white} />
+                            <Ionicons name="shield-checkmark" size={12} color={COLORS.white} />
                             <Text style={styles.adminBadgeText}>ADMIN</Text>
                         </View>
                     </View>
                     <View style={styles.profileInfo}>
                         <Text style={styles.userName}>{user.name}</Text>
-                        <Text style={styles.userRole}>Platform Administrator</Text>
-                        <Text style={styles.userEmail}>{user.email}</Text>
-                        <Text style={styles.joinDate}>Admin since March 2021</Text>
+                        <Text style={styles.userType}>Platform Administrator</Text>
+                        <Text style={styles.userLocation}>📍 System Admin</Text>
                     </View>
                 </View>
 
                 {/* Admin Stats */}
                 <View style={styles.statsContainer}>
-                    <Text style={styles.sectionTitle}>Admin Statistics</Text>
-                    <View style={styles.statsGrid}>
-                        {adminStats.map((stat, index) => (
-                            <View key={index} style={styles.statCard}>
-                                <View style={[styles.statIconContainer, { backgroundColor: `${stat.color}15` }]}>
-                                    <Ionicons name={stat.icon as any} size={20} color={stat.color} />
-                                </View>
-                                <Text style={styles.statValue}>{stat.value}</Text>
-                                <Text style={styles.statLabel}>{stat.label}</Text>
+                    {adminStats.map((stat, index) => (
+                        <View key={index} style={styles.statCard}>
+                            <View style={[styles.statIconContainer, { backgroundColor: `${stat.color}15` }]}>
+                                <Ionicons name={stat.icon as any} size={18} color={stat.color} />
                             </View>
-                        ))}
-                    </View>
-                </View>
-
-                {/* Quick Settings */}
-                <View style={styles.quickSettingsContainer}>
-                    <Text style={styles.sectionTitle}>Quick Settings</Text>
-                    <View style={styles.settingsCard}>
-                        <View style={styles.settingItem}>
-                            <View style={styles.settingLeft}>
-                                <Ionicons name="notifications-outline" size={20} color={COLORS.gray} />
-                                <Text style={styles.settingLabel}>Push Notifications</Text>
-                            </View>
-                            <Switch
-                                value={notificationsEnabled}
-                                onValueChange={setNotificationsEnabled}
-                                trackColor={{ false: '#e5e7eb', true: `${COLORS.primary}40` }}
-                                thumbColor={notificationsEnabled ? COLORS.primary : '#f4f3f4'}
-                            />
+                            <Text style={styles.statValue}>{stat.value}</Text>
+                            <Text style={styles.statLabel}>{stat.label}</Text>
                         </View>
-
-                        <View style={styles.settingItem}>
-                            <View style={styles.settingLeft}>
-                                <Ionicons name="checkmark-done-outline" size={20} color={COLORS.gray} />
-                                <Text style={styles.settingLabel}>Auto-approve Scientists</Text>
-                            </View>
-                            <Switch
-                                value={autoApprovalEnabled}
-                                onValueChange={setAutoApprovalEnabled}
-                                trackColor={{ false: '#e5e7eb', true: `${COLORS.primary}40` }}
-                                thumbColor={autoApprovalEnabled ? COLORS.primary : '#f4f3f4'}
-                            />
-                        </View>
-
-                        <View style={styles.settingItem}>
-                            <View style={styles.settingLeft}>
-                                <Ionicons name="analytics-outline" size={20} color={COLORS.gray} />
-                                <Text style={styles.settingLabel}>Advanced Analytics</Text>
-                            </View>
-                            <Switch
-                                value={dataAnalyticsEnabled}
-                                onValueChange={setDataAnalyticsEnabled}
-                                trackColor={{ false: '#e5e7eb', true: `${COLORS.primary}40` }}
-                                thumbColor={dataAnalyticsEnabled ? COLORS.primary : '#f4f3f4'}
-                            />
-                        </View>
-
-                        <View style={styles.settingItem}>
-                            <View style={styles.settingLeft}>
-                                <Ionicons name="construct-outline" size={20} color={COLORS.gray} />
-                                <Text style={styles.settingLabel}>Maintenance Mode</Text>
-                            </View>
-                            <Switch
-                                value={maintenanceModeEnabled}
-                                onValueChange={setMaintenanceModeEnabled}
-                                trackColor={{ false: '#e5e7eb', true: '#ef444440' }}
-                                thumbColor={maintenanceModeEnabled ? '#ef4444' : '#f4f3f4'}
-                            />
-                        </View>
-                    </View>
+                    ))}
                 </View>
 
                 {/* Profile Sections */}
-                {profileSections.map((section, index) => (
-                    <View key={index} style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>{section.title}</Text>
-                        <View style={styles.sectionCard}>
-                            {section.items.map((item, itemIndex) => (
-                                <TouchableOpacity
-                                    key={item.id}
-                                    style={[
-                                        styles.sectionItem,
-                                        itemIndex === section.items.length - 1 && styles.lastSectionItem
-                                    ]}
-                                    onPress={() => handleSectionPress(item.id)}
-                                >
-                                    <View style={styles.sectionLeft}>
-                                        <View style={styles.sectionIconContainer}>
-                                            <Ionicons
-                                                name={item.icon as any}
-                                                size={20}
-                                                color={COLORS.gray}
-                                            />
-                                        </View>
-                                        <Text style={styles.sectionLabel}>{item.label}</Text>
-                                    </View>
-                                    {item.hasArrow && (
-                                        <Ionicons
-                                            name="chevron-forward"
-                                            size={16}
-                                            color={COLORS.gray}
-                                        />
-                                    )}
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    </View>
-                ))}
+                <View style={styles.sectionsContainer}>
+                    {profileSections.map((section) => (
+                        <TouchableOpacity 
+                            key={section.id} 
+                            style={styles.sectionItem}
+                            onPress={() => handleSectionPress(section.id)}
+                        >
+                            <View style={styles.sectionLeft}>
+                                <View style={styles.sectionIconContainer}>
+                                    <Ionicons
+                                        name={section.icon as any}
+                                        size={20}
+                                        color={COLORS.textSecondary}
+                                    />
+                                </View>
+                                <Text style={styles.sectionLabel}>{section.label}</Text>
+                            </View>
+                            <Ionicons
+                                name="chevron-forward"
+                                size={16}
+                                color={COLORS.textDisabled}
+                            />
+                        </TouchableOpacity>
+                    ))}
+                </View>
 
-                {/* Action Buttons */}
-                <View style={styles.actionButtonsContainer}>
+                {/* Logout Section */}
+                <View style={styles.logoutContainer}>
                     <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                        <Ionicons name="log-out-outline" size={20} color={COLORS.white} />
-                        <Text style={styles.logoutButtonText}>Logout</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
-                        <Ionicons name="trash-outline" size={20} color={COLORS.white} />
-                        <Text style={styles.deleteButtonText}>Delete Account</Text>
+                        <Ionicons name="log-out-outline" size={20} color="#ef4444" />
+                        <Text style={styles.logoutText}>Sign Out</Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* App Info */}
-                <View style={styles.appInfoContainer}>
-                    <Text style={styles.appVersion}>GetWay Admin v2.1.0</Text>
-                    <Text style={styles.buildNumber}>Build 2024.03.15</Text>
-                </View>
-
-                <View style={styles.bottomSpacing} />
             </ScrollView>
         </View>
     );
@@ -302,213 +206,163 @@ const OwnerProfile: React.FC<OwnerProfileProps> = ({ user, onLogout }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: '#f8f9fa', // Match CustomerProfile background
+    },
+    scrollContent: {
+        paddingBottom: 120, // Extra padding to ensure content is above bottom navbar
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: SIZES.lg,
-        paddingTop: 50,
-        paddingBottom: SIZES.md,
-        backgroundColor: COLORS.primary,
+        paddingHorizontal: 20,
+        paddingTop: 60,
+        paddingBottom: 24,
+        backgroundColor: 'transparent',
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: COLORS.white,
-    },
-    settingsButton: {
-        // Settings button styles
+        fontSize: SIZES.heading, // 20 - Match customer profile title size
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: 4,
     },
     content: {
         flex: 1,
-    },
-    scrollContent: {
-        paddingBottom: 100,
+        paddingHorizontal: 20,
     },
     profileCard: {
-        backgroundColor: COLORS.white,
-        margin: SIZES.lg,
-        borderRadius: 20,
-        padding: SIZES.lg,
+        flexDirection: 'row',
+        backgroundColor: '#ffffff',
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 24,
         alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 6,
-    },
-    avatarContainer: {
-        position: 'relative',
-        marginBottom: SIZES.md,
-    },
-    avatar: {
-        width: 80,
-        height: 80,
-        borderRadius: 40,
-        backgroundColor: COLORS.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
         shadowRadius: 8,
         elevation: 4,
     },
+    avatarContainer: {
+        marginRight: 16,
+        position: 'relative',
+    },
+    avatar: {
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: COLORS.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     avatarText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: COLORS.white,
+        fontSize: SIZES.heading + 4, // 24
+        fontFamily: FONTS.bold,
+        color: '#ffffff',
     },
     adminBadge: {
         position: 'absolute',
-        bottom: -5,
-        right: -5,
+        bottom: -2,
+        right: -2,
         backgroundColor: '#10b981',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 12,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
         borderWidth: 2,
-        borderColor: COLORS.white,
+        borderColor: '#ffffff',
     },
     adminBadgeText: {
-        fontSize: 10,
-        fontWeight: 'bold',
-        color: COLORS.white,
+        fontSize: 8,
+        fontFamily: FONTS.bold,
+        color: '#ffffff',
         marginLeft: 2,
     },
     profileInfo: {
-        alignItems: 'center',
-    },
-    userName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: COLORS.black,
-        marginBottom: 4,
-    },
-    userRole: {
-        fontSize: SIZES.md,
-        color: COLORS.primary,
-        fontWeight: '600',
-        marginBottom: 2,
-    },
-    userEmail: {
-        fontSize: SIZES.sm,
-        color: COLORS.gray,
-        marginBottom: 2,
-    },
-    joinDate: {
-        fontSize: SIZES.sm,
-        color: COLORS.gray,
-    },
-    statsContainer: {
-        paddingHorizontal: SIZES.lg,
-        marginBottom: SIZES.lg,
-    },
-    sectionTitle: {
-        fontSize: SIZES.lg,
-        fontWeight: 'bold',
-        color: COLORS.black,
-        marginBottom: SIZES.md,
-    },
-    statsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-    },
-    statCard: {
-        backgroundColor: COLORS.white,
-        borderRadius: 16,
-        padding: SIZES.md,
-        alignItems: 'center',
-        width: '48%',
-        marginBottom: SIZES.sm,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    statIconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: SIZES.sm,
-    },
-    statValue: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.black,
-        marginBottom: 2,
-    },
-    statLabel: {
-        fontSize: SIZES.xs,
-        color: COLORS.gray,
-        textAlign: 'center',
-    },
-    quickSettingsContainer: {
-        paddingHorizontal: SIZES.lg,
-        marginBottom: SIZES.lg,
-    },
-    settingsCard: {
-        backgroundColor: COLORS.white,
-        borderRadius: 16,
-        padding: SIZES.md,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    settingItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: SIZES.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
-    },
-    settingLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
         flex: 1,
     },
-    settingLabel: {
-        fontSize: SIZES.md,
-        color: COLORS.black,
-        marginLeft: SIZES.sm,
-        fontWeight: '500',
+    userName: {
+        fontSize: SIZES.subheading + 2, // 18
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: 4,
     },
-    sectionContainer: {
-        paddingHorizontal: SIZES.lg,
-        marginBottom: SIZES.lg,
+    userType: {
+        fontSize: SIZES.body, // 14
+        fontFamily: FONTS.medium,
+        color: COLORS.textSecondary,
+        marginBottom: 2,
     },
-    sectionCard: {
-        backgroundColor: COLORS.white,
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
+    userLocation: {
+        fontSize: SIZES.caption, // 12
+        fontFamily: FONTS.regular,
+        color: COLORS.textTertiary,
+    },
+    statsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 24,
+    },
+    statCard: {
+        backgroundColor: '#ffffff',
+        padding: 16,
+        borderRadius: 12,
+        alignItems: 'center',
+        flex: 1,
+        marginHorizontal: 6,
+        minHeight: 100,
+        justifyContent: 'center',
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
         shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    statIconContainer: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
+    },
+    statValue: {
+        fontSize: SIZES.subheading, // 16
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: 3,
+    },
+    statLabel: {
+        fontSize: 11,
+        fontFamily: FONTS.medium,
+        color: COLORS.textTertiary,
+        textAlign: 'center',
+        lineHeight: 14,
+    },
+    sectionsContainer: {
+        marginBottom: 24,
     },
     sectionItem: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        paddingHorizontal: SIZES.md,
-        paddingVertical: SIZES.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
-    },
-    lastSectionItem: {
-        borderBottomWidth: 0,
+        justifyContent: 'space-between',
+        backgroundColor: '#ffffff',
+        paddingHorizontal: 20,
+        paddingVertical: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
     sectionLeft: {
         flexDirection: 'row',
@@ -516,69 +370,46 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     sectionIconContainer: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: `${COLORS.primary}10`,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'rgba(162, 142, 249, 0.1)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: SIZES.sm,
+        marginRight: 12,
     },
     sectionLabel: {
-        fontSize: SIZES.md,
-        color: COLORS.black,
-        fontWeight: '500',
+        fontSize: SIZES.body, // 14
+        fontFamily: FONTS.medium,
+        color: COLORS.textSecondary,
     },
-    actionButtonsContainer: {
-        paddingHorizontal: SIZES.lg,
-        marginBottom: SIZES.lg,
+    logoutContainer: {
+        marginBottom: 24,
     },
     logoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: COLORS.primary,
-        paddingVertical: SIZES.md,
+        backgroundColor: '#ffffff',
+        paddingVertical: 16,
+        paddingHorizontal: 20,
         borderRadius: 12,
-        marginBottom: SIZES.sm,
+        borderWidth: 1,
+        borderColor: '#fee2e2',
+        shadowColor: '#00000062',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
     },
-    logoutButtonText: {
-        color: COLORS.white,
-        fontSize: SIZES.md,
-        fontWeight: 'bold',
-        marginLeft: SIZES.xs,
-    },
-    deleteButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ef4444',
-        paddingVertical: SIZES.md,
-        borderRadius: 12,
-    },
-    deleteButtonText: {
-        color: COLORS.white,
-        fontSize: SIZES.md,
-        fontWeight: 'bold',
-        marginLeft: SIZES.xs,
-    },
-    appInfoContainer: {
-        alignItems: 'center',
-        paddingHorizontal: SIZES.lg,
-        marginBottom: SIZES.lg,
-    },
-    appVersion: {
-        fontSize: SIZES.sm,
-        color: COLORS.gray,
-        fontWeight: '500',
-    },
-    buildNumber: {
-        fontSize: SIZES.xs,
-        color: COLORS.gray,
-        marginTop: 2,
-    },
-    bottomSpacing: {
-        height: 20,
+    logoutText: {
+        fontSize: SIZES.body, // 14
+        fontFamily: FONTS.semiBold,
+        color: '#ef4444',
+        marginLeft: 8,
     },
 });
 
