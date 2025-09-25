@@ -54,11 +54,11 @@ router.post('/approve-scientist/:id', protect, authorizeRoles('owner'), async (r
                     id: scientist._id,
                     name: scientist.name,
                     email: scientist.email,
-                    organizationId: scientist.organizationId,
                     department: scientist.department,
                     designation: scientist.designation,
                     isApproved: scientist.isApproved,
                     approvedAt: new Date()
+                    // organizationId field explicitly excluded in simplified system
                 }
             }
         });
@@ -115,7 +115,6 @@ router.post('/disapprove-scientist/:id', protect, authorizeRoles('owner'), async
                     id: scientist._id,
                     name: scientist.name,
                     email: scientist.email,
-                    organizationId: scientist.organizationId,
                     department: scientist.department,
                     designation: scientist.designation,
                     isApproved: scientist.isApproved,
@@ -136,19 +135,18 @@ router.post('/disapprove-scientist/:id', protect, authorizeRoles('owner'), async
 
 /**
  * @route   GET /api/owner/pending-scientists
- * @desc    Get pending scientists for approval in owner's organization
+ * @desc    Get all pending scientists for approval
  * @access  Private (Owner only)
  */
 router.get('/pending-scientists', protect, authorizeRoles('owner'), async (req, res) => {
     try {
-        // Get pending scientists from ALL organizations (not just owner's organization)
+        // Get all pending scientists (unified - no organization filtering)
         const pendingScientists = await User.find({
             role: 'scientist',
             isApproved: false,
             isActive: true
-            // Removed organizationId filter to show pending scientists from all organizations
         })
-        .select('name email organizationId department designation createdAt')
+        .select('name email department designation createdAt')
         .sort({ createdAt: -1 });
 
         return res.status(200).json({
@@ -158,13 +156,11 @@ router.get('/pending-scientists', protect, authorizeRoles('owner'), async (req, 
                     id: scientist._id,
                     name: scientist.name,
                     email: scientist.email,
-                    organizationId: scientist.organizationId, // Show organization for each scientist
                     department: scientist.department,
                     designation: scientist.designation,
                     createdAt: scientist.createdAt
                 })),
-                count: pendingScientists.length,
-                ownerOrganization: req.user.organizationId // Show owner's organization for reference
+                count: pendingScientists.length
             }
         });
 
@@ -179,17 +175,16 @@ router.get('/pending-scientists', protect, authorizeRoles('owner'), async (req, 
 
 /**
  * @route   GET /api/owner/scientists
- * @desc    Get all scientists in owner's organization
+ * @desc    Get all scientists in the system
  * @access  Private (Owner only)
  */
 router.get('/scientists', protect, authorizeRoles('owner'), async (req, res) => {
     try {
-        // Get all scientists from ALL organizations (not just owner's organization)
+        // Get all scientists (unified - no organization divisions)
         const scientists = await User.find({
             role: 'scientist'
-            // Removed organizationId filter to show scientists from all organizations
         })
-        .select('name email organizationId department designation isApproved isActive createdAt')
+        .select('name email department designation isApproved isActive createdAt')
         .sort({ createdAt: -1 });
 
         const approvedCount = scientists.filter(s => s.isApproved).length;
@@ -203,7 +198,6 @@ router.get('/scientists', protect, authorizeRoles('owner'), async (req, res) => 
                     id: scientist._id,
                     name: scientist.name,
                     email: scientist.email,
-                    organizationId: scientist.organizationId, // Now shows organization for each scientist
                     department: scientist.department,
                     designation: scientist.designation,
                     isApproved: scientist.isApproved,
@@ -215,16 +209,15 @@ router.get('/scientists', protect, authorizeRoles('owner'), async (req, res) => 
                     approved: approvedCount,
                     pending: pendingCount,
                     active: activeCount
-                },
-                ownerOrganization: req.user.organizationId // Show owner's organization for reference
+                }
             }
         });
 
     } catch (error) {
-        console.error('Get organization scientists error:', error);
+        console.error('Get scientists error:', error);
         return res.status(500).json({
             status: 'error',
-            message: 'Failed to get organization scientists'
+            message: 'Failed to get scientists'
         });
     }
 });

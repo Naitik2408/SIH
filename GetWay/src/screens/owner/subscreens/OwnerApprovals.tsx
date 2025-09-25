@@ -19,7 +19,6 @@ interface ScientistRequest {
     id: string;
     name: string;
     email: string;
-    organizationId: string;
     department?: string;
     designation?: string;
     isApproved: boolean;
@@ -312,10 +311,10 @@ const OwnerApprovals: React.FC = () => {
                         </Text>
                         <Text style={styles.emptySubtitle}>
                             {selectedFilter === 'pending' 
-                                ? 'All scientists in your organization have been processed.'
+                                ? 'All scientists have been processed.'
                                 : selectedFilter === 'approved'
                                 ? 'No approved scientists found.'
-                                : 'No scientists found in your organization.'
+                                : 'No scientists found in the system.'
                             }
                         </Text>
                         <Text style={styles.debugText}>
@@ -332,9 +331,11 @@ const OwnerApprovals: React.FC = () => {
                                     <View style={styles.requestInfo}>
                                         <Text style={styles.requestName}>{scientist.name}</Text>
                                         <Text style={styles.requestEmail}>{scientist.email}</Text>
-                                        <Text style={styles.requestInstitution}>
-                                            {scientist.organizationId || 'No Organization'}
-                                        </Text>
+                                        {scientist.department && (
+                                            <Text style={styles.requestDepartment}>
+                                                {scientist.department}
+                                            </Text>
+                                        )}
                                     </View>
                                     <View style={[styles.statusBadge, { backgroundColor: `${getStatusColor(status)}15` }]}>
                                         <Ionicons 
@@ -578,6 +579,11 @@ const styles = StyleSheet.create({
         fontSize: SIZES.sm,
         color: COLORS.gray,
         marginBottom: 2,
+    },
+    requestDepartment: {
+        fontSize: SIZES.sm,
+        color: COLORS.primary,
+        fontWeight: '500',
     },
     requestInstitution: {
         fontSize: SIZES.sm,

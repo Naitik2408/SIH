@@ -25,8 +25,7 @@ interface DashboardStats {
     totalScientists: number;
     pendingApprovals: number;
     approvedScientists: number;
-    totalOrganizations: number;
-    organizationBreakdown: { [key: string]: number };
+    activeScientists: number;
 }
 
 interface RecentActivity {
@@ -47,8 +46,7 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
         totalScientists: 0,
         pendingApprovals: 0,
         approvedScientists: 0,
-        totalOrganizations: 0,
-        organizationBreakdown: {}
+        activeScientists: 0
     });
     const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
     const [loading, setLoading] = useState(true);
@@ -62,29 +60,20 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
             const result = await ownerAPI.getAllScientists();
             console.log('📊 [OWNER HOME] Scientists data received:', result);
             
-            // Calculate statistics
+            // Calculate simplified statistics
             const totalScientists = result.scientists.length;
             const pendingApprovals = result.scientists.filter(s => !s.isApproved).length;
             const approvedScientists = result.scientists.filter(s => s.isApproved).length;
-            
-            // Organization breakdown
-            const organizationBreakdown: { [key: string]: number } = {};
-            result.scientists.forEach(scientist => {
-                const org = scientist.organizationId || 'Unknown';
-                organizationBreakdown[org] = (organizationBreakdown[org] || 0) + 1;
-            });
-            
-            const totalOrganizations = Object.keys(organizationBreakdown).length;
+            const activeScientists = result.scientists.filter(s => s.isActive).length;
             
             setDashboardStats({
                 totalScientists,
                 pendingApprovals,
                 approvedScientists,
-                totalOrganizations,
-                organizationBreakdown
+                activeScientists
             });
             
-            // Generate recent activities based on actual data
+            // Generate simplified recent activities based on actual data
             const activities: RecentActivity[] = [];
             
             // Add activities for recent scientist registrations
@@ -92,12 +81,12 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                 .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
                 .slice(0, 3);
                 
-            recentScientists.forEach((scientist, index) => {
+            recentScientists.forEach((scientist) => {
                 const timeAgo = getTimeAgo(scientist.createdAt);
                 const status = scientist.isApproved ? 'approved' : 'pending approval';
                 activities.push({
                     title: `Scientist ${scientist.isApproved ? 'Approved' : 'Registration'}`,
-                    subtitle: `${scientist.name} from ${scientist.organizationId} - ${status}`,
+                    subtitle: `${scientist.name} - ${status}${scientist.department ? ` (${scientist.department})` : ''}`,
                     time: timeAgo,
                     icon: scientist.isApproved ? 'checkmark-circle' : 'person-add',
                     color: scientist.isApproved ? '#10b981' : '#3b82f6'
@@ -115,19 +104,14 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                 });
             }
             
-            // Add organization overview
-            const topOrg = Object.entries(organizationBreakdown)
-                .sort(([,a], [,b]) => b - a)[0];
-            
-            if (topOrg) {
-                activities.push({
-                    title: 'Organization Insights',
-                    subtitle: `${topOrg[0]} has the most scientists (${topOrg[1]})`,
-                    time: 'Updated',
-                    icon: 'business',
-                    color: '#8b5cf6'
-                });
-            }
+            // Add system overview
+            activities.push({
+                title: 'System Overview',
+                subtitle: `Managing ${totalScientists} scientists with ${approvedScientists} approved`,
+                time: 'Updated',
+                icon: 'analytics',
+                color: '#8b5cf6'
+            });
             
             setRecentActivities(activities);
             
@@ -135,7 +119,7 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                 totalScientists,
                 pendingApprovals,
                 approvedScientists,
-                totalOrganizations
+                activeScientists
             });
             
         } catch (error) {
@@ -179,14 +163,14 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
         setRefreshing(false);
     };
 
-    // Dynamic dashboard stats configuration
+    // Dynamic dashboard stats configuration (simplified - no organizations)
     const statsConfig = [
         {
             title: 'Total Scientists',
             value: dashboardStats.totalScientists.toString(),
             icon: 'school',
             color: '#3b82f6',
-            trend: `${dashboardStats.totalOrganizations} orgs`,
+            trend: 'All scientists',
             bgColor: '#eff6ff'
         },
         {
@@ -206,11 +190,11 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
             bgColor: '#f0fdf4'
         },
         {
-            title: 'Organizations',
-            value: dashboardStats.totalOrganizations.toString(),
-            icon: 'business',
+            title: 'Active Scientists',
+            value: dashboardStats.activeScientists.toString(),
+            icon: 'people',
             color: '#8b5cf6',
-            trend: 'Active',
+            trend: 'System users',
             bgColor: '#f3f4f6'
         }
     ];
@@ -254,7 +238,7 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                     <Text style={styles.welcomeSubtext}>
                         {loading 
                             ? 'Loading your dashboard...' 
-                            : `Managing ${dashboardStats.totalScientists} scientists across ${dashboardStats.totalOrganizations} organizations`
+                            : `Managing ${dashboardStats.totalScientists} scientists in the system`
                         }
                     </Text>
                 </View>
@@ -286,33 +270,6 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                             ))}
                         </View>
 
-                        {/* Organization Breakdown */}
-                        {Object.keys(dashboardStats.organizationBreakdown).length > 0 && (
-                            <View style={styles.organizationSection}>
-                                <Text style={styles.sectionTitle}>Organizations Overview</Text>
-                                <View style={styles.organizationCard}>
-                                    {Object.entries(dashboardStats.organizationBreakdown)
-                                        .sort(([,a], [,b]) => b - a)
-                                        .map(([org, count]) => (
-                                            <View key={org} style={styles.organizationItem}>
-                                                <View style={styles.orgInfo}>
-                                                    <Text style={styles.orgName}>{org}</Text>
-                                                    <Text style={styles.orgCount}>{count} scientists</Text>
-                                                </View>
-                                                <View style={styles.orgProgress}>
-                                                    <View 
-                                                        style={[
-                                                            styles.orgProgressBar, 
-                                                            { width: `${(count / dashboardStats.totalScientists) * 100}%` }
-                                                        ]} 
-                                                    />
-                                                </View>
-                                            </View>
-                                    ))}
-                                </View>
-                            </View>
-                        )}
-
                         {/* Quick Actions */}
                         <View style={styles.quickActionsSection}>
                             <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -331,10 +288,10 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                                     <Text style={styles.actionText}>View All Scientists</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.actionCard}>
-                                    <Ionicons name="business" size={28} color={COLORS.primary} />
-                                    <Text style={styles.actionText}>Organizations</Text>
+                                    <Ionicons name="analytics" size={28} color={COLORS.primary} />
+                                    <Text style={styles.actionText}>System Analytics</Text>
                                     <View style={styles.actionBadge}>
-                                        <Text style={styles.actionBadgeText}>{dashboardStats.totalOrganizations}</Text>
+                                        <Text style={styles.actionBadgeText}>{dashboardStats.activeScientists}</Text>
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={styles.actionCard}>
@@ -393,9 +350,9 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                                     </View>
                                 </View>
                                 <View style={styles.healthItem}>
-                                    <Text style={styles.healthLabel}>Organizations</Text>
+                                    <Text style={styles.healthLabel}>Active Scientists</Text>
                                     <View style={styles.healthStatus}>
-                                        <Text style={styles.healthValue}>{dashboardStats.totalOrganizations}</Text>
+                                        <Text style={styles.healthValue}>{dashboardStats.activeScientists}</Text>
                                     </View>
                                 </View>
                             </View>
