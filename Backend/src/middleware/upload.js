@@ -83,9 +83,8 @@ const cleanupFile = (filePath) => {
     if (filePath && fs.existsSync(filePath)) {
         try {
             fs.unlinkSync(filePath);
-            console.log('Cleaned up uploaded file:', filePath);
         } catch (error) {
-            console.error('Error cleaning up file:', error);
+            // Silently handle file cleanup errors
         }
     }
 };

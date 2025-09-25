@@ -12,6 +12,8 @@ import { COLORS, SIZES, FONTS } from '../../../../constants';
 
 interface CustomerNotificationsProps {
     onBack: () => void;
+    notifications: Notification[];
+    onNotificationsUpdate: (notifications: Notification[]) => void;
 }
 
 interface Notification {
@@ -23,43 +25,7 @@ interface Notification {
     type: 'journey' | 'reward' | 'system' | 'update';
 }
 
-const CustomerNotifications: React.FC<CustomerNotificationsProps> = ({ onBack }) => {
-    // Sample notifications data
-    const notifications: Notification[] = [
-        {
-            id: '1',
-            title: 'Journey Completed!',
-            message: 'Your trip from Delhi to Mumbai has been successfully logged. You earned 50 GovCoins!',
-            time: '2 hours ago',
-            isRead: false,
-            type: 'journey'
-        },
-        {
-            id: '2',
-            title: 'Monthly Check-in Available',
-            message: 'Complete your monthly travel survey to earn bonus rewards.',
-            time: '1 day ago',
-            isRead: false,
-            type: 'reward'
-        },
-        {
-            id: '3',
-            title: 'Welcome to GetWay!',
-            message: 'Thank you for joining GetWay. Start logging your journeys to earn rewards.',
-            time: '3 days ago',
-            isRead: true,
-            type: 'system'
-        },
-        {
-            id: '4',
-            title: 'App Update Available',
-            message: 'New features and improvements are available. Update now for the best experience.',
-            time: '1 week ago',
-            isRead: true,
-            type: 'update'
-        }
-    ];
-
+const CustomerNotifications: React.FC<CustomerNotificationsProps> = ({ onBack, notifications, onNotificationsUpdate }) => {
     const getNotificationIcon = (type: string) => {
         switch (type) {
             case 'journey':
@@ -91,6 +57,15 @@ const CustomerNotifications: React.FC<CustomerNotificationsProps> = ({ onBack })
     };
 
     const handleNotificationPress = (notification: Notification) => {
+        // Mark the notification as read if it's unread
+        if (!notification.isRead) {
+            const updatedNotifications = notifications.map(n =>
+                n.id === notification.id ? { ...n, isRead: true } : n
+            );
+            onNotificationsUpdate(updatedNotifications);
+        }
+
+        // Show the notification details
         Alert.alert(
             notification.title,
             notification.message,
@@ -99,12 +74,40 @@ const CustomerNotifications: React.FC<CustomerNotificationsProps> = ({ onBack })
     };
 
     const markAllAsRead = () => {
+        const unreadCount = notifications.filter(n => !n.isRead).length;
+        
+        if (unreadCount === 0) {
+            Alert.alert(
+                'All Notifications Read',
+                'All notifications are already marked as read.',
+                [{ text: 'OK', style: 'default' }]
+            );
+            return;
+        }
+
         Alert.alert(
             'Mark All as Read',
-            'Are you sure you want to mark all notifications as read?',
+            `Are you sure you want to mark all ${unreadCount} unread notifications as read?`,
             [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Yes', style: 'default' }
+                { 
+                    text: 'Yes', 
+                    style: 'default',
+                    onPress: () => {
+                        const updatedNotifications = notifications.map(notification => ({
+                            ...notification,
+                            isRead: true
+                        }));
+                        onNotificationsUpdate(updatedNotifications);
+                        
+                        // Show success feedback
+                        Alert.alert(
+                            'Success',
+                            'All notifications have been marked as read.',
+                            [{ text: 'OK', style: 'default' }]
+                        );
+                    }
+                }
             ]
         );
     };
@@ -121,13 +124,40 @@ const CustomerNotifications: React.FC<CustomerNotificationsProps> = ({ onBack })
                     />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Notifications</Text>
-                <TouchableOpacity onPress={markAllAsRead} style={styles.markReadButton}>
-                    <Text style={styles.markReadText}>Mark All Read</Text>
+                <TouchableOpacity 
+                    onPress={markAllAsRead} 
+                    style={[
+                        styles.markReadButton,
+                        notifications.filter(n => !n.isRead).length === 0 && styles.disabledButton
+                    ]}
+                    disabled={notifications.filter(n => !n.isRead).length === 0}
+                >
+                    <Text style={[
+                        styles.markReadText,
+                        notifications.filter(n => !n.isRead).length === 0 && styles.disabledButtonText
+                    ]}>
+                        Mark All Read
+                        {notifications.filter(n => !n.isRead).length > 0 && 
+                            ` (${notifications.filter(n => !n.isRead).length})`
+                        }
+                    </Text>
                 </TouchableOpacity>
             </View>
 
             {/* Notifications List */}
             <ScrollView style={styles.notificationsList} showsVerticalScrollIndicator={false}>
+                {/* Notifications Summary */}
+                {notifications.length > 0 && (
+                    <View style={styles.summaryContainer}>
+                        <Text style={styles.summaryText}>
+                            {notifications.filter(n => !n.isRead).length > 0
+                                ? `${notifications.filter(n => !n.isRead).length} unread of ${notifications.length} total`
+                                : `All ${notifications.length} notifications read`
+                            }
+                        </Text>
+                    </View>
+                )}
+
                 {notifications.map((notification) => (
                     <TouchableOpacity
                         key={notification.id}
@@ -229,10 +259,32 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.medium,
         color: COLORS.textSecondary,
     },
+    disabledButton: {
+        backgroundColor: COLORS.background,
+        opacity: 0.6,
+    },
+    disabledButtonText: {
+        color: COLORS.textQuaternary,
+    },
     notificationsList: {
         flex: 1,
         paddingHorizontal: 20,
         paddingTop: 16,
+    },
+    summaryContainer: {
+        backgroundColor: COLORS.white,
+        borderRadius: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        marginBottom: 16,
+        borderWidth: 1,
+        borderColor: COLORS.lightGray,
+    },
+    summaryText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.medium,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
     },
     notificationItem: {
         backgroundColor: COLORS.white,

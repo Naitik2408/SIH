@@ -1,14 +1,17 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     TouchableOpacity,
     ScrollView,
+    ActivityIndicator,
+    Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, FONTS } from '../../constants';
 import { User } from '../../types';
+import { journeyAPI } from '../../services/api';
 
 interface CustomerProfileProps {
     user: User;
@@ -19,6 +22,34 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
     user,
     onLogout
 }) => {
+    const [tripsCount, setTripsCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch real trip data from backend
+    useEffect(() => {
+        const fetchTripData = async () => {
+            try {
+                const response = await journeyAPI.getUserJourneys({
+                    limit: 100 // Get enough to count completed trips
+                });
+                
+                // Count completed trips only
+                const completedTrips = response.journeys.filter(
+                    journey => journey.status === 'completed'
+                ).length;
+                
+                setTripsCount(completedTrips);
+            } catch (error) {
+                console.error('Error fetching trip data:', error);
+                setTripsCount(0); // Default to 0 on error
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTripData();
+    }, []);
+
     const handleEditProfile = () => {
         // TODO: Navigate to edit profile
         alert('Edit profile - Coming soon!');
@@ -29,15 +60,56 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
         alert('Refresh - Coming soon!');
     };
 
+    // Handle section navigation
+    const handleSectionPress = (sectionId: string) => {
+        switch (sectionId) {
+            case 'privacy':
+                Alert.alert(
+                    'Privacy Settings',
+                    'Privacy Settings:\n\n• Data Collection: Control what travel data is collected\n• Location Sharing: Manage location privacy settings\n• Profile Visibility: Choose who can see your profile\n• Data Export: Download your data anytime\n• Account Deletion: Permanently delete your account and data\n\nYour privacy is important to us. All data is encrypted and stored securely.',
+                    [{ text: 'OK' }]
+                );
+                break;
+            case 'help':
+                Alert.alert(
+                    'Help & Support',
+                    'Need help? We\'re here for you!\n\n📧 Email: support@getway.app\n📞 Phone: +91 9876543210\n🕒 Support Hours: Mon-Fri 9AM-6PM IST\n\n📖 FAQs:\n• How to track my trips?\n• How to earn points?\n• Privacy and data security\n• Technical troubleshooting\n\nVisit our Help Center for detailed guides and tutorials.',
+                    [
+                        { text: 'OK' },
+                        { text: 'Contact Support', onPress: () => alert('Opening support contact...') }
+                    ]
+                );
+                break;
+            case 'about':
+                Alert.alert(
+                    'About GetWay',
+                    'GetWay v1.0.0\n\n🚀 Smart Travel Data Collection Platform\n\nBuilt for Smart India Hackathon 2024 to revolutionize urban mobility data collection.\n\n👥 Team: Transportation Data Analytics\n🏆 Category: Smart City Solutions\n\n📋 Features:\n• Automatic trip detection\n• Smart route optimization\n• Community travel insights\n• Privacy-focused data collection\n\n© 2024 GetWay. All rights reserved.',
+                    [{ text: 'OK' }]
+                );
+                break;
+            default:
+                break;
+        }
+    };
+
+    // Updated profile stats with real data and points set to 0
     const profileStats = [
-        { label: 'Trips Completed', value: '127', icon: 'checkmark-circle', color: '#10b981' },
-        { label: 'Points Earned', value: '2,450', icon: 'trophy', color: '#f59e0b' },
-        { label: 'Carbon Saved', value: '15.2kg', icon: 'leaf', color: '#22c55e' },
+        { 
+            label: 'Trips Completed', 
+            value: loading ? '...' : tripsCount.toString(), 
+            icon: 'checkmark-circle', 
+            color: '#10b981' 
+        },
+        { 
+            label: 'Points Earned', 
+            value: '0', // Set to 0 as requested
+            icon: 'trophy', 
+            color: '#f59e0b' 
+        },
     ];
 
+    // Updated sections - removed personal info and travel preferences
     const profileSections = [
-        { id: 'personal', label: 'Personal Info', icon: 'person-outline' },
-        { id: 'preferences', label: 'Travel Preferences', icon: 'settings-outline' },
         { id: 'privacy', label: 'Privacy Settings', icon: 'shield-outline' },
         { id: 'help', label: 'Help & Support', icon: 'help-circle-outline' },
         { id: 'about', label: 'About App', icon: 'information-circle-outline' },
@@ -48,13 +120,6 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.title}>My Profile</Text>
-                <TouchableOpacity style={styles.settingsButton}>
-                    <Ionicons
-                        name="settings-outline"
-                        size={SIZES.subheading + 2} // 18px
-                        color={COLORS.textSecondary}
-                    />
-                </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -93,7 +158,11 @@ const CustomerProfile: React.FC<CustomerProfileProps> = ({
                 {/* Profile Sections */}
                 <View style={styles.sectionsContainer}>
                     {profileSections.map((section) => (
-                        <TouchableOpacity key={section.id} style={styles.sectionItem}>
+                        <TouchableOpacity 
+                            key={section.id} 
+                            style={styles.sectionItem}
+                            onPress={() => handleSectionPress(section.id)}
+                        >
                             <View style={styles.sectionLeft}>
                                 <View style={styles.sectionIconContainer}>
                                     <Ionicons
@@ -134,9 +203,6 @@ const styles = StyleSheet.create({
         paddingBottom: 120, // Extra padding to ensure content is above bottom navbar
     },
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
         paddingHorizontal: 20,
         paddingTop: 60,
         paddingBottom: 24,
@@ -147,23 +213,6 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.bold,
         color: COLORS.textPrimary, // Use hierarchy colors
         marginBottom: 4,
-    },
-    settingsButton: {
-        width: 35,
-        height: 35,
-        borderRadius: 12,
-        backgroundColor: '#ffffff',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#00000062',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 4,
-        marginTop: 4,
     },
     content: {
         flex: 1,

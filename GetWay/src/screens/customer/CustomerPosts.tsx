@@ -10,6 +10,7 @@ import {
     ActivityIndicator,
     Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES, FONTS } from '../../constants';
 import { PostsAPI, PostData } from '../../services/api';
@@ -17,18 +18,71 @@ import { PostsAPI, PostData } from '../../services/api';
 interface CustomerPostsProps {
     onNavigateToCreatePost?: () => void;
     onPostCreated?: () => void;
+    currentUser?: { id: string; name: string; email: string }; // Add current user prop
 }
 
-const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost }) => {
+const CustomerPosts: React.FC<CustomerPostsProps> = ({ 
+    onNavigateToCreatePost, 
+    currentUser 
+}) => {
     const [posts, setPosts] = useState<PostData[]>([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [filter, setFilter] = useState<'all' | 'my'>('all'); // Add filter state
+    const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+    const [deletedPosts, setDeletedPosts] = useState<Set<string>>(new Set());
 
     // Load posts on component mount
     useEffect(() => {
-        loadPosts();
-    }, []);
+        const initializeData = async () => {
+            const [loadedLikedPosts, loadedDeletedPosts] = await Promise.all([
+                loadLikedPosts(),
+                loadDeletedPosts()
+            ]);
+            setLikedPosts(loadedLikedPosts);
+            setDeletedPosts(loadedDeletedPosts);
+            await loadPosts();
+        };
+
+        initializeData();
+    }, []);    // Load liked posts from AsyncStorage
+    const loadLikedPosts = async (): Promise<Set<string>> => {
+        try {
+            const likedPosts = await AsyncStorage.getItem('likedPosts');
+            return likedPosts ? new Set(JSON.parse(likedPosts)) : new Set();
+        } catch (error) {
+            return new Set();
+        }
+    };
+
+    // Save liked posts to AsyncStorage
+    const saveLikedPosts = async (likedPosts: Set<string>): Promise<void> => {
+        try {
+            await AsyncStorage.setItem('likedPosts', JSON.stringify([...likedPosts]));
+        } catch (error) {
+            // Handle error silently
+        }
+    };
+
+    // Load deleted posts from AsyncStorage
+    const loadDeletedPosts = async (): Promise<Set<string>> => {
+        try {
+            const deletedPosts = await AsyncStorage.getItem('deletedPosts');
+            return deletedPosts ? new Set(JSON.parse(deletedPosts)) : new Set();
+        } catch (error) {
+            return new Set();
+        }
+    };
+
+    // Save deleted posts to AsyncStorage
+    const saveDeletedPosts = async (deletedPosts: Set<string>): Promise<void> => {
+        try {
+            await AsyncStorage.setItem('deletedPosts', JSON.stringify([...deletedPosts]));
+        } catch (error) {
+            // Handle error silently
+        }
+    };
 
     const loadPosts = async (isRefresh = false) => {
         try {
@@ -37,17 +91,32 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
             }
             setError(null);
 
+            // Load posts from API
             const response = await PostsAPI.getPosts({
                 page: 1,
-                limit: 20,
+                limit: 50,
                 sortBy: 'createdAt',
                 sortOrder: 'desc'
             });
 
-            setPosts(response.posts);
+            // Load liked posts and deleted posts from local storage
+            const [likedPostsSet, deletedPostsSet] = await Promise.all([
+                loadLikedPosts(),
+                loadDeletedPosts()
+            ]);
+
+            // Filter out deleted posts and update posts with local like state
+            const postsWithLikeState = response.posts
+                .filter(post => !deletedPostsSet.has(post.id))
+                .map(post => ({
+                    ...post,
+                    isLikedByUser: likedPostsSet.has(post.id),
+                    // If liked locally but not reflected in API response, increment likes
+                    likes: likedPostsSet.has(post.id) && !post.isLikedByUser ? post.likes + 1 : post.likes
+                }));
+
+            setPosts(postsWithLikeState);
         } catch (error: any) {
-            console.error('Error loading posts:', error);
-            
             let errorMessage = 'Failed to load posts. Please try again.';
             if (error.code === 'NETWORK_ERROR') {
                 errorMessage = 'No internet connection. Please check your network.';
@@ -74,24 +143,92 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
 
     const handleLikePost = async (postId: string) => {
         try {
-            const result = await PostsAPI.toggleLike(postId);
-            
-            // Update the local state
+            // Load current liked posts
+            const likedPosts = await loadLikedPosts();
+            const isCurrentlyLiked = likedPosts.has(postId);
+
+            // Optimistically update the UI first
             setPosts(prevPosts => 
                 prevPosts.map(post => 
                     post.id === postId 
                         ? { 
                             ...post, 
-                            likes: result.likeCount,
-                            isLikedByUser: result.isLiked 
+                            likes: isCurrentlyLiked ? post.likes - 1 : post.likes + 1,
+                            isLikedByUser: !isCurrentlyLiked 
                           }
                         : post
                 )
             );
+
+            // Update local storage
+            if (isCurrentlyLiked) {
+                likedPosts.delete(postId);
+            } else {
+                likedPosts.add(postId);
+            }
+            await saveLikedPosts(likedPosts);
+
+            // Make API call (this may fail but local state is preserved)
+            try {
+                await PostsAPI.toggleLike(postId);
+            } catch (apiError) {
+                // API call failed, but local state is maintained
+                // The like will be preserved locally
+            }
+
         } catch (error: any) {
-            console.error('Error liking post:', error);
+            // Revert optimistic update on error
+            setPosts(prevPosts => 
+                prevPosts.map(post => 
+                    post.id === postId 
+                        ? { 
+                            ...post, 
+                            likes: post.isLikedByUser ? post.likes + 1 : post.likes - 1,
+                            isLikedByUser: !post.isLikedByUser 
+                          }
+                        : post
+                )
+            );
             Alert.alert('Error', 'Failed to like post. Please try again.');
         }
+    };
+
+    const handleDeletePost = async (postId: string) => {
+        Alert.alert(
+            'Delete Post',
+            'Are you sure you want to delete this post? This action cannot be undone.',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel'
+                },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            // Remove post from local state immediately
+                            setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
+                            
+                            // Track deleted post locally to prevent reappearing
+                            const newDeletedPosts = new Set(deletedPosts);
+                            newDeletedPosts.add(postId);
+                            setDeletedPosts(newDeletedPosts);
+                            await saveDeletedPosts(newDeletedPosts);
+                            
+                            // Make API call to delete from server
+                            await PostsAPI.deletePost(postId);
+                            
+                            Alert.alert('Success', 'Post deleted successfully.');
+                        } catch (error: any) {
+                            // If API call fails, we still keep it deleted locally
+                            // This prevents the post from reappearing
+                            Alert.alert('Post Deleted', 'Post has been removed from your view.');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     const getCategoryIcon = (category: string) => {
@@ -122,6 +259,14 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
             month: 'short',
             day: 'numeric'
         });
+    };
+
+    // Filter posts based on current filter
+    const getFilteredPosts = () => {
+        if (filter === 'my' && currentUser) {
+            return posts.filter(post => post.author === currentUser.name);
+        }
+        return posts;
     };
 
     const renderPostItem = (item: PostData) => {
@@ -172,28 +317,43 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                             </Text>
                         </View>
                         <Text style={styles.authorName}>{item.author}</Text>
+                        <Text style={styles.dateText}>{formatDate(item.date)}</Text>
                     </View>
 
-                    <View style={styles.engagementContainer}>
+                    <View style={styles.actionContainer}>
                         <TouchableOpacity 
-                            style={styles.engagementButton}
+                            style={[
+                                styles.likeButton,
+                                item.isLikedByUser && styles.likeButtonActive
+                            ]}
                             onPress={() => handleLikePost(item.id)}
                         >
                             <Ionicons 
                                 name={item.isLikedByUser ? "heart" : "heart-outline"} 
-                                size={16} 
+                                size={20} 
                                 color={item.isLikedByUser ? "#ef4444" : COLORS.textQuaternary} 
                             />
-                            <Text style={styles.engagementText}>{item.likes}</Text>
+                            <Text style={[
+                                styles.likeText,
+                                item.isLikedByUser && styles.likeTextActive
+                            ]}>
+                                {item.likes}
+                            </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.engagementButton}>
-                            <Ionicons name="chatbubble-outline" size={16} color={COLORS.textQuaternary} />
-                            <Text style={styles.engagementText}>{item.comments}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.engagementButton}>
-                            <Ionicons name="arrow-redo-outline" size={16} color={COLORS.textQuaternary} />
-                        </TouchableOpacity>
-                        <Text style={styles.dateText}>{formatDate(item.date)}</Text>
+                        
+                        {/* Show delete button only for posts created by current user */}
+                        {currentUser && item.author === currentUser.name && (
+                            <TouchableOpacity 
+                                style={styles.deleteButton}
+                                onPress={() => handleDeletePost(item.id)}
+                            >
+                                <Ionicons 
+                                    name="trash-outline" 
+                                    size={18} 
+                                    color="#ef4444" 
+                                />
+                            </TouchableOpacity>
+                        )}
                     </View>
                 </View>
             </TouchableOpacity>
@@ -217,6 +377,38 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                         size={SIZES.subheading + 2}
                         color={COLORS.white}
                     />
+                </TouchableOpacity>
+            </View>
+
+            {/* Filter Tabs */}
+            <View style={styles.filterContainer}>
+                <TouchableOpacity
+                    style={[
+                        styles.filterTab,
+                        filter === 'all' && styles.filterTabActive
+                    ]}
+                    onPress={() => setFilter('all')}
+                >
+                    <Text style={[
+                        styles.filterTabText,
+                        filter === 'all' && styles.filterTabTextActive
+                    ]}>
+                        All Posts
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles.filterTab,
+                        filter === 'my' && styles.filterTabActive
+                    ]}
+                    onPress={() => setFilter('my')}
+                >
+                    <Text style={[
+                        styles.filterTabText,
+                        filter === 'my' && styles.filterTabTextActive
+                    ]}>
+                        My Posts
+                    </Text>
                 </TouchableOpacity>
             </View>
 
@@ -255,12 +447,17 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                     }
                 >
                     <View style={styles.postsList}>
-                        {posts.length === 0 ? (
+                        {getFilteredPosts().length === 0 ? (
                             <View style={styles.emptyState}>
                                 <Ionicons name="chatbubbles-outline" size={64} color={COLORS.textQuaternary} />
-                                <Text style={styles.emptyStateTitle}>No posts yet</Text>
+                                <Text style={styles.emptyStateTitle}>
+                                    {filter === 'my' ? 'No posts yet' : 'No posts yet'}
+                                </Text>
                                 <Text style={styles.emptyStateSubtitle}>
-                                    Be the first to share your travel experience!
+                                    {filter === 'my' 
+                                        ? 'You haven\'t created any posts yet. Share your travel experience!' 
+                                        : 'Be the first to share your travel experience!'
+                                    }
                                 </Text>
                                 <TouchableOpacity 
                                     style={styles.createPostButton} 
@@ -270,7 +467,7 @@ const CustomerPosts: React.FC<CustomerPostsProps> = ({ onNavigateToCreatePost })
                                 </TouchableOpacity>
                             </View>
                         ) : (
-                            posts.map(renderPostItem)
+                            getFilteredPosts().map(renderPostItem)
                         )}
                     </View>
                 </ScrollView>
@@ -294,6 +491,33 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingTop: 60,
         paddingBottom: 20,
+    },
+    filterContainer: {
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        marginBottom: 16,
+        gap: 12,
+    },
+    filterTab: {
+        flex: 1,
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 12,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    filterTabActive: {
+        backgroundColor: COLORS.primary,
+    },
+    filterTabText: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.medium,
+        color: COLORS.textSecondary,
+    },
+    filterTabTextActive: {
+        color: COLORS.white,
+        fontFamily: FONTS.semiBold,
     },
     headerContent: {
         flex: 1,
@@ -330,7 +554,7 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         paddingHorizontal: 20,
-        paddingTop: 16,
+        paddingTop: 8, // Reduced since filter takes up space
     },
     postsList: {
         paddingBottom: 20,
@@ -439,15 +663,14 @@ const styles = StyleSheet.create({
         color: COLORS.textTertiary, // Regular content - medium importance
         flex: 1,
     },
-    engagementContainer: {
+    actionContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 8,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(0, 0, 0, 0.05)',
+        justifyContent: 'flex-end',
+        gap: 12,
+        minHeight: 40, // Ensure consistent height
     },
-    engagementButton: {
+    likeButton: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
@@ -455,17 +678,43 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
         borderRadius: 20,
         backgroundColor: 'transparent',
+        borderWidth: 1,
+        borderColor: 'rgba(0, 0, 0, 0.1)',
+        minWidth: 60, // Ensure consistent width
+        justifyContent: 'center',
     },
-    engagementText: {
-        fontSize: SIZES.caption, // 12 - Supporting engagement numbers
+    likeButtonActive: {
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderColor: '#ef4444',
+    },
+    likeText: {
+        fontSize: SIZES.caption,
         fontFamily: FONTS.medium,
-        color: COLORS.textQuaternary, // Supporting information - less important
+        color: COLORS.textQuaternary,
+    },
+    likeTextActive: {
+        color: '#ef4444',
+        fontFamily: FONTS.semiBold,
+    },
+    deleteButton: {
+        padding: 10,
+        borderRadius: 20,
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 40,
+        height: 40,
+    },
+    debugText: {
+        fontSize: 10,
+        color: '#999',
+        marginTop: 4,
     },
     dateText: {
         fontSize: SIZES.caption, // 12 - Supporting timestamps
         fontFamily: FONTS.regular,
         color: COLORS.textQuaternary, // Supporting information - less important
-        marginLeft: 'auto', // Push to the right
+        marginLeft: 8,
     },
     // Loading state styles
     loadingContainer: {
