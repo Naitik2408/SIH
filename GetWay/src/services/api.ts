@@ -508,3 +508,78 @@ export const journeyAPI = {
         return response.data!;
     }
 };
+
+// Owner API functions
+export const ownerAPI = {
+    // Get pending scientists for approval
+    async getPendingScientists(): Promise<any[]> {
+        const response = await apiRequest<{ scientists: any[]; count: number; organizationId: string }>(
+            '/owner/pending-scientists',
+            {
+                method: 'GET',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientists;
+        } else {
+            throw new Error(response.message || 'Failed to fetch pending scientists');
+        }
+    },
+
+    // Get all scientists in organization
+    async getAllScientists(): Promise<{ scientists: any[]; stats: any }> {
+        const response = await apiRequest<{ scientists: any[]; stats: any; organizationId: string }>(
+            '/owner/scientists',
+            {
+                method: 'GET',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                scientists: response.data.scientists,
+                stats: response.data.stats
+            };
+        } else {
+            throw new Error(response.message || 'Failed to fetch scientists');
+        }
+    },
+
+    // Approve scientist
+    async approveScientist(scientistId: string): Promise<any> {
+        const response = await apiRequest<{ scientist: any }>(
+            `/owner/approve-scientist/${scientistId}`,
+            {
+                method: 'POST',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientist;
+        } else {
+            throw new Error(response.message || 'Failed to approve scientist');
+        }
+    },
+
+    // Disapprove scientist
+    async disapproveScientist(scientistId: string, reason?: string): Promise<any> {
+        const response = await apiRequest<{ scientist: any }>(
+            `/owner/disapprove-scientist/${scientistId}`,
+            {
+                method: 'POST',
+                body: { reason: reason || 'Not specified' },
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientist;
+        } else {
+            throw new Error(response.message || 'Failed to disapprove scientist');
+        }
+    }
+};

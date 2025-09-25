@@ -147,7 +147,7 @@ const getPendingScientists = async (req, res) => {
         const pendingScientists = await User.find({
             role: 'scientist',
             isApproved: false,
-            isActive: true
+            // isActive: true
             // organizationId: organizationId // Add this when owner auth is ready
         }).select('-password').sort({ createdAt: -1 });
 
