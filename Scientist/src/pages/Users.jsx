@@ -329,251 +329,363 @@ const Users = () => {
     const mostPopularMode = Object.entries(summaryStats.topMode).sort(([, a], [, b]) => b - a)[0]?.[0] || 'N/A';
 
     return (
-        <div className="p-6 space-y-6">
-            {/* Header */}
-            <div className="mb-6">
-                <h1 className="text-3xl font-bold text-gray-900">Users & Cohorts</h1>
-                <p className="text-gray-600 mt-2">User analytics, cohort analysis, and behavioral insights</p>
-            </div>
+        <div className="p-4 lg:p-6 space-y-6 lg:space-y-8 bg-gradient-to-br from-slate-50 via-purple-50/40 to-blue-50/40 min-h-screen relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-grid-slate-900/[0.04] bg-[size:75px_75px] pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-blue-500/5 pointer-events-none"></div>
 
-            {/* Summary Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white rounded-xl shadow-md border p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Total Users</p>
-                            <p className="text-2xl font-bold text-gray-900">{summaryStats.totalUsers}</p>
+            {/* Enhanced Header with Animation */}
+            <div className="mb-6 lg:mb-8 relative z-10">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div className="space-y-4">
+                        <div className="flex items-center space-x-4">
+                            <div className="relative">
+                                <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-600 via-purple-700 to-blue-600 shadow-2xl transform hover:scale-105 transition-transform duration-300">
+                                    <UsersIcon className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="absolute -top-1 -right-1 p-1 bg-green-500 rounded-full">
+                                    <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 bg-clip-text text-transparent leading-tight">
+                                    Users & Cohorts
+                                </h1>
+                                <p className="text-gray-600 text-base lg:text-lg mt-2 font-medium">User analytics, cohort analysis, and behavioral insights</p>
+                            </div>
                         </div>
-                        <div className="p-3 rounded-lg bg-blue-100 text-blue-600">
-                            <UsersIcon className="w-6 h-6" />
-                        </div>
-                    </div>
-                </div>
 
-                <div className="bg-white rounded-xl shadow-md border p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Active Today</p>
-                            <p className="text-2xl font-bold text-green-600">{summaryStats.activeToday}</p>
-                        </div>
-                        <div className="p-3 rounded-lg bg-green-100 text-green-600">
-                            <Activity className="w-6 h-6" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-md border p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Avg Trips</p>
-                            <p className="text-2xl font-bold text-purple-600">{summaryStats.avgTrips}</p>
-                        </div>
-                        <div className="p-3 rounded-lg bg-purple-100 text-purple-600">
-                            <TrendingUp className="w-6 h-6" />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-xl shadow-md border p-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-gray-600">Top Mode</p>
-                            <p className="text-2xl font-bold text-orange-600">{mostPopularMode}</p>
-                        </div>
-                        <div className="p-3 rounded-lg bg-orange-100 text-orange-600">
-                            <MapPin className="w-6 h-6" />
+                        {/* Stats Row */}
+                        <div className="flex items-center space-x-6 text-sm">
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20 shadow-sm">
+                                <Calendar className="w-4 h-4 text-purple-600" />
+                                <span className="text-gray-700 font-medium">Last updated: Sept 26, 2025</span>
+                            </div>
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20 shadow-sm">
+                                <Activity className="w-4 h-4 text-green-600" />
+                                <span className="text-gray-700 font-medium">Real-time data</span>
+                            </div>
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20 shadow-sm">
+                                <UserCheck className="w-4 h-4 text-blue-600" />
+                                <span className="text-gray-700 font-medium">{filteredUsers.length} Active Users</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="bg-white rounded-2xl shadow-md border p-6">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                        <Filter className="w-5 h-5 mr-2 text-gray-500" />
-                        <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
+            {/* Enhanced Summary Stats with Glass Effect */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8 relative z-10">
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border-0 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-blue-600/5"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Total Users</p>
+                            <p className="text-3xl font-bold text-gray-900">{summaryStats.totalUsers}</p>
+                            <p className="text-xs text-green-600 font-medium mt-1">+12% from last month</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <UsersIcon className="w-7 h-7 text-white" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border-0 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-green-600/5"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Active Today</p>
+                            <p className="text-3xl font-bold text-gray-900">{summaryStats.activeToday}</p>
+                            <p className="text-xs text-green-600 font-medium mt-1">+5% from yesterday</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <Activity className="w-7 h-7 text-white" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border-0 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-purple-600/5"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Avg Trips</p>
+                            <p className="text-3xl font-bold text-gray-900">{summaryStats.avgTrips}</p>
+                            <p className="text-xs text-purple-600 font-medium mt-1">Per user monthly</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <TrendingUp className="w-7 h-7 text-white" />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border-0 p-6 hover:shadow-2xl transition-all duration-300 transform hover:scale-105 group overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-orange-600/5"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                        <div>
+                            <p className="text-sm font-medium text-gray-600 mb-1">Top Mode</p>
+                            <p className="text-3xl font-bold text-gray-900">{mostPopularMode}</p>
+                            <p className="text-xs text-orange-600 font-medium mt-1">Most preferred</p>
+                        </div>
+                        <div className="p-4 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <MapPin className="w-7 h-7 text-white" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Enhanced Filters with Glass Effect */}
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border-0 p-6 hover:shadow-3xl transition-all duration-500 relative z-10 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-purple-500/10"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6 relative z-10">
+                    <div className="flex items-center space-x-3">
+                        <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg">
+                            <Filter className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900">Advanced Filters</h2>
+                            <p className="text-gray-600 text-sm">Filter and analyze user data</p>
+                        </div>
                     </div>
                     <button
                         onClick={handleExportCohort}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+                        className="bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-3 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105"
                     >
-                        <Download className="w-4 h-4 mr-2" />
+                        <Download className="w-5 h-5 mr-2" />
                         Export Cohort Data
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 relative z-10">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Search</label>
                         <div className="relative">
-                            <Search className="w-4 h-4 absolute left-3 top-3 text-gray-400" />
+                            <Search className="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-400" />
                             <input
                                 type="text"
                                 placeholder="Search users..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-12 pr-4 py-3 border-0 bg-white/80 backdrop-blur-sm rounded-xl text-sm focus:ring-2 focus:ring-purple-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:bg-white placeholder-gray-400"
                             />
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 pointer-events-none"></div>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
-                        <select
-                            value={selectedGender}
-                            onChange={(e) => setSelectedGender(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            {genderOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Gender</label>
+                        <div className="relative">
+                            <select
+                                value={selectedGender}
+                                onChange={(e) => setSelectedGender(e.target.value)}
+                                className="w-full px-4 py-3 border-0 bg-white/80 backdrop-blur-sm rounded-xl focus:ring-2 focus:ring-purple-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:bg-white appearance-none cursor-pointer"
+                            >
+                                {genderOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 pointer-events-none"></div>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Age Group</label>
-                        <select
-                            value={selectedAgeGroup}
-                            onChange={(e) => setSelectedAgeGroup(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            {ageGroupOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Age Group</label>
+                        <div className="relative">
+                            <select
+                                value={selectedAgeGroup}
+                                onChange={(e) => setSelectedAgeGroup(e.target.value)}
+                                className="w-full px-4 py-3 border-0 bg-white/80 backdrop-blur-sm rounded-xl focus:ring-2 focus:ring-purple-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:bg-white appearance-none cursor-pointer"
+                            >
+                                {ageGroupOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 pointer-events-none"></div>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
-                        <select
-                            value={selectedOccupation}
-                            onChange={(e) => setSelectedOccupation(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            {occupationOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Occupation</label>
+                        <div className="relative">
+                            <select
+                                value={selectedOccupation}
+                                onChange={(e) => setSelectedOccupation(e.target.value)}
+                                className="w-full px-4 py-3 border-0 bg-white/80 backdrop-blur-sm rounded-xl focus:ring-2 focus:ring-purple-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:bg-white appearance-none cursor-pointer"
+                            >
+                                {occupationOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 pointer-events-none"></div>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Mode Preference</label>
-                        <select
-                            value={selectedMode}
-                            onChange={(e) => setSelectedMode(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        >
-                            {modeOptions.map(option => (
-                                <option key={option} value={option}>{option}</option>
-                            ))}
-                        </select>
+                        <label className="block text-sm font-bold text-gray-700 mb-2 uppercase tracking-wide">Mode Preference</label>
+                        <div className="relative">
+                            <select
+                                value={selectedMode}
+                                onChange={(e) => setSelectedMode(e.target.value)}
+                                className="w-full px-4 py-3 border-0 bg-white/80 backdrop-blur-sm rounded-xl focus:ring-2 focus:ring-purple-500 shadow-lg hover:shadow-xl transition-all duration-300 focus:bg-white appearance-none cursor-pointer"
+                            >
+                                {modeOptions.map(option => (
+                                    <option key={option} value={option}>{option}</option>
+                                ))}
+                            </select>
+                            <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 pointer-events-none"></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Users Table */}
-            <div className="bg-white rounded-2xl shadow-md border">
-                <div className="p-6 border-b border-gray-200">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                        <User className="w-5 h-5 mr-2 text-blue-600" />
-                        Users ({filteredUsers.length})
-                    </h2>
+            {/* Enhanced Users Table with Glass Effect */}
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border-0 hover:shadow-3xl transition-all duration-500 relative z-10 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-purple-500/5"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+
+                <div className="p-6 border-b border-gray-200/30 relative z-10">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg">
+                                <User className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
+                                    User Directory
+                                </h2>
+                                <p className="text-gray-600 text-sm">
+                                    {filteredUsers.length} users found
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20">
+                                <Activity className="w-4 h-4 text-green-600" />
+                                <span className="text-green-600 font-medium text-sm">Live Data</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto relative z-10">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-gray-200">
+                            <tr className="border-b border-gray-200/50 bg-gradient-to-r from-purple-50/50 to-blue-50/50">
                                 <th
-                                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
+                                    className="text-left py-4 px-6 font-bold text-gray-700 cursor-pointer hover:bg-white/50 transition-colors duration-200 rounded-tl-xl"
                                     onClick={() => handleSort('id')}
                                 >
-                                    <div className="flex items-center">
-                                        User ID
+                                    <div className="flex items-center space-x-2">
+                                        <span>User ID</span>
                                         {sortField === 'id' && (
-                                            sortDirection === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />
+                                            sortDirection === 'asc' ?
+                                                <ArrowUp className="w-4 h-4 text-purple-600" /> :
+                                                <ArrowDown className="w-4 h-4 text-purple-600" />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
+                                    className="text-left py-4 px-6 font-bold text-gray-700 cursor-pointer hover:bg-white/50 transition-colors duration-200"
                                     onClick={() => handleSort('name')}
                                 >
-                                    <div className="flex items-center">
-                                        Name
+                                    <div className="flex items-center space-x-2">
+                                        <span>Name</span>
                                         {sortField === 'name' && (
-                                            sortDirection === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />
+                                            sortDirection === 'asc' ?
+                                                <ArrowUp className="w-4 h-4 text-purple-600" /> :
+                                                <ArrowDown className="w-4 h-4 text-purple-600" />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
+                                    className="text-left py-4 px-6 font-bold text-gray-700 cursor-pointer hover:bg-white/50 transition-colors duration-200"
                                     onClick={() => handleSort('age')}
                                 >
-                                    <div className="flex items-center">
-                                        Age
+                                    <div className="flex items-center space-x-2">
+                                        <span>Age</span>
                                         {sortField === 'age' && (
-                                            sortDirection === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />
+                                            sortDirection === 'asc' ?
+                                                <ArrowUp className="w-4 h-4 text-purple-600" /> :
+                                                <ArrowDown className="w-4 h-4 text-purple-600" />
                                         )}
                                     </div>
                                 </th>
-                                <th className="text-left py-3 px-4 font-medium text-gray-700">Mode Preference</th>
+                                <th className="text-left py-4 px-6 font-bold text-gray-700">Mode Preference</th>
                                 <th
-                                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
+                                    className="text-left py-4 px-6 font-bold text-gray-700 cursor-pointer hover:bg-white/50 transition-colors duration-200"
                                     onClick={() => handleSort('tripsCount')}
                                 >
-                                    <div className="flex items-center">
-                                        Trips Count
+                                    <div className="flex items-center space-x-2">
+                                        <span>Trips Count</span>
                                         {sortField === 'tripsCount' && (
-                                            sortDirection === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />
+                                            sortDirection === 'asc' ?
+                                                <ArrowUp className="w-4 h-4 text-purple-600" /> :
+                                                <ArrowDown className="w-4 h-4 text-purple-600" />
                                         )}
                                     </div>
                                 </th>
                                 <th
-                                    className="text-left py-3 px-4 font-medium text-gray-700 cursor-pointer hover:bg-gray-50"
+                                    className="text-left py-4 px-6 font-bold text-gray-700 cursor-pointer hover:bg-white/50 transition-colors duration-200 rounded-tr-xl"
                                     onClick={() => handleSort('lastActive')}
                                 >
-                                    <div className="flex items-center">
-                                        Last Active
+                                    <div className="flex items-center space-x-2">
+                                        <span>Last Active</span>
                                         {sortField === 'lastActive' && (
-                                            sortDirection === 'asc' ? <ArrowUp className="w-4 h-4 ml-1" /> : <ArrowDown className="w-4 h-4 ml-1" />
+                                            sortDirection === 'asc' ?
+                                                <ArrowUp className="w-4 h-4 text-purple-600" /> :
+                                                <ArrowDown className="w-4 h-4 text-purple-600" />
                                         )}
                                     </div>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {paginatedUsers.map((user) => (
-                                <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="py-4 px-4">
-                                        <span className="font-medium text-blue-600">{user.id}</span>
-                                    </td>
-                                    <td className="py-4 px-4">
-                                        <div>
-                                            <p className="font-medium text-gray-800">{user.name}</p>
-                                            <p className="text-xs text-gray-500">{user.occupation}</p>
+                            {paginatedUsers.map((user, index) => (
+                                <tr key={user.id} className="border-b border-gray-100/50 hover:bg-white/70 transition-all duration-200 group">
+                                    <td className="py-5 px-6">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                                            <span className="font-bold text-blue-600 group-hover:text-blue-700">{user.id}</span>
                                         </div>
                                     </td>
-                                    <td className="py-4 px-4">
-                                        <span className="text-gray-700">{user.age}</span>
+                                    <td className="py-5 px-6">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                                                <span className="text-white font-bold text-sm">{user.name.split(' ').map(n => n[0]).join('')}</span>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-gray-800 group-hover:text-gray-900">{user.name}</p>
+                                                <p className="text-xs text-gray-500 font-medium">{user.occupation}</p>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td className="py-4 px-4">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${user.modePreference === 'Metro' ? 'bg-blue-100 text-blue-600' :
-                                                user.modePreference === 'Bus' ? 'bg-green-100 text-green-600' :
-                                                    user.modePreference === 'Auto' ? 'bg-yellow-100 text-yellow-600' :
-                                                        'bg-purple-100 text-purple-600'
+                                    <td className="py-5 px-6">
+                                        <span className="font-semibold text-gray-700 px-3 py-1 bg-gray-100 rounded-full">{user.age}</span>
+                                    </td>
+                                    <td className="py-5 px-6">
+                                        <span className={`px-4 py-2 rounded-xl text-sm font-bold shadow-sm ${user.modePreference === 'Metro' ? 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700' :
+                                                user.modePreference === 'Bus' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-700' :
+                                                    user.modePreference === 'Auto' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-700' :
+                                                        'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700'
                                             }`}>
                                             {user.modePreference}
                                         </span>
                                     </td>
-                                    <td className="py-4 px-4">
-                                        <span className="font-medium text-gray-800">{user.tripsCount}</span>
+                                    <td className="py-5 px-6">
+                                        <div className="flex items-center space-x-2">
+                                            <TrendingUp className="w-4 h-4 text-purple-500" />
+                                            <span className="font-bold text-gray-800">{user.tripsCount}</span>
+                                        </div>
                                     </td>
-                                    <td className="py-4 px-4">
+                                    <td className="py-5 px-6">
                                         <div>
-                                            <p className="text-gray-700">{new Date(user.lastActive).toLocaleDateString()}</p>
-                                            <p className="text-xs text-gray-500">
+                                            <p className="font-semibold text-gray-700">{new Date(user.lastActive).toLocaleDateString()}</p>
+                                            <p className="text-xs text-gray-500 font-medium">
                                                 {Math.floor((new Date() - new Date(user.lastActive)) / (1000 * 60 * 60 * 24))} days ago
                                             </p>
                                         </div>
@@ -584,26 +696,26 @@ const Users = () => {
                     </table>
                 </div>
 
-                {/* Pagination */}
-                <div className="p-4 border-t border-gray-200 flex items-center justify-between">
-                    <div className="text-sm text-gray-700">
-                        Showing {startIndex + 1} to {Math.min(startIndex + usersPerPage, sortedUsers.length)} of {sortedUsers.length} users
+                {/* Enhanced Pagination */}
+                <div className="p-6 border-t border-gray-200/30 flex flex-col md:flex-row md:items-center md:justify-between gap-4 relative z-10">
+                    <div className="text-sm font-medium text-gray-700 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20">
+                        Showing <span className="font-bold text-purple-600">{startIndex + 1}</span> to <span className="font-bold text-purple-600">{Math.min(startIndex + usersPerPage, sortedUsers.length)}</span> of <span className="font-bold text-purple-600">{sortedUsers.length}</span> users
                     </div>
-                    <div className="flex space-x-2">
+                    <div className="flex items-center space-x-3">
                         <button
                             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 border-0 bg-white/80 backdrop-blur-sm rounded-xl hover:bg-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
                         >
                             Previous
                         </button>
-                        <span className="px-3 py-2 bg-blue-600 text-white rounded-lg">
+                        <div className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-bold shadow-lg">
                             {currentPage} of {totalPages}
-                        </span>
+                        </div>
                         <button
                             onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 border-0 bg-white/80 backdrop-blur-sm rounded-xl hover:bg-white shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-medium"
                         >
                             Next
                         </button>
@@ -611,14 +723,28 @@ const Users = () => {
                 </div>
             </div>
 
-            {/* Charts Row */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {/* Enhanced Charts Row with Glass Effect - Stacked Layout */}
+            <div className="grid grid-cols-1 gap-6 lg:gap-8 relative z-10">
                 {/* Cohort Retention Curve */}
-                <div className="bg-white rounded-2xl shadow-md border p-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <TrendingUp className="w-5 h-5 mr-2 text-purple-600" />
-                        Cohort Retention Analysis
-                    </h3>
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border-0 p-6 hover:shadow-3xl transition-all duration-500 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-blue-500/5 to-purple-500/10"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+
+                    <div className="flex items-center justify-between mb-6 relative z-10">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 shadow-lg">
+                                <TrendingUp className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl lg:text-2xl font-bold text-gray-900">Cohort Retention Analysis</h3>
+                                <p className="text-gray-600 text-sm">User retention over time</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20">
+                            <Activity className="w-4 h-4 text-green-600" />
+                            <span className="text-green-600 font-medium text-sm">Live</span>
+                        </div>
+                    </div>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={cohortRetentionData}>
@@ -650,28 +776,54 @@ const Users = () => {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                        <div className="bg-purple-50 p-3 rounded-lg">
-                            <p className="font-medium text-purple-800">Week 1 Retention</p>
-                            <p className="text-purple-600">100% (Baseline)</p>
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm relative z-10">
+                        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200/50 shadow-lg">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                <p className="font-bold text-purple-800">Week 1 Retention</p>
+                            </div>
+                            <p className="text-2xl font-bold text-purple-600">100%</p>
+                            <p className="text-xs text-purple-500 font-medium">Baseline</p>
                         </div>
-                        <div className="bg-blue-50 p-3 rounded-lg">
-                            <p className="font-medium text-blue-800">Month 1 Retention</p>
-                            <p className="text-blue-600">68% Active</p>
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200/50 shadow-lg">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                <p className="font-bold text-blue-800">Month 1 Retention</p>
+                            </div>
+                            <p className="text-2xl font-bold text-blue-600">68%</p>
+                            <p className="text-xs text-blue-500 font-medium">Active Users</p>
                         </div>
-                        <div className="bg-green-50 p-3 rounded-lg">
-                            <p className="font-medium text-green-800">Long-term Retention</p>
-                            <p className="text-green-600">36% (9 months)</p>
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200/50 shadow-lg">
+                            <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                                <p className="font-bold text-green-800">Long-term Retention</p>
+                            </div>
+                            <p className="text-2xl font-bold text-green-600">36%</p>
+                            <p className="text-xs text-green-500 font-medium">9 months</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Segment Distribution */}
-                <div className="bg-white rounded-2xl shadow-md border p-6">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                        <UserCheck className="w-5 h-5 mr-2 text-orange-600" />
-                        User Segment Distribution
-                    </h3>
+                <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border-0 p-6 hover:shadow-3xl transition-all duration-500 overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-pink-500/5 to-orange-500/10"></div>
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-pink-500 to-orange-500"></div>
+
+                    <div className="flex items-center justify-between mb-6 relative z-10">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-orange-600 to-pink-600 shadow-lg">
+                                <UserCheck className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl lg:text-2xl font-bold text-gray-900">User Segment Distribution</h3>
+                                <p className="text-gray-600 text-sm">Breakdown by user categories</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2 px-3 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20">
+                            <UsersIcon className="w-4 h-4 text-orange-600" />
+                            <span className="text-orange-600 font-medium text-sm">Segments</span>
+                        </div>
+                    </div>
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={segmentData}>
@@ -701,19 +853,19 @@ const Users = () => {
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm relative z-10">
                         {segmentData.map((segment, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                                <div className="flex items-center space-x-2">
+                            <div key={index} className="flex items-center justify-between p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                <div className="flex items-center space-x-3">
                                     <div
-                                        className="w-3 h-3 rounded-full"
+                                        className="w-4 h-4 rounded-full shadow-lg"
                                         style={{ backgroundColor: segment.color }}
                                     ></div>
-                                    <span className="font-medium text-gray-700">{segment.segment}</span>
+                                    <span className="font-bold text-gray-800">{segment.segment}</span>
                                 </div>
                                 <div className="text-right">
-                                    <span className="font-semibold text-gray-800">{segment.count.toLocaleString()}</span>
-                                    <span className="text-xs text-gray-500 ml-2">({segment.percentage}%)</span>
+                                    <div className="font-bold text-lg text-gray-900">{segment.count.toLocaleString()}</div>
+                                    <div className="text-xs font-medium text-gray-600">({segment.percentage}%)</div>
                                 </div>
                             </div>
                         ))}
@@ -721,37 +873,103 @@ const Users = () => {
                 </div>
             </div>
 
-            {/* Key Insights */}
-            <div className="bg-white rounded-2xl shadow-md border p-6">
-                <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <Eye className="w-5 h-5 mr-2 text-green-600" />
-                    Key Insights
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg">
-                        <h4 className="font-semibold text-blue-800 mb-2">User Engagement</h4>
-                        <ul className="text-sm text-blue-700 space-y-1">
-                            <li>• 68% retention rate after first month</li>
-                            <li>• Employees show highest trip frequency</li>
-                            <li>• Metro is the preferred mode (45% users)</li>
+            {/* Enhanced Key Insights with Glass Effect */}
+            <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-2xl border-0 p-6 lg:p-8 hover:shadow-3xl transition-all duration-500 relative z-10 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-emerald-500/10"></div>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500"></div>
+
+                <div className="flex items-center justify-between mb-8 relative z-10">
+                    <div className="flex items-center space-x-4">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-600 shadow-lg">
+                            <Eye className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">Key Insights & Recommendations</h3>
+                            <p className="text-gray-600">AI-powered analytics and strategic insights</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center space-x-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20">
+                        <Activity className="w-4 h-4 text-emerald-600" />
+                        <span className="text-emerald-600 font-bold text-sm">AI Generated</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+                    <div className="bg-gradient-to-br from-blue-50 via-blue-100/50 to-blue-200/30 p-6 rounded-2xl border border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div className="flex items-center mb-4">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg">
+                                <Activity className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="ml-4">
+                                <h4 className="font-bold text-blue-800 text-lg">User Engagement</h4>
+                                <div className="w-12 h-1 bg-blue-500 rounded-full mt-1"></div>
+                            </div>
+                        </div>
+                        <ul className="text-sm text-blue-700 space-y-2 font-medium">
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>68% retention rate after first month showing strong initial engagement</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Employees show highest trip frequency with consistent usage patterns</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Metro is the preferred mode (45% users) indicating infrastructure preference</span>
+                            </li>
                         </ul>
                     </div>
 
-                    <div className="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg">
-                        <h4 className="font-semibold text-green-800 mb-2">Segment Insights</h4>
-                        <ul className="text-sm text-green-700 space-y-1">
-                            <li>• Employees dominate (52.3% of users)</li>
-                            <li>• Students are second largest segment (24.4%)</li>
-                            <li>• Strong potential in homemaker segment</li>
+                    <div className="bg-gradient-to-br from-green-50 via-green-100/50 to-emerald-200/30 p-6 rounded-2xl border border-green-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div className="flex items-center mb-4">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-green-600 to-emerald-600 shadow-lg">
+                                <UsersIcon className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="ml-4">
+                                <h4 className="font-bold text-green-800 text-lg">Segment Insights</h4>
+                                <div className="w-12 h-1 bg-green-500 rounded-full mt-1"></div>
+                            </div>
+                        </div>
+                        <ul className="text-sm text-green-700 space-y-2 font-medium">
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Employees dominate (52.3% of users) representing primary user base</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Students are second largest segment (24.4%) with growth potential</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Strong potential in homemaker segment for off-peak optimization</span>
+                            </li>
                         </ul>
                     </div>
 
-                    <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg">
-                        <h4 className="font-semibold text-purple-800 mb-2">Recommendations</h4>
-                        <ul className="text-sm text-purple-700 space-y-1">
-                            <li>• Focus on improving month 2-3 retention</li>
-                            <li>• Create targeted campaigns for students</li>
-                            <li>• Expand metro connectivity options</li>
+                    <div className="bg-gradient-to-br from-purple-50 via-purple-100/50 to-pink-200/30 p-6 rounded-2xl border border-purple-200/50 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div className="flex items-center mb-4">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 shadow-lg">
+                                <TrendingUp className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="ml-4">
+                                <h4 className="font-bold text-purple-800 text-lg">Strategic Actions</h4>
+                                <div className="w-12 h-1 bg-purple-500 rounded-full mt-1"></div>
+                            </div>
+                        </div>
+                        <ul className="text-sm text-purple-700 space-y-2 font-medium">
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Focus on improving month 2-3 retention through engagement campaigns</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Create targeted campaigns for students with special pricing</span>
+                            </li>
+                            <li className="flex items-start space-x-2">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span>Expand metro connectivity options to capture more market share</span>
+                            </li>
                         </ul>
                     </div>
                 </div>

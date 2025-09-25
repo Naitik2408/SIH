@@ -128,7 +128,7 @@ const EnhancedKPICard = ({ title, value, subtitle, icon: Icon, gradient, badge, 
 
 const Temporal = () => {
     const [timePeriod, setTimePeriod] = useState('7days');
-    
+
     // State for async data
     const [heatmapData, setHeatmapData] = useState([]);
     const [peakHoursData, setPeakHoursData] = useState([]);
@@ -155,7 +155,7 @@ const Temporal = () => {
                     generateWeekdayWeekendData(),
                     getTemporalMetrics()
                 ]);
-                
+
                 console.log('✅ Temporal data loaded successfully');
                 setHeatmapData(heatmap);
                 setPeakHoursData(peaks);
@@ -167,7 +167,7 @@ const Temporal = () => {
                 setLoading(false);
             }
         };
-        
+
         loadTemporalData();
     }, []);
 
@@ -177,13 +177,13 @@ const Temporal = () => {
 
     // Use metrics from API data
     const { totalTrips, peakHour, avgDuration, rushHourImpact } = temporalMetrics;
-    
+
     // Find peak hour data for display
     const peakHourData = peakHoursData.find(h => h.hour === peakHour) || { trips: 0 };
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-            
+
             {/* Enhanced Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -256,7 +256,7 @@ const Temporal = () => {
             </div>
 
             {/* Enhanced Row 1: Heatmap + Peak Hours Chart */}
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-8">
                 {/* Enhanced Hourly-Weekly Heatmap */}
                 <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-purple-50/20 to-white">
                     <CardHeader className="pb-4">
@@ -289,35 +289,35 @@ const Temporal = () => {
                                         ))}
                                     </div>
 
-                                {/* Enhanced Heatmap grid */}
-                                {days.map((day, dayIndex) => (
-                                    <div key={day} className="flex items-center mb-2">
-                                        <div className="w-14 text-sm font-bold text-gray-700 pr-3">{day}</div>
-                                        {hours.map(hour => {
-                                            const cellData = heatmapData.find(d => d.day === day && d.hour === hour);
-                                            return (
-                                                <div key={`${day}-${hour}`} className="mr-1">
-                                                    <HeatmapCell data={cellData} maxIntensity={maxIntensity} />
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ))}
+                                    {/* Enhanced Heatmap grid */}
+                                    {days.map((day, dayIndex) => (
+                                        <div key={day} className="flex items-center mb-2">
+                                            <div className="w-14 text-sm font-bold text-gray-700 pr-3">{day}</div>
+                                            {hours.map(hour => {
+                                                const cellData = heatmapData.find(d => d.day === day && d.hour === hour);
+                                                return (
+                                                    <div key={`${day}-${hour}`} className="mr-1">
+                                                        <HeatmapCell data={cellData} maxIntensity={maxIntensity} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ))}
 
-                                {/* Enhanced Legend */}
-                                <div className="flex items-center justify-center mt-6 space-x-6 text-sm">
-                                    <span className="text-gray-600 font-medium">Low Intensity</span>
-                                    <div className="flex space-x-2">
-                                        <div className="w-5 h-5 bg-gradient-to-br from-purple-100 to-purple-200 rounded-md shadow-sm"></div>
-                                        <div className="w-5 h-5 bg-gradient-to-br from-purple-200 to-purple-300 rounded-md shadow-sm"></div>
-                                        <div className="w-5 h-5 bg-gradient-to-br from-purple-300 to-purple-400 rounded-md shadow-sm"></div>
-                                        <div className="w-5 h-5 bg-gradient-to-br from-purple-400 to-purple-500 rounded-md shadow-sm"></div>
-                                        <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-md shadow-sm"></div>
+                                    {/* Enhanced Legend */}
+                                    <div className="flex items-center justify-center mt-6 space-x-6 text-sm">
+                                        <span className="text-gray-600 font-medium">Low Intensity</span>
+                                        <div className="flex space-x-2">
+                                            <div className="w-5 h-5 bg-gradient-to-br from-purple-100 to-purple-200 rounded-md shadow-sm"></div>
+                                            <div className="w-5 h-5 bg-gradient-to-br from-purple-200 to-purple-300 rounded-md shadow-sm"></div>
+                                            <div className="w-5 h-5 bg-gradient-to-br from-purple-300 to-purple-400 rounded-md shadow-sm"></div>
+                                            <div className="w-5 h-5 bg-gradient-to-br from-purple-400 to-purple-500 rounded-md shadow-sm"></div>
+                                            <div className="w-5 h-5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-md shadow-sm"></div>
+                                        </div>
+                                        <span className="text-gray-600 font-medium">High Intensity</span>
                                     </div>
-                                    <span className="text-gray-600 font-medium">High Intensity</span>
                                 </div>
                             </div>
-                        </div>
                         )}
                     </CardContent>
                 </Card>
@@ -343,30 +343,30 @@ const Temporal = () => {
                             </div>
                         ) : (
                             <ResponsiveContainer width="100%" height={350}>
-                            <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
-                                <XAxis
-                                    dataKey="hour"
-                                    interval={3}
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <YAxis 
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Area
-                                    type="monotone"
-                                    dataKey="trips"
-                                    stroke="#10b981"
-                                    fill="#10b98140"
-                                    strokeWidth={3}
-                                    dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
-                                    activeDot={{ r: 6, fill: '#10b981', strokeWidth: 2 }}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                                <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
+                                    <XAxis
+                                        dataKey="hour"
+                                        interval={3}
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <YAxis
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="trips"
+                                        stroke="#10b981"
+                                        fill="#10b98140"
+                                        strokeWidth={3}
+                                        dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                                        activeDot={{ r: 6, fill: '#10b981', strokeWidth: 2 }}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         )}
                     </CardContent>
                 </Card>
@@ -395,38 +395,38 @@ const Temporal = () => {
                             </div>
                         ) : (
                             <ResponsiveContainer width="100%" height={350}>
-                            <BarChart data={weekdayWeekendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-                                <XAxis
-                                    dataKey="hour"
-                                    interval={3}
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <YAxis 
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Legend />
-                                <Bar 
-                                    dataKey="weekday" 
-                                    fill="#a28ef9" 
-                                    name="Weekday" 
-                                    radius={[4, 4, 0, 0]}
-                                    stroke="#8b7cf6"
-                                    strokeWidth={1}
-                                />
-                                <Bar 
-                                    dataKey="weekend" 
-                                    fill="#7c3aed" 
-                                    name="Weekend" 
-                                    radius={[4, 4, 0, 0]}
-                                    stroke="#6d28d9"
-                                    strokeWidth={1}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                                <BarChart data={weekdayWeekendData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                                    <XAxis
+                                        dataKey="hour"
+                                        interval={3}
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <YAxis
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Legend />
+                                    <Bar
+                                        dataKey="weekday"
+                                        fill="#a28ef9"
+                                        name="Weekday"
+                                        radius={[4, 4, 0, 0]}
+                                        stroke="#8b7cf6"
+                                        strokeWidth={1}
+                                    />
+                                    <Bar
+                                        dataKey="weekend"
+                                        fill="#7c3aed"
+                                        name="Weekend"
+                                        radius={[4, 4, 0, 0]}
+                                        stroke="#6d28d9"
+                                        strokeWidth={1}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
                         )}
                     </CardContent>
                 </Card>
@@ -452,31 +452,31 @@ const Temporal = () => {
                             </div>
                         ) : (
                             <ResponsiveContainer width="100%" height={350}>
-                            <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-                                <XAxis
-                                    dataKey="hour"
-                                    interval={3}
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <YAxis 
-                                    tick={{ fill: '#6b7280', fontSize: 12 }}
-                                    axisLine={{ stroke: '#d1d5db' }}
-                                />
-                                <Tooltip content={<CustomTooltip />} />
-                                <Area
-                                    type="monotone"
-                                    dataKey="avgDuration"
-                                    stroke="#f97316"
-                                    fill="#f9731640"
-                                    strokeWidth={3}
-                                    name="avgDuration"
-                                    dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
-                                    activeDot={{ r: 6, fill: '#f97316', strokeWidth: 2 }}
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                                <AreaChart data={peakHoursData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                                    <XAxis
+                                        dataKey="hour"
+                                        interval={3}
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <YAxis
+                                        tick={{ fill: '#6b7280', fontSize: 12 }}
+                                        axisLine={{ stroke: '#d1d5db' }}
+                                    />
+                                    <Tooltip content={<CustomTooltip />} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="avgDuration"
+                                        stroke="#f97316"
+                                        fill="#f9731640"
+                                        strokeWidth={3}
+                                        name="avgDuration"
+                                        dot={{ fill: '#f97316', strokeWidth: 2, r: 4 }}
+                                        activeDot={{ r: 6, fill: '#f97316', strokeWidth: 2 }}
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
                         )}
                     </CardContent>
                 </Card>
