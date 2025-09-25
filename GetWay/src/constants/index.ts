@@ -59,7 +59,7 @@ export const DEMO_USERS = {
         role: 'customer' as const,
     },
     owner: {
-        email: 'owner@getway.com',
+        email: 'owner@transport.gov',
         password: 'owner123',
         name: 'Admin Owner',
         role: 'owner' as const,
