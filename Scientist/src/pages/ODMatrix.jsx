@@ -34,11 +34,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import L from 'leaflet';
-import { 
-    extractZonesFromUserData, 
-    generateRealODMatrix, 
-    generateRealCorridorData, 
-    getRealTopCorridors 
+import {
+    extractZonesFromUserData,
+    generateRealODMatrix,
+    generateRealCorridorData,
+    getRealTopCorridors
 } from '../utils/odMatrixAnalytics';
 
 // Fix for default markers
@@ -54,7 +54,7 @@ const ODMatrix = () => {
     const [hoveredCell, setHoveredCell] = useState(null);
     const [showInfo, setShowInfo] = useState(false);
     const [matrixView, setMatrixView] = useState('absolute'); // 'absolute' or 'percentage'
-    
+
     // State for async data loading
     const [odMatrix, setOdMatrix] = useState({});
     const [zones, setZones] = useState([]);
@@ -68,7 +68,7 @@ const ODMatrix = () => {
             try {
                 const { matrix, zones } = await generateRealODMatrix();
                 const corridorsResult = await getRealTopCorridors(matrix, zones);
-                
+
                 setOdMatrix(matrix);
                 setZones(zones);
                 setTopCorridors(corridorsResult);
@@ -82,7 +82,7 @@ const ODMatrix = () => {
                 setLoading(false);
             }
         };
-        
+
         loadODData();
     }, []);    // Use real data from user analytics - REPLACED WITH ASYNC LOADING
     // const { matrix: odMatrix, zones } = useMemo(() => generateRealODMatrix(), []);
@@ -127,74 +127,143 @@ const ODMatrix = () => {
 
     return (
         <div className="p-4 md:p-6 space-y-6 bg-gradient-to-br from-slate-50 via-white to-blue-50 min-h-screen">
-            {loading && (
-                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading Kerala OD Matrix data...</p>
-                    </div>
-                </div>
-            )}
-            
+
+
             {/* Enhanced Header with Info */}
-            <div className="bg-white rounded-2xl shadow-lg border-0 p-6 md:p-8 bg-gradient-to-r from-blue-50 via-white to-purple-50">
-                <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
-                    <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
-                                <Navigation className="w-6 h-6 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                                    Kerala OD Matrix
-                                </h1>
-                                <p className="text-slate-600 text-lg">Real travel patterns from {zones.length} zones based on user data</p>
+            <div className="relative bg-white rounded-3xl shadow-2xl border-0 overflow-hidden">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 opacity-80"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.05),transparent)] bg-[radial-gradient(circle_at_70%_80%,rgba(147,51,234,0.05),transparent)]"></div>
+
+                <div className="relative p-6 md:p-8">
+                    {/* Top Section with Title and Stats */}
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between space-y-6 lg:space-y-0 lg:space-x-8 mb-6">
+                        <div className="flex-1">
+                            <div className="flex items-start space-x-4 mb-4">
+                                <div className="p-4 bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 rounded-2xl shadow-lg transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                                    <Navigation className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 bg-clip-text text-transparent leading-tight">
+                                        Origin-Destination Matrix
+                                    </h1>
+                                    <p className="text-slate-600 text-lg mt-2 font-medium">
+                                        Comprehensive travel flow analysis from <span className="text-blue-600 font-bold">{zones.length}</span> zones
+                                    </p>
+                                    <div className="flex items-center space-x-4 mt-3">
+                                        <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-3 py-1">
+                                            Real Data
+                                        </Badge>
+                                        <Badge variant="outline" className="border-slate-300 text-slate-600">
+                                            {totalTrips.toLocaleString()} Daily Trips
+                                        </Badge>
+                                        <Badge variant="outline" className="border-slate-300 text-slate-600">
+                                            Live Analytics
+                                        </Badge>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        
-                        {/* Info Panel */}
-                        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                            <div className="flex items-start space-x-3">
-                                <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                                <div className="text-sm text-blue-800">
-                                    <p className="font-semibold mb-1">How to use this real data matrix:</p>
-                                    <ul className="space-y-1 text-blue-700">
-                                        <li>• Based on actual user trip data from 100 Delhi NCR residents</li>
-                                        <li>• Click any cell to analyze that corridor in detail</li>
-                                        <li>• Darker colors indicate higher trip volumes</li>
-                                        <li>• Hover over cells to see trip counts and zone names</li>
-                                        <li>• View top corridors below the matrix</li>
+
+                        {/* Quick Stats Cards */}
+                        <div className="flex flex-col sm:flex-row lg:flex-col gap-4">
+                            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg min-w-48">
+                                <div className="flex items-center space-x-3">
+                                    <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                                        <Route className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-slate-600 font-medium">Active Zones</p>
+                                        <p className="text-2xl font-bold text-slate-800">{zones.length}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-4 border border-white/50 shadow-lg min-w-48">
+                                <div className="flex items-center space-x-3">
+                                    <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl">
+                                        <TrendingUp className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-slate-600 font-medium">Peak Flow</p>
+                                        <p className="text-2xl font-bold text-slate-800">{topCorridors[0]?.trips || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Controls Section */}
+                    <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0 mb-6">
+                        <div className="flex items-center space-x-4">
+                            <div className="flex space-x-2">
+                                <button
+                                    onClick={() => setMatrixView('absolute')}
+                                    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${matrixView === 'absolute'
+                                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform scale-105'
+                                        : 'bg-white/60 backdrop-blur-sm text-slate-700 border border-slate-200 hover:bg-white/80 hover:shadow-md'
+                                        }`}
+                                >
+                                    <BarChart3 className="w-4 h-4" />
+                                    <span>Absolute Values</span>
+                                </button>
+                                <button
+                                    onClick={() => setMatrixView('percentage')}
+                                    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${matrixView === 'percentage'
+                                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg transform scale-105'
+                                        : 'bg-white/60 backdrop-blur-sm text-slate-700 border border-slate-200 hover:bg-white/80 hover:shadow-md'
+                                        }`}
+                                >
+                                    <Target className="w-4 h-4" />
+                                    <span>Percentage</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center space-x-3">
+                            <div className="text-sm text-slate-600">
+                                Viewing: <span className="font-semibold text-slate-800">{matrixView === 'absolute' ? 'Trip Counts' : 'Percentage Share'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Enhanced Info Panel */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-2xl p-6 backdrop-blur-sm">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div className="flex items-start space-x-4">
+                                <div className="p-2 bg-blue-500 rounded-lg flex-shrink-0">
+                                    <Info className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-blue-900 mb-2">Interactive Analysis</h3>
+                                    <ul className="space-y-1 text-sm text-blue-800">
+                                        <li>• Click any matrix cell to analyze corridor details</li>
+                                        <li>• Hover for instant trip volume and zone information</li>
+                                        <li>• Color intensity indicates traffic volume levels</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div className="flex items-start space-x-4">
+                                <div className="p-2 bg-purple-500 rounded-lg flex-shrink-0">
+                                    <Activity className="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-purple-900 mb-2">Real-Time Data</h3>
+                                    <ul className="space-y-1 text-sm text-purple-800">
+                                        <li>• Based on actual user journey patterns</li>
+                                        <li>• Updated with live transportation flows</li>
+                                        <li>• Includes temporal and modal split analysis</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
-                        <Button
-                            variant={matrixView === 'absolute' ? 'default' : 'outline'}
-                            onClick={() => setMatrixView('absolute')}
-                            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                            <BarChart3 className="w-4 h-4 mr-2" />
-                            Absolute
-                        </Button>
-                        <Button
-                            variant={matrixView === 'percentage' ? 'default' : 'outline'}
-                            onClick={() => setMatrixView('percentage')}
-                            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                        >
-                            <Target className="w-4 h-4 mr-2" />
-                            Percentage
-                        </Button>
-                    </div>
                 </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Left Column - Enhanced OD Matrix */}
-                <Card className="xl:col-span-2 shadow-xl border-0 bg-gradient-to-br from-white via-slate-50 to-white">
+            {/* Main Content - Stacked Layout */}
+            <div className="space-y-6">
+                {/* Top Section - Enhanced OD Matrix */}
+                <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-slate-50 to-white">
                     <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                             <CardTitle className="flex items-center text-xl font-bold text-slate-800">
@@ -208,7 +277,7 @@ const ODMatrix = () => {
                             </Badge>
                         </div>
                         <CardDescription className="text-slate-600">
-                            {matrixView === 'absolute' 
+                            {matrixView === 'absolute'
                                 ? 'Real daily trip volumes between zones from user data'
                                 : 'Percentage distribution of total daily trips from user data'
                             }
@@ -268,7 +337,7 @@ const ODMatrix = () => {
                                                         {trips > 0 && (
                                                             <div className="absolute inset-0 bg-blue-600 opacity-0 group-hover:opacity-10 transition-opacity duration-200 rounded"></div>
                                                         )}
-                                                        
+
                                                         {/* Enhanced Tooltip */}
                                                         {isHovered && trips > 0 && (
                                                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-50">
@@ -335,10 +404,10 @@ const ODMatrix = () => {
                     </CardContent>
                 </Card>
 
-                {/* Right Column - Map and Quick Stats */}
-                <div className="space-y-6">
-                    {/* Quick Stats Cards */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Bottom Section - Corridor Visualization and Stats */}
+                <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+                    {/* Left Column - Quick Stats Cards */}
+                    <div className="xl:col-span-1 space-y-4">
                         <Card className="shadow-lg border-0 bg-gradient-to-br from-blue-50 to-blue-100">
                             <CardContent className="p-4">
                                 <div className="flex items-center space-x-3">
@@ -352,7 +421,7 @@ const ODMatrix = () => {
                                 </div>
                             </CardContent>
                         </Card>
-                        
+
                         <Card className="shadow-lg border-0 bg-gradient-to-br from-purple-50 to-purple-100">
                             <CardContent className="p-4">
                                 <div className="flex items-center space-x-3">
@@ -366,10 +435,24 @@ const ODMatrix = () => {
                                 </div>
                             </CardContent>
                         </Card>
+
+                        <Card className="shadow-lg border-0 bg-gradient-to-br from-emerald-50 to-emerald-100">
+                            <CardContent className="p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="p-2 bg-emerald-500 rounded-lg">
+                                        <Users className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-emerald-700 font-medium">Total Trips</p>
+                                        <p className="text-2xl font-bold text-emerald-800">{totalTrips.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
 
-                    {/* Enhanced Map */}
-                    <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-green-50 to-white">
+                    {/* Right Column - Enhanced Map */}
+                    <Card className="xl:col-span-3 shadow-xl border-0 bg-gradient-to-br from-white via-green-50 to-white">
                         <CardHeader className="pb-4">
                             <CardTitle className="flex items-center text-lg font-bold text-slate-800">
                                 <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg mr-3">
@@ -378,14 +461,14 @@ const ODMatrix = () => {
                                 Real Corridor Visualization
                             </CardTitle>
                             <CardDescription className="text-slate-600">
-                                {selectedCorridor 
+                                {selectedCorridor
                                     ? `Real route: ${zones.find(z => z.id === selectedCorridor.origin)?.name} → ${zones.find(z => z.id === selectedCorridor.destination)?.name}`
                                     : 'Select a corridor from the matrix to visualize the route'
                                 }
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-80 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                            <div className="h-96 rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
                                 <MapContainer
                                     center={[28.6139, 77.2090]}
                                     zoom={10}
@@ -427,7 +510,7 @@ const ODMatrix = () => {
                                     )}
                                 </MapContainer>
                             </div>
-                            
+
                             {!selectedCorridor && (
                                 <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                                     <div className="flex items-center space-x-2 text-amber-800">
@@ -437,7 +520,8 @@ const ODMatrix = () => {
                                 </div>
                             )}
                         </CardContent>
-                    </Card>                </div>
+                    </Card>
+                </div>
             </div>
 
             {/* Corridor Details Section */}
@@ -451,8 +535,8 @@ const ODMatrix = () => {
                                 </div>
                                 Real Corridor Analysis
                             </CardTitle>
-                            <Button 
-                                variant="outline" 
+                            <Button
+                                variant="outline"
                                 onClick={() => setSelectedCorridor(null)}
                                 className="border-slate-300 hover:bg-slate-50"
                             >
@@ -486,16 +570,16 @@ const ODMatrix = () => {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <LineChart data={corridorData.dailyTrips}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                            <XAxis 
-                                                dataKey="day" 
+                                            <XAxis
+                                                dataKey="day"
                                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                                 axisLine={{ stroke: '#cbd5e1' }}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 tick={{ fill: '#64748b', fontSize: 12 }}
                                                 axisLine={{ stroke: '#cbd5e1' }}
                                             />
-                                            <Tooltip 
+                                            <Tooltip
                                                 contentStyle={{
                                                     backgroundColor: '#1e293b',
                                                     border: 'none',
@@ -556,16 +640,16 @@ const ODMatrix = () => {
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={corridorData.peakHours}>
                                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                                        <XAxis 
-                                            dataKey="hour" 
+                                        <XAxis
+                                            dataKey="hour"
                                             tick={{ fill: '#64748b', fontSize: 12 }}
                                             axisLine={{ stroke: '#cbd5e1' }}
                                         />
-                                        <YAxis 
+                                        <YAxis
                                             tick={{ fill: '#64748b', fontSize: 12 }}
                                             axisLine={{ stroke: '#cbd5e1' }}
                                         />
-                                        <Tooltip 
+                                        <Tooltip
                                             contentStyle={{
                                                 backgroundColor: '#1e293b',
                                                 border: 'none',
@@ -573,9 +657,9 @@ const ODMatrix = () => {
                                                 color: '#fff'
                                             }}
                                         />
-                                        <Bar 
-                                            dataKey="trips" 
-                                            fill="#f59e0b" 
+                                        <Bar
+                                            dataKey="trips"
+                                            fill="#f59e0b"
                                             radius={[4, 4, 0, 0]}
                                         />
                                     </BarChart>
@@ -604,11 +688,10 @@ const ODMatrix = () => {
                         {topCorridors.map((corridor, index) => (
                             <Card
                                 key={`${corridor.origin}-${corridor.destination}`}
-                                className={`cursor-pointer transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
-                                    selectedCorridor?.origin === corridor.origin && selectedCorridor?.destination === corridor.destination
-                                        ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-200'
-                                        : 'border-slate-200 hover:border-blue-300 hover:bg-blue-50'
-                                }`}
+                                className={`cursor-pointer transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${selectedCorridor?.origin === corridor.origin && selectedCorridor?.destination === corridor.destination
+                                    ? 'ring-2 ring-blue-500 bg-blue-50 border-blue-200'
+                                    : 'border-slate-200 hover:border-blue-300 hover:bg-blue-50'
+                                    }`}
                                 onClick={() => setSelectedCorridor(corridor)}
                             >
                                 <CardContent className="p-4">

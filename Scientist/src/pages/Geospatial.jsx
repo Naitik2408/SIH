@@ -61,10 +61,10 @@ const generateHeatmapData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('🗺️ DEBUG Geospatial Heatmap: Total journeys fetched:', journeys.length);
         console.log('🗺️ DEBUG Geospatial Heatmap: Sample journey structure:', journeys[0]);
-        
+
         const heatmapPoints = [];
         let id = 0;
         let processedPoints = 0;
@@ -73,7 +73,7 @@ const generateHeatmapData = async () => {
         journeys.forEach((journey, index) => {
             // Add start location (FIX: Use lat/lng instead of latitude/longitude)
             const startLoc = journey.tripData?.startLocation;
-            
+
             if (index < 3) {
                 console.log(`🗺️ DEBUG Geospatial Journey ${index + 1} start:`, {
                     startLoc,
@@ -84,7 +84,7 @@ const generateHeatmapData = async () => {
                     address: startLoc?.address
                 });
             }
-            
+
             if (startLoc && startLoc.lat && startLoc.lng) {
                 heatmapPoints.push({
                     id: id++,
@@ -105,7 +105,7 @@ const generateHeatmapData = async () => {
 
             // Add end location (FIX: Use lat/lng instead of latitude/longitude)
             const endLoc = journey.tripData?.endLocation;
-            
+
             if (index < 3) {
                 console.log(`🗺️ DEBUG Geospatial Journey ${index + 1} end:`, {
                     endLoc,
@@ -116,7 +116,7 @@ const generateHeatmapData = async () => {
                     address: endLoc?.address
                 });
             }
-            
+
             if (endLoc && endLoc.lat && endLoc.lng) {
                 heatmapPoints.push({
                     id: id++,
@@ -154,7 +154,7 @@ const generateHeatmapData = async () => {
         });
 
         return Object.values(aggregatedPoints);
-        
+
     } catch (error) {
         console.error('Error generating heatmap data:', error);
         return [];
@@ -166,9 +166,9 @@ const generateODData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('📊 DEBUG Geospatial OD: Total journeys for OD data:', journeys.length);
-        
+
         const odFlows = [];
         let id = 0;
         let validODPairs = 0;
@@ -177,7 +177,7 @@ const generateODData = async () => {
         journeys.forEach((journey, index) => {
             const startLoc = journey.tripData?.startLocation;
             const endLoc = journey.tripData?.endLocation;
-            
+
             if (index < 3) {
                 console.log(`📊 DEBUG Geospatial OD Journey ${index + 1}:`, {
                     startLoc: {
@@ -196,9 +196,9 @@ const generateODData = async () => {
                     }
                 });
             }
-            
+
             // FIX: Use lat/lng instead of latitude/longitude
-            if (startLoc && endLoc && startLoc.lat && startLoc.lng && 
+            if (startLoc && endLoc && startLoc.lat && startLoc.lng &&
                 endLoc.lat && endLoc.lng) {
                 odFlows.push({
                     id: id++,
@@ -239,9 +239,9 @@ const generateODData = async () => {
 
         const result = Object.values(aggregatedOD).filter(flow => flow.trips > 0);
         console.log('📊 DEBUG Geospatial OD: Final aggregated OD flows:', result.length);
-        
+
         return result;
-        
+
     } catch (error) {
         console.error('Error generating OD data:', error);
         return [];
@@ -300,7 +300,7 @@ const HeatmapLayer = ({ data, timeFilter, visible }) => {
                             font-size: 10px;
                         ">${point.trips}</div>`,
                         iconSize: [getIntensitySize(point.intensity), getIntensitySize(point.intensity)],
-                        iconAnchor: [getIntensitySize(point.intensity)/2, getIntensitySize(point.intensity)/2]
+                        iconAnchor: [getIntensitySize(point.intensity) / 2, getIntensitySize(point.intensity) / 2]
                     })}
                 >
                     <Popup>
@@ -365,8 +365,8 @@ const ODArrowsLayer = ({ data, timeFilter, visible }) => {
                         color: getModeColor(arrow.mode),
                         weight: getLineWeight(arrow.trips),
                         opacity: getOpacity(arrow.trips),
-                        dashArray: arrow.purpose === 'entertainment' ? '10, 5' : 
-                                  arrow.purpose === 'shopping' ? '5, 5' : null
+                        dashArray: arrow.purpose === 'entertainment' ? '10, 5' :
+                            arrow.purpose === 'shopping' ? '5, 5' : null
                     }}
                 >
                     <Popup>
@@ -390,7 +390,7 @@ const ODArrowsLayer = ({ data, timeFilter, visible }) => {
                                     <p><span className="font-medium">Weekly Trips:</span> <span className="text-green-600 font-bold">{arrow.trips}</span></p>
                                     <p><span className="font-medium">Peak Time:</span> {arrow.time}:00</p>
                                     <p><span className="font-medium">Avg Duration:</span> {arrow.duration} min</p>
-                                    <p><span className="font-medium">Transport:</span> <Badge style={{backgroundColor: getModeColor(arrow.mode)}}>{arrow.mode}</Badge></p>
+                                    <p><span className="font-medium">Transport:</span> <Badge style={{ backgroundColor: getModeColor(arrow.mode) }}>{arrow.mode}</Badge></p>
                                     <p><span className="font-medium">Purpose:</span> <Badge variant="outline">{arrow.purpose}</Badge></p>
                                     <p><span className="font-medium">Users:</span> {arrow.users || 1}</p>
                                     {arrow.user_occupation && (
@@ -414,20 +414,20 @@ const getDemographicInsights = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('📈 DEBUG Geospatial Demographics: Total journeys fetched:', journeys.length);
         console.log('📈 DEBUG Geospatial Demographics: Sample journey for user ID check:', {
             userId: journeys[0]?.userId,
             _id: journeys[0]?._id,
             email: journeys[0]?.email
         });
-        
+
         const totalUsers = new Set(journeys.map(j => j.userId)).size;
         const totalTrips = journeys.length;
-        
+
         console.log('📈 DEBUG Geospatial Demographics: Total unique users:', totalUsers);
         console.log('📈 DEBUG Geospatial Demographics: Total trips:', totalTrips);
-        
+
         // Age distribution
         const ageGroups = { young: 0, middle: 0, senior: 0 };
         journeys.forEach(journey => {
@@ -436,21 +436,21 @@ const getDemographicInsights = async () => {
             else if (age < 50) ageGroups.middle++;
             else ageGroups.senior++;
         });
-        
+
         // Income distribution
         const incomeDistribution = { low: 0, middle: 0, high: 0 };
         journeys.forEach(journey => {
             const income = journey.income || 'middle';
             incomeDistribution[income.toLowerCase()] = (incomeDistribution[income.toLowerCase()] || 0) + 1;
         });
-        
+
         // Transport preference distribution
         const transportPreferences = {};
         journeys.forEach(journey => {
             const mode = journey.tripData?.transportMode || 'Unknown';
             transportPreferences[mode] = (transportPreferences[mode] || 0) + 1;
         });
-        
+
         // Most common routes
         const routeFrequency = {};
         journeys.forEach(journey => {
@@ -461,11 +461,11 @@ const getDemographicInsights = async () => {
                 routeFrequency[route] = (routeFrequency[route] || 0) + 1;
             }
         });
-        
+
         const topRoutes = Object.entries(routeFrequency)
-            .sort(([,a], [,b]) => b - a)
+            .sort(([, a], [, b]) => b - a)
             .slice(0, 5);
-        
+
         const result = {
             totalUsers,
             totalTrips,
@@ -474,9 +474,9 @@ const getDemographicInsights = async () => {
             transportPreferences,
             topRoutes
         };
-        
+
         console.log('📈 DEBUG Geospatial Demographics: Final result:', result);
-        
+
         return result;
     } catch (error) {
         console.error('Error getting demographic insights:', error);
@@ -499,7 +499,8 @@ const Geospatial = () => {
     });
     const [timeFilter, setTimeFilter] = useState([0, 24]);
     const [mapStyle, setMapStyle] = useState('default'); // 'default' or 'satellite'
-    
+    const [showControlPanel, setShowControlPanel] = useState(false); // New state for control panel
+
     // State for async data
     const [heatmapData, setHeatmapData] = useState([]);
     const [odData, setOdData] = useState([]);
@@ -523,7 +524,7 @@ const Geospatial = () => {
                     generateODData(),
                     getDemographicInsights()
                 ]);
-                
+
                 setHeatmapData(heatmap);
                 setOdData(od);
                 setDemographicData(demographics);
@@ -533,21 +534,21 @@ const Geospatial = () => {
                 setLoading(false);
             }
         };
-        
+
         loadData();
     }, []);
 
     // Calculate real-time statistics
-    const filteredHeatmapData = heatmapData.filter(point => 
+    const filteredHeatmapData = heatmapData.filter(point =>
         point.time >= timeFilter[0] && point.time <= timeFilter[1]
     );
-    const filteredODData = odData.filter(flow => 
+    const filteredODData = odData.filter(flow =>
         flow.time >= timeFilter[0] && flow.time <= timeFilter[1]
     );
-    
+
     const activeTrips = filteredODData.reduce((sum, flow) => sum + flow.trips, 0);
     const hotZones = filteredHeatmapData.filter(point => point.intensity > 15).length;
-    
+
     // Add debugging for activeTrips calculation
     if (odData.length > 0) {
         console.log('🔢 DEBUG Geospatial Stats: OD data length:', odData.length);
@@ -557,8 +558,8 @@ const Geospatial = () => {
         console.log('🔢 DEBUG Geospatial Stats: Active trips calculated:', activeTrips);
         console.log('🔢 DEBUG Geospatial Stats: Demographics total trips:', demographicData.totalTrips);
     }
-    const peakTime = filteredHeatmapData.length > 0 ? 
-        filteredHeatmapData.reduce((max, point) => 
+    const peakTime = filteredHeatmapData.length > 0 ?
+        filteredHeatmapData.reduce((max, point) =>
             point.intensity > max.intensity ? point : max
         ).time : 9;
 
@@ -574,7 +575,7 @@ const Geospatial = () => {
     };
 
     return (
-        <div className="h-screen relative overflow-hidden bg-gray-50">
+        <div className="min-h-[calc(100vh-140px)] w-full relative overflow-hidden bg-gray-50">
             {loading && (
                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
                     <div className="text-center">
@@ -583,113 +584,135 @@ const Geospatial = () => {
                     </div>
                 </div>
             )}
-            
-            {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 bg-white shadow-sm border-b">
-                <div className="px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div>
-                                <h1 className="text-2xl font-bold text-gray-900 flex items-center">
-                                    <Globe className="w-6 h-6 mr-2 text-blue-600" />
-                                    Geospatial Analysis
-                                </h1>
-                                <p className="text-gray-600 text-sm mt-1">
-                                    Interactive mapping and spatial analysis of transportation patterns
-                                </p>
-                            </div>
-                            
-                            {/* Quick Stats */}
-                            <div className="hidden lg:flex items-center space-x-6 ml-8">
-                                <div className="text-center">
-                                    <div className="text-lg font-bold text-blue-600">{activeTrips.toLocaleString()}</div>
-                                    <div className="text-xs text-gray-500">Active Trips</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-lg font-bold text-green-600">{hotZones}</div>
-                                    <div className="text-xs text-gray-500">Hot Zones</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-lg font-bold text-orange-600">{peakTime}:00</div>
-                                    <div className="text-xs text-gray-500">Peak Hour</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-lg font-bold text-purple-600">{demographicData.totalUsers}</div>
-                                    <div className="text-xs text-gray-500">Total Users</div>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Controls */}
-                        <div className="flex items-center space-x-3">
-                            <Button 
-                                variant={layers.heatmap ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => toggleLayer('heatmap')}
-                            >
-                                <Activity className="w-4 h-4 mr-1" />
-                                Heatmap
-                            </Button>
-                            <Button 
-                                variant={layers.odArrows ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => toggleLayer('odArrows')}
-                            >
-                                <Route className="w-4 h-4 mr-1" />
-                                OD Flows
-                            </Button>
-                            <Button 
-                                variant={mapStyle === 'satellite' ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setMapStyle(mapStyle === 'satellite' ? 'default' : 'satellite')}
-                            >
-                                <Satellite className="w-4 h-4 mr-1" />
-                                {mapStyle === 'satellite' ? 'Street' : 'Satellite'}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
+            {/* Floating Control Button */}
+            <div className="absolute top-4 right-4 z-30">
+                <Button
+                    onClick={() => setShowControlPanel(!showControlPanel)}
+                    className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 shadow-lg"
+                    size="sm"
+                >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Controls
+                </Button>
             </div>
 
-            {/* Time Filter */}
-            <div className="absolute top-24 left-0 right-0 z-10 bg-white shadow-sm border-b">
-                <div className="px-6 py-3">
-                    <div className="flex items-center space-x-4">
-                        <span className="text-sm font-medium text-gray-600">Time Filter:</span>
-                        <div className="flex items-center space-x-2">
+            {/* Control Panel Popup */}
+            {showControlPanel && (
+                <div className="absolute top-16 right-4 z-40 bg-white rounded-lg shadow-xl border border-gray-200 p-4 w-80 max-h-[60vh] overflow-y-auto">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-semibold text-gray-800 flex items-center">
+                            <Settings className="w-4 h-4 mr-2 text-blue-600" />
+                            Map Controls
+                        </h3>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowControlPanel(false)}
+                        >
+                            <X className="w-4 h-4" />
+                        </Button>
+                    </div>
+
+                    {/* Layer Controls */}
+                    <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Layers</h4>
+                        <div className="space-y-2">
+                            <div
+                                onClick={() => toggleLayer('heatmap')}
+                                className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${layers.heatmap
+                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    }`}
+                            >
+                                <Activity className="w-4 h-4 mr-2" />
+                                Heatmap
+                            </div>
+                            <div
+                                onClick={() => toggleLayer('odArrows')}
+                                className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${layers.odArrows
+                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    }`}
+                            >
+                                <Route className="w-4 h-4 mr-2" />
+                                OD Flows
+                            </div>
+                            <div
+                                onClick={() => setMapStyle(mapStyle === 'satellite' ? 'default' : 'satellite')}
+                                className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${mapStyle === 'satellite'
+                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    }`}
+                            >
+                                <Satellite className="w-4 h-4 mr-2" />
+                                {mapStyle === 'satellite' ? 'Street View' : 'Satellite View'}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Time Filter */}
+                    <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Time Filter</h4>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between text-sm text-gray-600">
+                                <span>Start: {timeFilter[0]}:00</span>
+                                <span>End: {timeFilter[1]}:00</span>
+                            </div>
                             <input
                                 type="range"
                                 min="0"
                                 max="23"
                                 value={timeFilter[0]}
                                 onChange={(e) => setTimeFilter([parseInt(e.target.value), timeFilter[1]])}
-                                className="w-32"
+                                className="w-full"
                             />
-                            <span className="text-sm text-gray-600">
-                                {timeFilter[0]}:00 - {timeFilter[1]}:00
-                            </span>
                             <input
                                 type="range"
                                 min="0"
                                 max="23"
                                 value={timeFilter[1]}
                                 onChange={(e) => setTimeFilter([timeFilter[0], parseInt(e.target.value)])}
-                                className="w-32"
+                                className="w-full"
                             />
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setTimeFilter([0, 24])}
+                                className="w-full"
+                            >
+                                Reset to All Day
+                            </Button>
                         </div>
-                        <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => setTimeFilter([0, 24])}
-                        >
-                            All Day
-                        </Button>
+                    </div>
+
+                    {/* Quick Stats */}
+                    <div className="mb-4">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Quick Stats</h4>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="text-center p-2 bg-blue-50 rounded">
+                                <div className="font-bold text-blue-600">{activeTrips.toLocaleString()}</div>
+                                <div className="text-gray-600 text-xs">Active Trips</div>
+                            </div>
+                            <div className="text-center p-2 bg-green-50 rounded">
+                                <div className="font-bold text-green-600">{hotZones}</div>
+                                <div className="text-gray-600 text-xs">Hot Zones</div>
+                            </div>
+                            <div className="text-center p-2 bg-orange-50 rounded">
+                                <div className="font-bold text-orange-600">{peakTime}:00</div>
+                                <div className="text-gray-600 text-xs">Peak Hour</div>
+                            </div>
+                            <div className="text-center p-2 bg-purple-50 rounded">
+                                <div className="font-bold text-purple-600">{demographicData.totalUsers}</div>
+                                <div className="text-gray-600 text-xs">Total Users</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* Map Container */}
-            <div className="absolute top-32 left-0 right-0 bottom-0 z-0">
+            {/* Full Screen Map Container */}
+            <div className="absolute inset-0 z-0">
                 <MapContainer
                     center={[10.8505, 76.2711]} // Kerala coordinates (Kochi)
                     zoom={9}
@@ -707,20 +730,20 @@ const Geospatial = () => {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                     )}
-                    
+
                     {layers.heatmap && (
-                        <HeatmapLayer 
-                            data={heatmapData} 
-                            timeFilter={timeFilter} 
-                            visible={layers.heatmap} 
+                        <HeatmapLayer
+                            data={heatmapData}
+                            timeFilter={timeFilter}
+                            visible={layers.heatmap}
                         />
                     )}
-                    
+
                     {layers.odArrows && (
-                        <ODArrowsLayer 
-                            data={odData} 
-                            timeFilter={timeFilter} 
-                            visible={layers.odArrows} 
+                        <ODArrowsLayer
+                            data={odData}
+                            timeFilter={timeFilter}
+                            visible={layers.odArrows}
                         />
                     )}
                 </MapContainer>
@@ -732,7 +755,7 @@ const Geospatial = () => {
                     <BarChart3 className="w-4 h-4 mr-2 text-blue-600" />
                     Data Summary
                 </h3>
-                
+
                 <div className="space-y-3">
                     <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="text-center p-2 bg-blue-50 rounded">
@@ -744,7 +767,7 @@ const Geospatial = () => {
                             <div className="text-gray-600">Trips</div>
                         </div>
                     </div>
-                    
+
                     <div className="text-xs">
                         <div className="font-medium text-gray-600 mb-1">Top Routes:</div>
                         {demographicData.topRoutes.slice(0, 3).map(([route, count], index) => (

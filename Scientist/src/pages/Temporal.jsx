@@ -183,14 +183,6 @@ const Temporal = () => {
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-            {loading && (
-                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading Kerala temporal transportation data...</p>
-                    </div>
-                </div>
-            )}
             
             {/* Enhanced Header */}
             <div className="mb-8">

@@ -253,14 +253,6 @@ const ModePurpose = () => {
 
     return (
         <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-            {loading && (
-                <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-                        <p className="mt-4 text-gray-600">Loading transportation mode and purpose data...</p>
-                    </div>
-                </div>
-            )}
             
             {/* Enhanced Header */}
             <div className="mb-8">
@@ -328,7 +320,7 @@ const ModePurpose = () => {
             {/* Enhanced Tab Navigation */}
             <Card className="shadow-xl border-0 bg-gradient-to-br from-white via-purple-50/20 to-white">
                 <div className="flex border-b border-gray-200">
-                    <button
+                    <div
                         onClick={() => setActiveTab('mode')}
                         className={`px-8 py-6 font-semibold text-sm transition-all duration-300 ${
                             activeTab === 'mode'
@@ -340,8 +332,8 @@ const ModePurpose = () => {
                             <Bus className="w-5 h-5" />
                             <span>Mode Share Analysis</span>
                         </div>
-                    </button>
-                    <button
+                    </div>
+                    <div
                         onClick={() => setActiveTab('purpose')}
                         className={`px-8 py-6 font-semibold text-sm transition-all duration-300 ${
                             activeTab === 'purpose'
@@ -353,7 +345,7 @@ const ModePurpose = () => {
                             <Briefcase className="w-5 h-5" />
                             <span>Trip Purpose Analysis</span>
                         </div>
-                    </button>
+                    </div>
                 </div>
 
                 {/* Tab Content */}
