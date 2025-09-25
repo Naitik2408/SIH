@@ -7,8 +7,6 @@ const { generateToken } = require('../utils/generateToken');
  */
 const register = async (req, res) => {
     try {
-        console.log('Registration request body:', JSON.stringify(req.body, null, 2));
-
         const {
             name,
             email,

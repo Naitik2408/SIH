@@ -9,6 +9,7 @@ import {
     FlatList,
     Dimensions,
     Alert,
+    Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 // import * as Location from 'expo-location'; // Temporarily commented out
@@ -20,6 +21,24 @@ import { journeyAPI } from '../../services/api';
 interface CustomerHomeProps {
     user: User;
     onNavigateToNotifications?: () => void;
+    notifications?: Notification[];
+    onNotificationsUpdate?: (notifications: Notification[]) => void;
+}
+
+interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    time: string;
+    isRead: boolean;
+    type: 'journey' | 'reward' | 'system' | 'update';
+    data?: {
+        tripId?: string;
+        pointsEarned?: number;
+        badges?: string[];
+        duration?: string;
+        [key: string]: any;
+    };
 }
 
 interface SurveyQuestion {
@@ -181,7 +200,12 @@ const benefitCards: BenefitCard[] = [
     }
 ];
 
-const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotifications }) => {
+const CustomerHome: React.FC<CustomerHomeProps> = ({ 
+    user, 
+    onNavigateToNotifications, 
+    notifications: propNotifications, 
+    onNotificationsUpdate: propOnNotificationsUpdate 
+}) => {
     const [showSurvey, setShowSurvey] = React.useState(false);
     const [currentQuestion, setCurrentQuestion] = React.useState(0);
     const [journeyStarted, setJourneyStarted] = React.useState(false);
@@ -212,6 +236,48 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
     const [totalTrips, setTotalTrips] = React.useState(0);
     const [totalPoints, setTotalPoints] = React.useState(0);
     const [isLoadingStats, setIsLoadingStats] = React.useState(true);
+
+    // Popup states
+    const [showUpcomingFeaturePopup, setShowUpcomingFeaturePopup] = React.useState(false);
+
+    // Notification states - use props if provided, fallback to local state
+    const [localNotifications, setLocalNotifications] = React.useState<Notification[]>([
+        {
+            id: '1',
+            title: 'Journey Completed!',
+            message: 'Your trip from Delhi to Mumbai has been successfully logged. You earned 7 GovCoins!',
+            time: '2 hours ago',
+            isRead: false,
+            type: 'journey'
+        },
+        {
+            id: '2',
+            title: 'Monthly Check-in Available',
+            message: 'Complete your monthly travel survey to earn bonus rewards.',
+            time: '1 day ago',
+            isRead: false,
+            type: 'reward'
+        },
+        {
+            id: '3',
+            title: 'Welcome to GetWay!',
+            message: 'Thank you for joining GetWay. Start logging your journeys to earn rewards.',
+            time: '3 days ago',
+            isRead: true,
+            type: 'system'
+        },
+        {
+            id: '4',
+            title: 'New Feature Available',
+            message: 'Track your carbon footprint with our new environmental impact feature.',
+            time: '1 week ago',
+            isRead: false,
+            type: 'update'
+        }
+    ]);
+
+    const notifications = propNotifications || localNotifications;
+    const setNotifications = propOnNotificationsUpdate || setLocalNotifications;
 
     // ScrollView ref for smooth scrolling
     const scrollViewRef = React.useRef<ScrollView>(null);
@@ -256,12 +322,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
 
     const requestLocationPermissions = async (): Promise<boolean> => {
         try {
-            // Mock location permission - always granted for demo
-            Alert.alert(
-                'Location Permission',
-                'Demo mode: Location tracking enabled with mock GPS data.',
-                [{ text: 'OK' }]
-            );
+            // Mock location permission - always granted for demo (silent)
             return true;
         } catch (error) {
             console.error('Error requesting location permissions:', error);
@@ -295,20 +356,20 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
     const fetchUserStats = async (): Promise<void> => {
         try {
             setIsLoadingStats(true);
-            const response = await journeyAPI.getUserJourneys();
+            const response = await journeyAPI.getUserJourneys({
+                limit: 100 // Get enough to count completed trips, same as CustomerProfile
+            });
             const journeys = response.journeys || [];
             
             // Calculate dynamic stats
             const completedTrips = journeys.filter((journey: any) => journey.status === 'completed');
             const tripsLogged = completedTrips.length;
-            const pointsEarned = tripsLogged * 7; // 7 coins per trip
+            const pointsEarned = 0; // Set to 0 until backend logic is implemented
             
             setTotalTrips(tripsLogged);
             setTotalPoints(pointsEarned);
             
-            console.log(`📊 Updated Stats: ${tripsLogged} trips, ${pointsEarned} points`);
         } catch (error) {
-            console.error('Error fetching user stats:', error);
             // Keep default values (0) on error
         } finally {
             setIsLoadingStats(false);
@@ -381,37 +442,11 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
 
             await AsyncStorage.setItem('journeyLogs', JSON.stringify(logs));
             
-            // Show the data that would be added to journeyLogs.json
-            console.log('📝 Journey Data for journeyLogs.json:');
-            console.log('=====================================');
-            console.log(JSON.stringify(journey, null, 2));
-            console.log('=====================================');
-            console.log('📊 Updated Summary:');
-            console.log(JSON.stringify(logs.summary, null, 2));
-            
-            // Create a user-friendly alert showing the data
-            const dataPreview = `
-🆔 Trip ID: ${journey.tripId}
-🚌 Transport: ${journey.surveyData.transportMode}
-🎯 Purpose: ${journey.surveyData.journeyPurpose}
-⏱️ Duration: ${journey.tripDetails.actualDurationFormatted}
-📍 GPS Points: ${journey.gpsTrackingData.length}
-🏆 Points: ${journey.rewards?.pointsEarned || 0}
-📱 Status: ${journey.status}
-            `.trim();
+            // Journey data saved silently - no popup needed
+            // The main completion popup will be shown from handleEndJourney
 
-            if (journey.status === 'completed') {
-                Alert.alert(
-                    '✅ Journey Saved!',
-                    `Your journey data has been logged:\n\n${dataPreview}\n\nThis data would be added to journeyLogs.json in a real backend system.`,
-                    [{ text: 'View in Console', onPress: () => console.log('Full Journey Data:', journey) }]
-                );
-            }
-
-            console.log('Journey saved successfully:', journey.tripId);
         } catch (error) {
-            console.error('Error saving journey to storage:', error);
-            Alert.alert('Error', 'Failed to save journey data. Please check console for details.');
+            Alert.alert('Error', 'Failed to save journey data. Please try again.');
         }
     };
 
@@ -640,7 +675,7 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
 
                 Alert.alert(
                     'Journey Started! 🚀',
-                    `Your journey tracking has begun. We'll collect data to help improve transportation in your area.\n\nTrip ID: ${journey.tripId}\nCheck console for detailed logs.`,
+                    'Happy journey! Your trip tracking has begun.',
                     [{ text: 'Great!' }]
                 );
             } catch (error) {
@@ -717,6 +752,29 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             // Save completed journey
             await saveJourneyToStorage(completedJourney);
 
+            // Create a completion notification
+            const completionNotification: Notification = {
+                id: `journey-${completedJourney.tripId}-${Date.now()}`,
+                title: 'Journey Completed! 🎉',
+                message: `Great job! You've earned ${pointsEarned} points for your ${completedJourney.surveyData.transportMode} journey.${badges.length > 0 ? ` New badges: ${badges.join(', ')}` : ''}`,
+                type: 'journey' as const,
+                time: new Date().toLocaleString(),
+                isRead: false,
+                data: {
+                    tripId: completedJourney.tripId,
+                    pointsEarned,
+                    badges: badges.length > 0 ? badges : undefined,
+                    duration: completedJourney.tripDetails.actualDurationFormatted,
+                }
+            };
+
+            // Add notification to the state
+            if (propOnNotificationsUpdate) {
+                propOnNotificationsUpdate([completionNotification, ...notifications]);
+            } else {
+                setLocalNotifications(prev => [completionNotification, ...prev]);
+            }
+
             // Refresh user stats to reflect the new journey
             await fetchUserStats();
 
@@ -736,18 +794,42 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             // Show completion message
             Alert.alert(
                 'Journey Completed! 🎉',
-                `Great job! You've earned 7 points for this journey!${badges.length > 0 ? `\n\nNew badges unlocked: ${badges.join(', ')}` : ''}\n\nTrip ID: ${completedJourney.tripId}\nDuration: ${completedJourney.tripDetails.actualDurationFormatted}\n\nYour stats will be updated automatically.`,
+                'Your journey has been successfully completed and saved.',
                 [
                     { text: 'Awesome!' }
                 ]
             );
 
-            console.log('Journey ended successfully:', completedJourney.tripId);
         } catch (error) {
             console.error('Error ending journey:', error);
             Alert.alert('Error', 'Failed to complete journey. Please try again.');
         }
     };
+
+    // Handle benefits card learn more button press
+    const handleLearnMorePress = () => {
+        setShowUpcomingFeaturePopup(true);
+    };
+
+    // Handle popup close
+    const handlePopupClose = () => {
+        setShowUpcomingFeaturePopup(false);
+    };
+
+    // Handle notification navigation with callback for updates
+    const handleNotificationPress = () => {
+        if (onNavigateToNotifications) {
+            onNavigateToNotifications();
+        }
+    };
+
+    // Function to update notifications from child component
+    const handleNotificationsUpdate = (updatedNotifications: Notification[]) => {
+        setNotifications(updatedNotifications);
+    };
+
+    // Calculate unread notifications count
+    const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
 
     const renderBenefitCard = ({ item }: { item: BenefitCard }) => (
         <View style={styles.benefitCard}>
@@ -761,7 +843,10 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
             </View>
             <Text style={styles.benefitTitle}>{item.title}</Text>
             <Text style={styles.benefitDescription}>{item.description}</Text>
-            <TouchableOpacity style={[styles.benefitButton, { borderColor: item.color }]}>
+            <TouchableOpacity 
+                style={[styles.benefitButton, { borderColor: item.color }]}
+                onPress={handleLearnMorePress}
+            >
                 <Text style={[styles.benefitButtonText, { color: item.color }]}>Learn More</Text>
                 <Ionicons name="arrow-forward" size={14} color={item.color} />
             </TouchableOpacity>
@@ -817,19 +902,17 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 break;
         }
         
-        console.log('📄 FILE UPDATE SIMULATION:');
-        console.log('============================');
-        console.log(message);
-        console.log('============================');
+        // Simulate file update without console logging
     };
 
     return (
-        <ScrollView
-            ref={scrollViewRef}
-            style={styles.container}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-        >
+        <>
+            <ScrollView
+                ref={scrollViewRef}
+                style={styles.container}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
             <View style={styles.header}>
                 <View style={styles.headerContent}>
                     <Text style={styles.greeting}>Hello, {user.name}! 👋</Text>
@@ -837,17 +920,20 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 </View>
                 <TouchableOpacity
                     style={styles.notificationButton}
-                    onPress={onNavigateToNotifications}
+                    onPress={handleNotificationPress}
                 >
                     <Ionicons
                         name="notifications-outline"
                         size={SIZES.subheading + 2}
                         color={COLORS.textSecondary}
                     />
-                    {/* Notification badge */}
-                    <View style={styles.notificationBadge}>
-                        <Text style={styles.badgeText}>3</Text>
-                    </View>
+                    {unreadNotificationsCount > 0 && (
+                        <View style={styles.notificationBadge}>
+                            <Text style={styles.badgeText}>
+                                {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                            </Text>
+                        </View>
+                    )}
                 </TouchableOpacity>
             </View>
 
@@ -1071,6 +1157,46 @@ const CustomerHome: React.FC<CustomerHomeProps> = ({ user, onNavigateToNotificat
                 </View>
             )}
         </ScrollView>
+
+        {/* Upcoming Feature Popup Modal */}
+        <Modal
+            visible={showUpcomingFeaturePopup}
+            transparent={true}
+            animationType="fade"
+            onRequestClose={handlePopupClose}
+        >
+            <View style={styles.modalOverlay}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalHeader}>
+                        <View style={styles.modalIconContainer}>
+                            <Ionicons name="rocket-outline" size={32} color={COLORS.primary} />
+                        </View>
+                        <TouchableOpacity 
+                            style={styles.modalCloseButton}
+                            onPress={handlePopupClose}
+                        >
+                            <Ionicons name="close" size={20} color={COLORS.textSecondary} />
+                        </TouchableOpacity>
+                    </View>
+                    
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Coming Soon!</Text>
+                        <Text style={styles.modalDescription}>
+                            This feature is currently under development and will be available soon. 
+                            Stay tuned for exciting rewards and benefits!
+                        </Text>
+                        
+                        <TouchableOpacity 
+                            style={styles.modalButton}
+                            onPress={handlePopupClose}
+                        >
+                            <Text style={styles.modalButtonText}>Got it!</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+        </>
     );
 };
 
@@ -1688,6 +1814,87 @@ const styles = StyleSheet.create({
         fontFamily: FONTS.regular,
         color: COLORS.textTertiary,
         marginLeft: 4,
+    },
+    // Upcoming Feature Modal Styles
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    modalContainer: {
+        backgroundColor: '#ffffff',
+        borderRadius: 20,
+        padding: 0,
+        width: '100%',
+        maxWidth: 340,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 10,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 20,
+        elevation: 10,
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 10,
+    },
+    modalIconContainer: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: `${COLORS.primary}15`,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalCloseButton: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContent: {
+        paddingHorizontal: 20,
+        paddingBottom: 24,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: SIZES.subheading,
+        fontFamily: FONTS.bold,
+        color: COLORS.textPrimary,
+        marginBottom: 12,
+        textAlign: 'center',
+    },
+    modalDescription: {
+        fontSize: SIZES.body,
+        fontFamily: FONTS.regular,
+        color: COLORS.textSecondary,
+        textAlign: 'center',
+        lineHeight: 20,
+        marginBottom: 24,
+    },
+    modalButton: {
+        backgroundColor: COLORS.primary,
+        paddingVertical: 12,
+        paddingHorizontal: 32,
+        borderRadius: 25,
+        minWidth: 120,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalButtonText: {
+        color: '#ffffff',
+        fontSize: SIZES.body,
+        fontFamily: FONTS.semiBold,
     },
 });
 

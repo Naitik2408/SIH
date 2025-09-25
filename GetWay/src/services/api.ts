@@ -452,31 +452,22 @@ export const journeyAPI = {
             includeAuth: true
         });
 
-        console.log('🚗 Journey API Raw Response:', JSON.stringify(response, null, 2)); // Pretty debug log
-
         // Backend returns: { success: true, data: { journeys: [...], totalPages: 4, ... } }
         if (response && response.success && response.data) {
-            console.log('🚗 Journey API Data:', response.data);
-            console.log('🚗 Number of journeys found:', response.data.journeys?.length || 0);
             return response.data;
         } 
         
         // Fallback: if response has journeys directly
         else if (response && response.journeys) {
-            console.log('🚗 Direct journeys response found:', response.journeys.length);
             return response;
         } 
         
         // Another fallback: if response.data has journeys directly
         else if (response && response.data && response.data.journeys) {
-            console.log('🚗 Nested data.journeys found:', response.data.journeys.length);
             return response.data;
         }
         
         else {
-            console.error('❌ Invalid response structure:', response);
-            console.error('❌ Response keys:', response ? Object.keys(response) : 'No response');
-            console.error('❌ Response type:', typeof response);
             throw new Error('Invalid response format from server');
         }
     },
