@@ -26,8 +26,12 @@ interface ScientistRequest {
     createdAt: string;
 }
 
-const OwnerApprovals: React.FC = () => {
-    const [selectedFilter, setSelectedFilter] = useState<'all' | 'pending' | 'approved'>('pending');
+interface OwnerApprovalsProps {
+    initialFilter?: 'all' | 'pending' | 'approved';
+}
+
+const OwnerApprovals: React.FC<OwnerApprovalsProps> = ({ initialFilter = 'pending' }) => {
+    const [selectedFilter, setSelectedFilter] = useState<'all' | 'pending' | 'approved'>(initialFilter);
     const [selectedRequest, setSelectedRequest] = useState<ScientistRequest | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [rejectionReason, setRejectionReason] = useState('');
@@ -101,6 +105,13 @@ const OwnerApprovals: React.FC = () => {
     useEffect(() => {
         fetchScientists();
     }, []);
+
+    // Update filter when initialFilter prop changes
+    useEffect(() => {
+        if (initialFilter) {
+            setSelectedFilter(initialFilter);
+        }
+    }, [initialFilter]);
 
     // Refresh handler
     const onRefresh = async () => {
@@ -241,22 +252,6 @@ const OwnerApprovals: React.FC = () => {
                     <Text style={[styles.statNumber, { color: '#3b82f6' }]}>{stats.total}</Text>
                     <Text style={styles.statLabel}>Total</Text>
                 </View>
-            </View>
-
-            {/* Debug Info Section */}
-            <View style={styles.debugContainer}>
-                <Text style={styles.debugText}>
-                    🔍 Debug: Loaded {scientists.length} scientists, showing {filteredRequests.length} for "{selectedFilter}" filter
-                </Text>
-                <TouchableOpacity 
-                    onPress={() => {
-                        console.log('🔄 Manual refresh triggered');
-                        fetchScientists();
-                    }}
-                    style={styles.debugRefreshButton}
-                >
-                    <Text style={styles.debugRefreshText}>🔄 Refresh Data</Text>
-                </TouchableOpacity>
             </View>
 
             {/* Filter Tabs */}

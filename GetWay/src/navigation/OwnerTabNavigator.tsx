@@ -17,17 +17,25 @@ const ownerTabItems: TabItem[] = [
 
 const OwnerTabNavigator: React.FC<OwnerTabNavigatorProps> = ({ user, onLogout }) => {
     const [activeTab, setActiveTab] = useState('Home');
+    const [approvalsFilter, setApprovalsFilter] = useState<'all' | 'pending' | 'approved'>('pending');
+
+    const handleNavigateToApprovals = (filter?: 'all' | 'pending' | 'approved') => {
+        if (filter) {
+            setApprovalsFilter(filter);
+        }
+        setActiveTab('Approvals');
+    };
 
     const renderActiveScreen = () => {
         switch (activeTab) {
             case 'Home':
-                return <OwnerHome user={user} />;
+                return <OwnerHome user={user} onNavigateToApprovals={handleNavigateToApprovals} />;
             case 'Approvals':
-                return <OwnerApprovals />;
+                return <OwnerApprovals initialFilter={approvalsFilter} />;
             case 'Profile':
                 return <OwnerProfile user={user} onLogout={onLogout} />;
             default:
-                return <OwnerHome user={user} />;
+                return <OwnerHome user={user} onNavigateToApprovals={handleNavigateToApprovals} />;
         }
     };
 

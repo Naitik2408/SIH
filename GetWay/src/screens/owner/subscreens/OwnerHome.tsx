@@ -19,6 +19,7 @@ const { width } = Dimensions.get('window');
 
 interface OwnerHomeProps {
     user: User;
+    onNavigateToApprovals?: (filter?: 'all' | 'pending' | 'approved') => void;
 }
 
 interface DashboardStats {
@@ -36,11 +37,7 @@ interface RecentActivity {
     color: string;
 }
 
-interface OwnerHomeProps {
-    user: User;
-}
-
-const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
+const OwnerHome: React.FC<OwnerHomeProps> = ({ user, onNavigateToApprovals }) => {
     // State for dynamic data
     const [dashboardStats, setDashboardStats] = useState<DashboardStats>({
         totalScientists: 0,
@@ -103,15 +100,6 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                     color: '#f59e0b'
                 });
             }
-            
-            // Add system overview
-            activities.push({
-                title: 'System Overview',
-                subtitle: `Managing ${totalScientists} scientists with ${approvedScientists} approved`,
-                time: 'Updated',
-                icon: 'analytics',
-                color: '#8b5cf6'
-            });
             
             setRecentActivities(activities);
             
@@ -209,15 +197,6 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                         <Text style={styles.adminBadge}>ADMIN</Text>
                     </View>
                 </View>
-                <View style={styles.navRight}>
-                    <TouchableOpacity style={styles.notificationButton}>
-                        <Ionicons name="notifications-outline" size={24} color={COLORS.white} />
-                        <View style={styles.notificationDot} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.menuButton}>
-                        <Ionicons name="menu" size={24} color={COLORS.white} />
-                    </TouchableOpacity>
-                </View>
             </View>
 
             <ScrollView 
@@ -274,7 +253,10 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                         <View style={styles.quickActionsSection}>
                             <Text style={styles.sectionTitle}>Quick Actions</Text>
                             <View style={styles.quickActionsGrid}>
-                                <TouchableOpacity style={styles.actionCard}>
+                                <TouchableOpacity 
+                                    style={styles.actionCard}
+                                    onPress={() => onNavigateToApprovals?.('pending')}
+                                >
                                     <Ionicons name="person-add" size={28} color={COLORS.primary} />
                                     <Text style={styles.actionText}>Approve Scientists</Text>
                                     {dashboardStats.pendingApprovals > 0 && (
@@ -283,20 +265,12 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                                         </View>
                                     )}
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.actionCard}>
+                                <TouchableOpacity 
+                                    style={styles.actionCard}
+                                    onPress={() => onNavigateToApprovals?.('all')}
+                                >
                                     <Ionicons name="people" size={28} color={COLORS.primary} />
                                     <Text style={styles.actionText}>View All Scientists</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.actionCard}>
-                                    <Ionicons name="analytics" size={28} color={COLORS.primary} />
-                                    <Text style={styles.actionText}>System Analytics</Text>
-                                    <View style={styles.actionBadge}>
-                                        <Text style={styles.actionBadgeText}>{dashboardStats.activeScientists}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.actionCard}>
-                                    <Ionicons name="shield-checkmark" size={28} color={COLORS.primary} />
-                                    <Text style={styles.actionText}>System Health</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -306,7 +280,7 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                             <Text style={styles.sectionTitle}>Recent Activities</Text>
                             {recentActivities.length > 0 ? (
                                 recentActivities.map((activity, index) => (
-                                    <TouchableOpacity key={index} style={styles.activityCard}>
+                                    <View key={index} style={styles.activityCard}>
                                         <View style={[styles.activityIcon, { backgroundColor: `${activity.color}15` }]}>
                                             <Ionicons name={activity.icon as any} size={20} color={activity.color} />
                                         </View>
@@ -315,8 +289,7 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                                             <Text style={styles.activitySubtitle}>{activity.subtitle}</Text>
                                             <Text style={styles.activityTime}>{activity.time}</Text>
                                         </View>
-                                        <Ionicons name="chevron-forward" size={16} color={COLORS.gray} />
-                                    </TouchableOpacity>
+                                    </View>
                                 ))
                             ) : (
                                 <View style={styles.emptyActivities}>
@@ -325,40 +298,11 @@ const OwnerHome: React.FC<OwnerHomeProps> = ({ user }) => {
                                 </View>
                             )}
                         </View>
-
-                        {/* System Status */}
-                        <View style={styles.healthSection}>
-                            <Text style={styles.sectionTitle}>System Status</Text>
-                            <View style={styles.healthCard}>
-                                <View style={styles.healthItem}>
-                                    <Text style={styles.healthLabel}>Database Connection</Text>
-                                    <View style={styles.healthStatus}>
-                                        <View style={[styles.statusDot, { backgroundColor: '#10b981' }]} />
-                                        <Text style={styles.healthValue}>Connected</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.healthItem}>
-                                    <Text style={styles.healthLabel}>Scientists Data</Text>
-                                    <View style={styles.healthStatus}>
-                                        <Text style={styles.healthValue}>Up to date</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.healthItem}>
-                                    <Text style={styles.healthLabel}>Total Scientists</Text>
-                                    <View style={styles.healthStatus}>
-                                        <Text style={styles.healthValue}>{dashboardStats.totalScientists}</Text>
-                                    </View>
-                                </View>
-                                <View style={styles.healthItem}>
-                                    <Text style={styles.healthLabel}>Active Scientists</Text>
-                                    <View style={styles.healthStatus}>
-                                        <Text style={styles.healthValue}>{dashboardStats.activeScientists}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
                     </>
                 )}
+
+                {/* Bottom spacing for floating buttons */}
+                <View style={styles.bottomSpacing} />
             </ScrollView>
         </View>
     );
@@ -371,7 +315,6 @@ const styles = StyleSheet.create({
     },
     topNavBar: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: SIZES.lg,
         paddingTop: 50,
@@ -399,26 +342,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 8,
-    },
-    navRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    notificationButton: {
-        position: 'relative',
-        marginRight: SIZES.md,
-    },
-    notificationDot: {
-        position: 'absolute',
-        top: -2,
-        right: -2,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        backgroundColor: '#ef4444',
-    },
-    menuButton: {
-        // Menu button styles
     },
     content: {
         flex: 1,
@@ -568,48 +491,7 @@ const styles = StyleSheet.create({
     activityTime: {
         fontSize: SIZES.xs,
         color: COLORS.gray,
-    },
-    healthSection: {
-        paddingHorizontal: SIZES.lg,
-        marginBottom: 100, // Extra space for bottom tab bar
-    },
-    healthCard: {
-        backgroundColor: COLORS.white,
-        borderRadius: 12,
-        padding: SIZES.md,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    healthItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: SIZES.sm,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f3f4f6',
-    },
-    healthLabel: {
-        fontSize: SIZES.md,
-        color: COLORS.black,
-        fontWeight: '500',
-    },
-    healthStatus: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    statusDot: {
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-        marginRight: SIZES.xs,
-    },
-    healthValue: {
-        fontSize: SIZES.md,
-        color: COLORS.gray,
-        fontWeight: '500',
+        marginTop: SIZES.md,
     },
     // Loading styles
     loadingContainer: {
@@ -697,6 +579,10 @@ const styles = StyleSheet.create({
         marginTop: SIZES.sm,
         fontSize: SIZES.md,
         color: COLORS.gray,
+    },
+    // Bottom spacing for floating buttons
+    bottomSpacing: {
+        height: 100,
     },
 });
 
