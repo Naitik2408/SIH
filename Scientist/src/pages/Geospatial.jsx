@@ -61,10 +61,10 @@ const generateHeatmapData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-
+        
         console.log('🗺️ DEBUG Geospatial Heatmap: Total journeys fetched:', journeys.length);
         console.log('🗺️ DEBUG Geospatial Heatmap: Sample journey structure:', journeys[0]);
-
+        
         const heatmapPoints = [];
         let id = 0;
         let processedPoints = 0;
@@ -73,7 +73,7 @@ const generateHeatmapData = async () => {
         journeys.forEach((journey, index) => {
             // Add start location (FIX: Use lat/lng instead of latitude/longitude)
             const startLoc = journey.tripData?.startLocation;
-
+            
             if (index < 3) {
                 console.log(`🗺️ DEBUG Geospatial Journey ${index + 1} start:`, {
                     startLoc,
@@ -84,7 +84,7 @@ const generateHeatmapData = async () => {
                     address: startLoc?.address
                 });
             }
-
+            
             if (startLoc && startLoc.lat && startLoc.lng) {
                 heatmapPoints.push({
                     id: id++,

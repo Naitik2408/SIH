@@ -452,31 +452,22 @@ export const journeyAPI = {
             includeAuth: true
         });
 
-        console.log('🚗 Journey API Raw Response:', JSON.stringify(response, null, 2)); // Pretty debug log
-
         // Backend returns: { success: true, data: { journeys: [...], totalPages: 4, ... } }
         if (response && response.success && response.data) {
-            console.log('🚗 Journey API Data:', response.data);
-            console.log('🚗 Number of journeys found:', response.data.journeys?.length || 0);
             return response.data;
         } 
         
         // Fallback: if response has journeys directly
         else if (response && response.journeys) {
-            console.log('🚗 Direct journeys response found:', response.journeys.length);
             return response;
         } 
         
         // Another fallback: if response.data has journeys directly
         else if (response && response.data && response.data.journeys) {
-            console.log('🚗 Nested data.journeys found:', response.data.journeys.length);
             return response.data;
         }
         
         else {
-            console.error('❌ Invalid response structure:', response);
-            console.error('❌ Response keys:', response ? Object.keys(response) : 'No response');
-            console.error('❌ Response type:', typeof response);
             throw new Error('Invalid response format from server');
         }
     },
@@ -506,5 +497,80 @@ export const journeyAPI = {
         );
 
         return response.data!;
+    }
+};
+
+// Owner API functions
+export const ownerAPI = {
+    // Get pending scientists for approval
+    async getPendingScientists(): Promise<any[]> {
+        const response = await apiRequest<{ scientists: any[]; count: number; organizationId: string }>(
+            '/owner/pending-scientists',
+            {
+                method: 'GET',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientists;
+        } else {
+            throw new Error(response.message || 'Failed to fetch pending scientists');
+        }
+    },
+
+    // Get all scientists in organization
+    async getAllScientists(): Promise<{ scientists: any[]; stats: any }> {
+        const response = await apiRequest<{ scientists: any[]; stats: any; organizationId: string }>(
+            '/owner/scientists',
+            {
+                method: 'GET',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return {
+                scientists: response.data.scientists,
+                stats: response.data.stats
+            };
+        } else {
+            throw new Error(response.message || 'Failed to fetch scientists');
+        }
+    },
+
+    // Approve scientist
+    async approveScientist(scientistId: string): Promise<any> {
+        const response = await apiRequest<{ scientist: any }>(
+            `/owner/approve-scientist/${scientistId}`,
+            {
+                method: 'POST',
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientist;
+        } else {
+            throw new Error(response.message || 'Failed to approve scientist');
+        }
+    },
+
+    // Disapprove scientist
+    async disapproveScientist(scientistId: string, reason?: string): Promise<any> {
+        const response = await apiRequest<{ scientist: any }>(
+            `/owner/disapprove-scientist/${scientistId}`,
+            {
+                method: 'POST',
+                body: { reason: reason || 'Not specified' },
+                includeAuth: true
+            }
+        );
+
+        if (response.status === 'success' && response.data) {
+            return response.data.scientist;
+        } else {
+            throw new Error(response.message || 'Failed to disapprove scientist');
+        }
     }
 };

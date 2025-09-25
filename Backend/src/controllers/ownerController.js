@@ -54,9 +54,11 @@ const approveScientist = async (req, res) => {
                     id: scientist._id,
                     name: scientist.name,
                     email: scientist.email,
-                    organizationId: scientist.organizationId,
+                    department: scientist.department,
+                    designation: scientist.designation,
                     isApproved: scientist.isApproved,
                     approvedAt: new Date()
+                    // organizationId explicitly excluded in simplified system
                 }
             }
         });
@@ -147,7 +149,7 @@ const getPendingScientists = async (req, res) => {
         const pendingScientists = await User.find({
             role: 'scientist',
             isApproved: false,
-            isActive: true
+            // isActive: true
             // organizationId: organizationId // Add this when owner auth is ready
         }).select('-password').sort({ createdAt: -1 });
 

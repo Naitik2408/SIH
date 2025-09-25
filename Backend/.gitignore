@@ -35,3 +35,15 @@ coverage/
 *.bak
 *.orig
 .env
+
+# Test and debug files
+test*.js
+debug*.js
+quick*.js
+create*.js
+check*.js
+getAll*.js
+
+# Temporary files
+*.tmp
+*.cache

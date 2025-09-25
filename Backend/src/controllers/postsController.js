@@ -8,8 +8,6 @@ const cloudinary = require('../config/cloudinary');
  */
 const createPost = async (req, res) => {
     try {
-        console.log('Create post request body:', JSON.stringify(req.body, null, 2));
-
         const {
             title,
             content,
