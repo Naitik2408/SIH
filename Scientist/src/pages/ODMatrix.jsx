@@ -35,11 +35,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import L from 'leaflet';
 import {
-    extractZonesFromUserData,
-    generateRealODMatrix,
-    generateRealCorridorData,
-    getRealTopCorridors
+    generateRealCorridorData
 } from '../utils/odMatrixAnalytics';
+import { useODMatrixData, usePrefetchData, useDataContext } from '../contexts/DataContext';
+import { ODMatrixSkeleton, ErrorState, LoadingState } from '../components/LoadingSkeleton';
 
 // Fix for default markers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -55,40 +54,25 @@ const ODMatrix = () => {
     const [showInfo, setShowInfo] = useState(false);
     const [matrixView, setMatrixView] = useState('absolute'); // 'absolute' or 'percentage'
 
-    // State for async data loading
-    const [odMatrix, setOdMatrix] = useState({});
-    const [zones, setZones] = useState([]);
-    const [topCorridors, setTopCorridors] = useState([]);
-    const [loading, setLoading] = useState(true);
+    // Use React Query for data fetching with caching
+    const {
+        data: odMatrixData,
+        isLoading,
+        isError,
+        error,
+        refetch,
+        isFetching
+    } = useODMatrixData();
 
-    // Load data on component mount
-    useEffect(() => {
-        const loadODData = async () => {
-            setLoading(true);
-            try {
-                const { matrix, zones } = await generateRealODMatrix();
-                const corridorsResult = await getRealTopCorridors(matrix, zones);
+    const { prefetch } = usePrefetchData();
+    const { cacheManager } = useDataContext();
 
-                setOdMatrix(matrix);
-                setZones(zones);
-                setTopCorridors(corridorsResult);
-            } catch (error) {
-                console.error('Error loading OD matrix data:', error);
-                // Set empty defaults to prevent crashes
-                setOdMatrix({});
-                setZones([]);
-                setTopCorridors([]);
-            } finally {
-                setLoading(false);
-            }
-        };
+    // Extract data with defaults (must be done before any conditional returns to maintain hook order)
+    const odMatrix = odMatrixData?.matrix || {};
+    const zones = odMatrixData?.zones || [];
+    const topCorridors = odMatrixData?.topCorridors || [];
 
-        loadODData();
-    }, []);    // Use real data from user analytics - REPLACED WITH ASYNC LOADING
-    // const { matrix: odMatrix, zones } = useMemo(() => generateRealODMatrix(), []);
-    // const topCorridors = useMemo(() => getRealTopCorridors(odMatrix, zones), [odMatrix, zones]);
-
-    // Calculate total trips for percentage view
+    // Calculate total trips for percentage view (useMemo must be called before conditional returns)
     const totalTrips = useMemo(() => {
         let total = 0;
         if (odMatrix && typeof odMatrix === 'object') {
@@ -102,6 +86,35 @@ const ODMatrix = () => {
         }
         return total;
     }, [odMatrix]);
+
+    // Prefetch other page data when ODMatrix loads
+    useEffect(() => {
+        if (!isLoading && odMatrixData) {
+            // Prefetch other pages for faster navigation
+            setTimeout(() => {
+                prefetch.prefetchDashboardData();
+                prefetch.prefetchGeospatialData();
+                prefetch.prefetchDemographicsData();
+                prefetch.prefetchTemporalData();
+            }, 1000);
+        }
+    }, [isLoading, odMatrixData, prefetch]);
+
+    // Handle loading state
+    if (isLoading) {
+        return <ODMatrixSkeleton />;
+    }
+
+    // Handle error state
+    if (isError) {
+        return (
+            <ErrorState
+                title="Failed to Load OD Matrix Data"
+                message={error?.message || "Unable to fetch OD Matrix data. Please check your connection."}
+                onRetry={refetch}
+            />
+        );
+    }
 
     const corridorData = selectedCorridor
         ? generateRealCorridorData(selectedCorridor.origin, selectedCorridor.destination)

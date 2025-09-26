@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useSmartPrefetch, usePerformanceMonitor, useBackgroundSync } from '../hooks/usePrefetchStrategies';
+import PerformanceMonitor from '../components/PerformanceMonitor';
 import {
     LayoutDashboard,
     MapPin,
@@ -16,7 +18,8 @@ import {
     Menu,
     ChevronDown,
     Calendar,
-    LogOut
+    LogOut,
+    Activity
 } from 'lucide-react';
 
 const MainLayout = () => {
@@ -25,7 +28,28 @@ const MainLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [startDate, setStartDate] = useState('2025-09-01');
     const [endDate, setEndDate] = useState('2025-09-20');
+    const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false);
     const location = useLocation();
+
+    // Smart prefetching hooks
+    const { prefetchOnHover, prefetchRelatedData } = useSmartPrefetch();
+    usePerformanceMonitor();
+    useBackgroundSync();
+
+    // Prefetch related data when route changes
+    useEffect(() => {
+        prefetchRelatedData(location.pathname);
+    }, [location.pathname, prefetchRelatedData]);
+
+    // Map paths to prefetch types
+    const getPageType = (path) => {
+        if (path === '/') return 'dashboard';
+        if (path.startsWith('/geospatial')) return 'geospatial';
+        if (path.startsWith('/demographics')) return 'demographics';
+        if (path.startsWith('/temporal')) return 'temporal';
+        if (path.startsWith('/od-matrix')) return 'odmatrix';
+        return null;
+    };
 
     // Debug route changes
     useEffect(() => {
@@ -97,6 +121,13 @@ const MainLayout = () => {
                             <li key={item.path}>
                                 <Link
                                     to={item.path}
+                                    onMouseEnter={() => {
+                                        // Prefetch data when user hovers over navigation link
+                                        const pageType = getPageType(item.path);
+                                        if (pageType) {
+                                            prefetchOnHover(pageType);
+                                        }
+                                    }}
                                     onClick={(e) => {
                                         console.log('🔗 Navigation clicked:', item.name, '→', item.path);
                                         // Close sidebar on mobile after navigation
@@ -213,6 +244,18 @@ const MainLayout = () => {
                         </div>
 
                         <div className="flex items-center space-x-3 flex-shrink-0">
+                            {/* Performance Monitor Toggle */}
+                            <button
+                                onClick={() => setShowPerformanceMonitor(!showPerformanceMonitor)}
+                                className={`p-2 rounded-xl transition-all duration-200 border ${showPerformanceMonitor
+                                        ? 'bg-green-100 text-green-700 border-green-300'
+                                        : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200 border-gray-300'
+                                    }`}
+                                title="Toggle Performance Monitor"
+                            >
+                                <Activity className="w-5 h-5" />
+                            </button>
+
                             {/* Profile Icon Only */}
                             <div className="p-2 transition-all duration-200 group text-gray-600 hover:text-gray-800 hover:bg-gray-200">
                                 <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 via-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-xl group-hover:scale-105 transition-transform border border-purple-400/30">
@@ -232,6 +275,9 @@ const MainLayout = () => {
                     </div>
                 </main>
             </div>
+
+            {/* Performance Monitor */}
+            <PerformanceMonitor isVisible={showPerformanceMonitor} />
         </div>
     );
 };

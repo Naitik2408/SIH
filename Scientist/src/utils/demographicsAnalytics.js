@@ -10,9 +10,9 @@ export const getDemographicKPIs = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('👥 DEBUG Demographics KPIs: Total journeys loaded:', journeys.length);
-        
+
         // Initialize occupation counters
         const occupationCounts = {
             student: 0,
@@ -21,11 +21,11 @@ export const getDemographicKPIs = async () => {
             senior: 0,
             other: 0
         };
-        
+
         // Process journey data to count occupations
         journeys.forEach((journey, index) => {
             const occupation = journey.occupation ? journey.occupation.toLowerCase() : 'other';
-            
+
             // Map various occupation types to our categories
             if (occupation.includes('student') || occupation.includes('education')) {
                 occupationCounts.student++;
@@ -38,19 +38,19 @@ export const getDemographicKPIs = async () => {
             } else {
                 occupationCounts.other++;
             }
-            
+
             // Debug first few entries
             if (index < 5) {
                 console.log(`👥 DEBUG Demographics Journey ${index + 1}:`, {
                     originalOccupation: journey.occupation,
                     categorized: occupation,
-                    counts: {...occupationCounts}
+                    counts: { ...occupationCounts }
                 });
             }
         });
-        
+
         const totalJourneys = journeys.length;
-        
+
         // Calculate percentages and create KPI structure
         const kpis = [
             {
@@ -86,11 +86,11 @@ export const getDemographicKPIs = async () => {
                 gradient: 'from-orange-500 to-orange-600'
             }
         ];
-        
+
         console.log('👥 DEBUG Demographics KPIs: Final data:', kpis);
-        
+
         return kpis;
-        
+
     } catch (error) {
         console.error('❌ Error getting demographic KPIs:', error);
         return [
@@ -109,9 +109,9 @@ export const getAgeGroupData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('🎂 DEBUG Demographics Age Groups: Total journeys loaded:', journeys.length);
-        
+
         // Initialize age group counters
         const ageGroups = {
             '18-25': 0,
@@ -121,11 +121,11 @@ export const getAgeGroupData = async () => {
             '56-65': 0,
             '65+': 0
         };
-        
+
         // Process journey data
         journeys.forEach((journey, index) => {
             const age = journey.age ? parseInt(journey.age) : 25; // Default age
-            
+
             // Categorize by age groups
             if (age >= 18 && age <= 25) {
                 ageGroups['18-25']++;
@@ -140,18 +140,18 @@ export const getAgeGroupData = async () => {
             } else if (age > 65) {
                 ageGroups['65+']++;
             }
-            
+
             // Debug first few entries
             if (index < 5) {
                 console.log(`🎂 DEBUG Demographics Age Journey ${index + 1}:`, {
                     age,
-                    groups: {...ageGroups}
+                    groups: { ...ageGroups }
                 });
             }
         });
-        
+
         const totalTrips = journeys.length;
-        
+
         // Convert to chart data format
         const ageGroupData = Object.entries(ageGroups).map(([ageGroup, trips]) => ({
             ageGroup,
@@ -159,11 +159,11 @@ export const getAgeGroupData = async () => {
             percentage: totalTrips > 0 ? Math.round((trips / totalTrips) * 100 * 10) / 10 : 0, // One decimal place
             color: getAgeGroupColor(ageGroup)
         }));
-        
+
         console.log('🎂 DEBUG Demographics Age Groups: Final data:', ageGroupData);
-        
+
         return ageGroupData;
-        
+
     } catch (error) {
         console.error('❌ Error getting age group data:', error);
         return [];
@@ -192,9 +192,9 @@ export const getIncomeLevelData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('💰 DEBUG Demographics Income: Total journeys loaded:', journeys.length);
-        
+
         // Initialize income groups with transport mode counters
         const incomeGroups = {
             '< ₹25k': { bus: 0, metro: 0, auto: 0, walk: 0, other: 0 },
@@ -202,12 +202,12 @@ export const getIncomeLevelData = async () => {
             '₹50-75k': { bus: 0, metro: 0, auto: 0, walk: 0, other: 0 },
             '> ₹75k': { bus: 0, metro: 0, auto: 0, walk: 0, other: 0 }
         };
-        
+
         // Process journey data
         journeys.forEach((journey, index) => {
             const income = journey.income ? journey.income.toLowerCase() : 'middle';
             const transportMode = journey.tripData?.transportMode ? journey.tripData.transportMode.toLowerCase() : 'bus';
-            
+
             // Map income levels
             let incomeCategory;
             if (income.includes('low') || income.includes('poor')) {
@@ -219,7 +219,7 @@ export const getIncomeLevelData = async () => {
             } else {
                 incomeCategory = '₹25-50k'; // Default to middle
             }
-            
+
             // Map transport modes
             let modeCategory;
             if (transportMode.includes('bus')) {
@@ -233,12 +233,12 @@ export const getIncomeLevelData = async () => {
             } else {
                 modeCategory = 'other';
             }
-            
+
             // Increment counters
             if (incomeGroups[incomeCategory] && incomeGroups[incomeCategory][modeCategory] !== undefined) {
                 incomeGroups[incomeCategory][modeCategory]++;
             }
-            
+
             // Debug first few entries
             if (index < 5) {
                 console.log(`💰 DEBUG Demographics Income Journey ${index + 1}:`, {
@@ -249,9 +249,9 @@ export const getIncomeLevelData = async () => {
                 });
             }
         });
-        
+
         const totalJourneys = journeys.length;
-        
+
         // Convert to chart data format
         const incomeLevelData = Object.entries(incomeGroups).map(([incomeRange, modes]) => {
             const total = Object.values(modes).reduce((sum, count) => sum + count, 0);
@@ -265,11 +265,11 @@ export const getIncomeLevelData = async () => {
                 percentage: totalJourneys > 0 ? Math.round((total / totalJourneys) * 100 * 10) / 10 : 0
             };
         });
-        
+
         console.log('💰 DEBUG Demographics Income: Final data:', incomeLevelData);
-        
+
         return incomeLevelData;
-        
+
     } catch (error) {
         console.error('❌ Error getting income level data:', error);
         return [];
@@ -283,20 +283,20 @@ export const getGenderData = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('⚧ DEBUG Demographics Gender: Total journeys loaded:', journeys.length);
-        
+
         // Initialize gender counters
         const genderCounts = {
             male: 0,
             female: 0,
             other: 0
         };
-        
+
         // Process journey data
         journeys.forEach((journey, index) => {
             const gender = journey.gender ? journey.gender.toLowerCase() : 'male'; // Default assumption
-            
+
             if (gender.includes('male') && !gender.includes('female')) {
                 genderCounts.male++;
             } else if (gender.includes('female')) {
@@ -304,19 +304,19 @@ export const getGenderData = async () => {
             } else {
                 genderCounts.other++;
             }
-            
+
             // Debug first few entries
             if (index < 5) {
                 console.log(`⚧ DEBUG Demographics Gender Journey ${index + 1}:`, {
                     originalGender: journey.gender,
                     categorized: gender,
-                    counts: {...genderCounts}
+                    counts: { ...genderCounts }
                 });
             }
         });
-        
+
         const totalTrips = journeys.length;
-        
+
         // Convert to chart data format
         const genderData = [
             {
@@ -338,11 +338,11 @@ export const getGenderData = async () => {
                 color: '#7c3aed'
             }
         ];
-        
+
         console.log('⚧ DEBUG Demographics Gender: Final data:', genderData);
-        
+
         return genderData;
-        
+
     } catch (error) {
         console.error('❌ Error getting gender data:', error);
         return [
@@ -361,9 +361,9 @@ export const getEquityZones = async () => {
     try {
         const response = await fetchJourneyData();
         const journeys = response.data || [];
-        
+
         console.log('🗺️ DEBUG Demographics Equity: Total journeys loaded:', journeys.length);
-        
+
         // For now, return Kerala-specific equity zones based on known data
         // In a real implementation, this would analyze journey start/end locations
         const keralaEquityZones = [
@@ -416,11 +416,11 @@ export const getEquityZones = async () => {
                 color: '#DC2626'
             }
         ];
-        
+
         console.log('🗺️ DEBUG Demographics Equity: Kerala zones created:', keralaEquityZones.length);
-        
+
         return keralaEquityZones;
-        
+
     } catch (error) {
         console.error('❌ Error getting equity zones:', error);
         return [];
@@ -440,11 +440,57 @@ export const getTransportStops = async () => {
             { id: 4, name: 'Kochi Metro Terminal', coords: [10.0261, 76.3125], type: 'metro' },
             { id: 5, name: 'Thrissur Bus Stand', coords: [10.5276, 76.2144], type: 'bus' }
         ];
-        
+
         return keralaTransportStops;
-        
+
     } catch (error) {
         console.error('❌ Error getting transport stops:', error);
         return [];
+    }
+};
+
+/**
+ * Combined demographics data generation for React Query
+ */
+export const generateDemographicsData = async () => {
+    try {
+        const [
+            kpis,
+            ageGroups,
+            incomeData,
+            genderData,
+            equityZones,
+            transportStops
+        ] = await Promise.all([
+            getDemographicKPIs(),
+            getAgeGroupData(),
+            getIncomeLevelData(),
+            getGenderData(),
+            getEquityZones(),
+            getTransportStops()
+        ]);
+
+        // Debug: Log the final data structure
+        console.log('📊 DEBUG generateDemographicsData returning:', {
+            kpis: kpis?.length || 0,
+            ageGroups: ageGroups?.length || 0,
+            incomeData: incomeData?.length || 0,
+            genderData: genderData?.length || 0,
+            equityZones: equityZones?.length || 0,
+            transportStops: transportStops?.length || 0
+        });
+
+        return {
+            kpis,
+            ageGroups,
+            incomeData,
+            genderData,
+            equityZones,
+            transportStops,
+            lastFetched: new Date().toISOString()
+        };
+    } catch (error) {
+        console.error('Error generating demographics data:', error);
+        throw error;
     }
 };

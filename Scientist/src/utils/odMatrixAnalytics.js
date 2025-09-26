@@ -33,7 +33,7 @@ const getZoneFromLocation = (lat, lng, address) => {
       }
     }
   }
-  
+
   // Default to coordinate-based mapping for Kerala
   if (lat && lng) {
     // Basic coordinate ranges for Kerala cities
@@ -45,7 +45,7 @@ const getZoneFromLocation = (lat, lng, address) => {
       return { ...zoneMapping['Kozhikode'], coords: [lat, lng] };
     }
   }
-  
+
   return { id: 'OTH', name: 'Other Kerala', coords: [lat || 0, lng || 0] };
 };
 
@@ -54,7 +54,7 @@ const extractZonesFromJourneyData = async () => {
   try {
     const response = await fetchJourneyData();
     const journeys = response.data || [];
-    
+
     const zoneSet = new Set();
     const zoneCoords = {};
 
@@ -63,8 +63,8 @@ const extractZonesFromJourneyData = async () => {
       const startLoc = journey.tripData?.startLocation;
       if (startLoc) {
         const startZone = getZoneFromLocation(
-          startLoc.latitude, 
-          startLoc.longitude, 
+          startLoc.latitude,
+          startLoc.longitude,
           startLoc.address
         );
         zoneSet.add(startZone.id);
@@ -77,8 +77,8 @@ const extractZonesFromJourneyData = async () => {
       const endLoc = journey.tripData?.endLocation;
       if (endLoc) {
         const endZone = getZoneFromLocation(
-          endLoc.latitude, 
-          endLoc.longitude, 
+          endLoc.latitude,
+          endLoc.longitude,
           endLoc.address
         );
         zoneSet.add(endZone.id);
@@ -103,8 +103,8 @@ const extractZonesFromUserData = () => {
   usersData.users.forEach(user => {
     // Add home location zone
     const homeZone = getZoneFromLocation(
-      user.home_location.lat, 
-      user.home_location.lng, 
+      user.home_location.lat,
+      user.home_location.lng,
       user.home_location.area
     );
     zoneSet.add(homeZone.id);
@@ -117,8 +117,8 @@ const extractZonesFromUserData = () => {
 
     // Add work location zone
     const workZone = getZoneFromLocation(
-      user.work_location.lat, 
-      user.work_location.lng, 
+      user.work_location.lat,
+      user.work_location.lng,
       user.work_location.area
     );
     zoneSet.add(workZone.id);
@@ -152,7 +152,7 @@ const generateRealODMatrix = async () => {
     const journeys = response.data || [];
     const matrix = {};
     const zones = await extractZonesFromJourneyData();
-    
+
     // Initialize matrix
     zones.forEach(origin => {
       matrix[origin.id] = {};
@@ -165,19 +165,19 @@ const generateRealODMatrix = async () => {
     journeys.forEach(journey => {
       const startLoc = journey.tripData?.startLocation;
       const endLoc = journey.tripData?.endLocation;
-      
+
       if (startLoc && endLoc) {
         const originZone = getZoneFromLocation(
-          startLoc.latitude, 
-          startLoc.longitude, 
+          startLoc.latitude,
+          startLoc.longitude,
           startLoc.address
         );
         const destZone = getZoneFromLocation(
-          endLoc.latitude, 
-          endLoc.longitude, 
+          endLoc.latitude,
+          endLoc.longitude,
           endLoc.address
         );
-        
+
         if (matrix[originZone.id] && matrix[originZone.id][destZone.id] !== undefined) {
           matrix[originZone.id][destZone.id] += 1;
         }
@@ -196,26 +196,26 @@ const generateRealCorridorData = async (originId, destinationId) => {
   try {
     const response = await fetchJourneyData();
     const journeys = response.data || [];
-    
+
     const relevantJourneys = journeys.filter(journey => {
       const startLoc = journey.tripData?.startLocation;
       const endLoc = journey.tripData?.endLocation;
-      
+
       if (!startLoc || !endLoc) return false;
-      
+
       const originZone = getZoneFromLocation(
-        startLoc.latitude, 
-        startLoc.longitude, 
+        startLoc.latitude,
+        startLoc.longitude,
         startLoc.address
       );
       const destZone = getZoneFromLocation(
-        endLoc.latitude, 
-        endLoc.longitude, 
+        endLoc.latitude,
+        endLoc.longitude,
         endLoc.address
       );
-      
+
       return (originZone.id === originId && destZone.id === destinationId) ||
-             (destZone.id === originId && originZone.id === destinationId);
+        (destZone.id === originId && originZone.id === destinationId);
     });
 
     // Generate mode data from journey transport modes
@@ -262,22 +262,61 @@ const generateRealCorridorData = async (originId, destinationId) => {
 // Get top corridors from real data
 const getRealTopCorridors = async (matrix, zones) => {
   const corridors = [];
+
+  // Add null check for matrix
+  if (!matrix || typeof matrix !== 'object') {
+    console.warn('Matrix is null or undefined in getRealTopCorridors');
+    return [];
+  }
+
   Object.keys(matrix).forEach(origin => {
-    Object.keys(matrix[origin]).forEach(destination => {
-      if (matrix[origin][destination] > 0) {
-        const originZone = zones.find(z => z.id === origin);
-        const destinationZone = zones.find(z => z.id === destination);
-        corridors.push({
-          origin,
-          destination,
-          trips: matrix[origin][destination],
-          originName: originZone?.name || origin,
-          destinationName: destinationZone?.name || destination
-        });
-      }
-    });
+    if (matrix[origin] && typeof matrix[origin] === 'object') {
+      Object.keys(matrix[origin]).forEach(destination => {
+        if (matrix[origin][destination] > 0) {
+          const originZone = zones.find(z => z.id === origin);
+          const destinationZone = zones.find(z => z.id === destination);
+          corridors.push({
+            origin,
+            destination,
+            trips: matrix[origin][destination],
+            originName: originZone?.name || origin,
+            destinationName: destinationZone?.name || destination
+          });
+        }
+      });
+    }
   });
   return corridors.sort((a, b) => b.trips - a.trips).slice(0, 10);
+};
+
+/**
+ * Combined OD Matrix data generation for React Query
+ */
+const generateODMatrixData = async () => {
+  try {
+    // First get zones and matrix, then use them for other operations
+    const [zones, matrixResult, corridors] = await Promise.all([
+      extractZonesFromJourneyData(),
+      generateRealODMatrix(),
+      generateRealCorridorData()
+    ]);
+
+    const matrix = matrixResult?.matrix || {};
+
+    // Now get top corridors with the matrix and zones data
+    const topCorridors = await getRealTopCorridors(matrix, zones);
+
+    return {
+      zones,
+      matrix,
+      corridors,
+      topCorridors,
+      lastFetched: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error generating OD Matrix data:', error);
+    throw error;
+  }
 };
 
 // Export functions with Journey data compatibility
@@ -287,5 +326,6 @@ export {
   generateRealODMatrix,
   generateRealCorridorData,
   getRealTopCorridors,
-  getZoneFromLocation
+  getZoneFromLocation,
+  generateODMatrixData
 };

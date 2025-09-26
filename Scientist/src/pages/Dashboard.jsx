@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {
   PieChart,
   Pie,
@@ -38,7 +38,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getChartData, getPerformanceMetrics, analyzeUserData } from '../utils/dashboardAnalytics';
+import { useDashboardData, usePrefetchData, useDataContext } from '../contexts/DataContext';
+import { DashboardSkeleton, ErrorState, LoadingState } from '../components/LoadingSkeleton';
+import dataCacheService from '../services/dataCacheService';
 
 
 
@@ -90,8 +92,48 @@ const EnhancedKPICard = ({ title, value, change, icon: Icon, gradient, descripti
 );
 
 const Dashboard = () => {
-  // State for async data
-  const [chartData, setChartData] = useState({
+  // Use React Query for data fetching with caching
+  const {
+    data: dashboardData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching
+  } = useDashboardData();
+
+  const { prefetch } = usePrefetchData();
+  const { cacheManager } = useDataContext();
+
+  // Prefetch other page data when dashboard loads
+  useEffect(() => {
+    if (!isLoading && dashboardData) {
+      // Prefetch geospatial and demographics data for faster navigation
+      setTimeout(() => {
+        prefetch.prefetchGeospatialData();
+        prefetch.prefetchDemographicsData();
+      }, 1000);
+    }
+  }, [isLoading, dashboardData, prefetch]);
+
+  // Handle loading state
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
+
+  // Handle error state
+  if (isError) {
+    return (
+      <ErrorState
+        title="Failed to Load Dashboard"
+        message={error?.message || "Unable to fetch dashboard data. Please check your connection."}
+        onRetry={refetch}
+      />
+    );
+  }
+
+  // Extract data with defaults
+  const chartData = dashboardData?.chartData || {
     ageData: [],
     transportData: [],
     hourlyData: [],
@@ -99,8 +141,9 @@ const Dashboard = () => {
     dailyTrends: [],
     totalJourneys: 0,
     totalUsers: 0
-  });
-  const [performanceMetrics, setPerformanceMetrics] = useState({
+  };
+
+  const performanceMetrics = dashboardData?.performanceMetrics || {
     totalTrips: 0,
     uniqueUsers: 0,
     avgSatisfaction: 0,
@@ -111,36 +154,13 @@ const Dashboard = () => {
     peakTraffic: 0,
     dataQuality: 'Loading...',
     lastUpdated: new Date().toISOString()
-  });
-  const [loading, setLoading] = useState(true);
-
-  // Load data on component mount
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        const [chartResult, metricsResult] = await Promise.all([
-          getChartData(),
-          getPerformanceMetrics()
-        ]);
-        
-        setChartData(chartResult);
-        setPerformanceMetrics(metricsResult);
-      } catch (error) {
-        console.error('❌ Error loading dashboard data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadData();
-  }, []);
+  };
 
   // Destructure data for backward compatibility
-  const { 
-    ageData, 
-    transportData: modeShareData, 
-    purposeData: tripPurposeData, 
+  const {
+    ageData,
+    transportData: modeShareData,
+    purposeData: tripPurposeData,
     hourlyData: hourlyTrafficData,
     dailyTrends,
     totalJourneys,
@@ -166,7 +186,7 @@ const Dashboard = () => {
     { name: 'Middle Income', value: Math.floor(totalUsers * 0.5), color: '#82ca9d' },
     { name: 'High Income', value: Math.floor(totalUsers * 0.2), color: '#ffc658' }
   ];
-  
+
   // Use real daily trends data instead of mock data
   const dailyTripsData = dailyTrends.length > 0 ? dailyTrends : Array.from({ length: 7 }, (_, i) => ({
     day: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][i],
@@ -216,17 +236,48 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 space-y-8 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-      
+
       {/* Enhanced Header */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 bg-clip-text text-transparent">
               Transportation Dashboard
+              {isFetching && (
+                <span className="ml-3 inline-flex items-center px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                  <div className="w-3 h-3 mr-1 rounded-full bg-blue-600 animate-pulse"></div>
+                  Updating...
+                </span>
+              )}
             </h1>
-            <p className="text-gray-600 mt-2 text-lg">Real-time analytics and key performance indicators</p>
+            <p className="text-gray-600 mt-2 text-lg">
+              Real-time analytics and key performance indicators
+              {dashboardData?.lastFetched && (
+                <span className="ml-2 text-sm text-gray-500">
+                  • Last updated: {new Date(dashboardData.lastFetched).toLocaleTimeString()}
+                </span>
+              )}
+            </p>
           </div>
           <div className="flex space-x-3">
+            <Button
+              variant="outline"
+              className="border-purple-200 text-purple-700 hover:bg-purple-50"
+              onClick={() => refetch()}
+              disabled={isFetching}
+            >
+              {isFetching ? (
+                <>
+                  <div className="w-4 h-4 mr-2 rounded-full border-2 border-purple-600 border-t-transparent animate-spin"></div>
+                  Refreshing...
+                </>
+              ) : (
+                <>
+                  <Activity className="w-4 h-4 mr-2" />
+                  Refresh Data
+                </>
+              )}
+            </Button>
             <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
               Export Data
             </Button>
@@ -315,7 +366,7 @@ const Dashboard = () => {
                   ))}
                 </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Legend 
+                <Legend
                   wrapperStyle={{ paddingTop: '20px' }}
                   formatter={(value, entry) => (
                     <span className="text-gray-700 font-medium">{value}</span>
@@ -341,18 +392,18 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={tripPurposeData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tick={{ fill: '#6b7280', fontSize: 12 }}
                   axisLine={{ stroke: '#d1d5db' }}
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fill: '#6b7280', fontSize: 12 }}
                   axisLine={{ stroke: '#d1d5db' }}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Bar 
-                  dataKey="trips" 
+                <Bar
+                  dataKey="trips"
                   radius={[6, 6, 0, 0]}
                   stroke="#8b7cf6"
                   strokeWidth={1}
@@ -384,12 +435,12 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <AreaChart data={dailyTripsData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
-                <XAxis 
-                  dataKey="day" 
+                <XAxis
+                  dataKey="day"
                   tick={{ fill: '#6b7280', fontSize: 12 }}
                   axisLine={{ stroke: '#d1d5db' }}
                 />
-                <YAxis 
+                <YAxis
                   tick={{ fill: '#6b7280', fontSize: 12 }}
                   axisLine={{ stroke: '#d1d5db' }}
                 />
@@ -443,7 +494,7 @@ const Dashboard = () => {
                   ></div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-medium text-gray-700">User Satisfaction</span>
@@ -494,12 +545,12 @@ const Dashboard = () => {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={hourlyTrafficData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
-              <XAxis 
-                dataKey="hour" 
+              <XAxis
+                dataKey="hour"
                 tick={{ fill: '#6b7280', fontSize: 12 }}
                 axisLine={{ stroke: '#d1d5db' }}
               />
-              <YAxis 
+              <YAxis
                 tick={{ fill: '#6b7280', fontSize: 12 }}
                 axisLine={{ stroke: '#d1d5db' }}
               />
