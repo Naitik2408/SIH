@@ -46,7 +46,9 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { fetchJourneyData } from '../services/apiService';
+import { useGeospatialData, usePrefetchData, useDataContext } from '../contexts/DataContext';
+import { GeospatialSkeleton, ErrorState, LoadingState } from '../components/LoadingSkeleton';
+import dataCacheService from '../services/dataCacheService';
 
 // Fix for default markers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -56,197 +58,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-// Generate realistic heatmap data from journey data
-const generateHeatmapData = async () => {
-    try {
-        const response = await fetchJourneyData();
-        const journeys = response.data || [];
-        
-        console.log('🗺️ DEBUG Geospatial Heatmap: Total journeys fetched:', journeys.length);
-        console.log('🗺️ DEBUG Geospatial Heatmap: Sample journey structure:', journeys[0]);
-        
-        const heatmapPoints = [];
-        let id = 0;
-        let processedPoints = 0;
-        let skippedPoints = 0;
 
-        journeys.forEach((journey, index) => {
-            // Add start location (FIX: Use lat/lng instead of latitude/longitude)
-            const startLoc = journey.tripData?.startLocation;
-            
-            if (index < 3) {
-                console.log(`🗺️ DEBUG Geospatial Journey ${index + 1} start:`, {
-                    startLoc,
-                    hasLat: !!startLoc?.lat,
-                    hasLng: !!startLoc?.lng,
-                    lat: startLoc?.lat,
-                    lng: startLoc?.lng,
-                    address: startLoc?.address
-                });
-            }
-            
-            if (startLoc && startLoc.lat && startLoc.lng) {
-                heatmapPoints.push({
-                    id: id++,
-                    lat: startLoc.lat,
-                    lng: startLoc.lng,
-                    intensity: Math.random() * 5 + 1, // Random intensity for visualization
-                    time: journey.tripData?.timestamp ? new Date(journey.tripData.timestamp).getHours() : 8,
-                    trips: 1,
-                    type: 'origin',
-                    area: startLoc.address || 'Unknown',
-                    occupation: journey.occupation || 'Unknown',
-                    transport_mode: journey.tripData?.transportMode || 'Unknown'
-                });
-                processedPoints++;
-            } else {
-                skippedPoints++;
-            }
-
-            // Add end location (FIX: Use lat/lng instead of latitude/longitude)
-            const endLoc = journey.tripData?.endLocation;
-
-            if (index < 3) {
-                console.log(`🗺️ DEBUG Geospatial Journey ${index + 1} end:`, {
-                    endLoc,
-                    hasLat: !!endLoc?.lat,
-                    hasLng: !!endLoc?.lng,
-                    lat: endLoc?.lat,
-                    lng: endLoc?.lng,
-                    address: endLoc?.address
-                });
-            }
-
-            if (endLoc && endLoc.lat && endLoc.lng) {
-                heatmapPoints.push({
-                    id: id++,
-                    lat: endLoc.lat,
-                    lng: endLoc.lng,
-                    intensity: Math.random() * 5 + 1,
-                    time: journey.tripData?.timestamp ? new Date(journey.tripData.timestamp).getHours() + 1 : 18,
-                    trips: 1,
-                    type: 'destination',
-                    area: endLoc.address || 'Unknown',
-                    occupation: journey.occupation || 'Unknown',
-                    transport_mode: journey.tripData?.transportMode || 'Unknown'
-                });
-                processedPoints++;
-            } else {
-                skippedPoints++;
-            }
-        });
-
-        console.log('🗺️ DEBUG Geospatial Heatmap: Points processed:', processedPoints);
-        console.log('🗺️ DEBUG Geospatial Heatmap: Points skipped:', skippedPoints);
-        console.log('🗺️ DEBUG Geospatial Heatmap: Total heatmap points before aggregation:', heatmapPoints.length);
-
-        // Aggregate points by location to avoid duplicates and create density
-        const aggregatedPoints = {};
-        heatmapPoints.forEach(point => {
-            const key = `${point.lat.toFixed(4)}_${point.lng.toFixed(4)}`;
-            if (aggregatedPoints[key]) {
-                aggregatedPoints[key].intensity += point.intensity;
-                aggregatedPoints[key].trips += point.trips;
-                aggregatedPoints[key].users = (aggregatedPoints[key].users || 1) + 1;
-            } else {
-                aggregatedPoints[key] = { ...point, users: 1 };
-            }
-        });
-
-        return Object.values(aggregatedPoints);
-
-    } catch (error) {
-        console.error('Error generating heatmap data:', error);
-        return [];
-    }
-};
-
-// Generate OD flow data from journey data  
-const generateODData = async () => {
-    try {
-        const response = await fetchJourneyData();
-        const journeys = response.data || [];
-
-        console.log('📊 DEBUG Geospatial OD: Total journeys for OD data:', journeys.length);
-
-        const odFlows = [];
-        let id = 0;
-        let validODPairs = 0;
-        let invalidODPairs = 0;
-
-        journeys.forEach((journey, index) => {
-            const startLoc = journey.tripData?.startLocation;
-            const endLoc = journey.tripData?.endLocation;
-
-            if (index < 3) {
-                console.log(`📊 DEBUG Geospatial OD Journey ${index + 1}:`, {
-                    startLoc: {
-                        lat: startLoc?.lat,
-                        lng: startLoc?.lng,
-                        latitude: startLoc?.latitude,
-                        longitude: startLoc?.longitude,
-                        address: startLoc?.address
-                    },
-                    endLoc: {
-                        lat: endLoc?.lat,
-                        lng: endLoc?.lng,
-                        latitude: endLoc?.latitude,
-                        longitude: endLoc?.longitude,
-                        address: endLoc?.address
-                    }
-                });
-            }
-
-            // FIX: Use lat/lng instead of latitude/longitude
-            if (startLoc && endLoc && startLoc.lat && startLoc.lng &&
-                endLoc.lat && endLoc.lng) {
-                odFlows.push({
-                    id: id++,
-                    origin: [startLoc.lat, startLoc.lng],
-                    destination: [endLoc.lat, endLoc.lng],
-                    trips: 1,
-                    time: journey.tripData?.timestamp ? new Date(journey.tripData.timestamp).getHours() : 9,
-                    duration: journey.tripData?.duration || 30,
-                    mode: journey.tripData?.transportMode || 'Unknown',
-                    purpose: journey.tripData?.journeyPurpose || 'Other',
-                    user_age: journey.age || 25,
-                    user_occupation: journey.occupation || 'Unknown',
-                    income_bracket: journey.income || 'Middle Class',
-                    origin_area: startLoc.address || 'Unknown',
-                    dest_area: endLoc.address || 'Unknown'
-                });
-                validODPairs++;
-            } else {
-                invalidODPairs++;
-            }
-        });
-
-        console.log('📊 DEBUG Geospatial OD: Valid OD pairs:', validODPairs);
-        console.log('📊 DEBUG Geospatial OD: Invalid OD pairs:', invalidODPairs);
-        console.log('📊 DEBUG Geospatial OD: Total OD flows before aggregation:', odFlows.length);
-
-        // Aggregate similar OD pairs
-        const aggregatedOD = {};
-        odFlows.forEach(flow => {
-            const key = `${flow.origin[0].toFixed(4)}_${flow.origin[1].toFixed(4)}_${flow.destination[0].toFixed(4)}_${flow.destination[1].toFixed(4)}_${flow.time}`;
-            if (aggregatedOD[key]) {
-                aggregatedOD[key].trips += flow.trips;
-                aggregatedOD[key].users = (aggregatedOD[key].users || 1) + 1;
-            } else {
-                aggregatedOD[key] = { ...flow, users: 1 };
-            }
-        });
-
-        const result = Object.values(aggregatedOD).filter(flow => flow.trips > 0);
-        console.log('📊 DEBUG Geospatial OD: Final aggregated OD flows:', result.length);
-
-        return result;
-
-    } catch (error) {
-        console.error('Error generating OD data:', error);
-        return [];
-    }
-};
 
 // Enhanced heatmap implementation with realistic user data
 const HeatmapLayer = ({ data, timeFilter, visible }) => {
@@ -409,89 +221,22 @@ const ODArrowsLayer = ({ data, timeFilter, visible }) => {
     );
 };
 
-// Data processing and analytics functions
-const getDemographicInsights = async () => {
-    try {
-        const response = await fetchJourneyData();
-        const journeys = response.data || [];
 
-        console.log('📈 DEBUG Geospatial Demographics: Total journeys fetched:', journeys.length);
-        console.log('📈 DEBUG Geospatial Demographics: Sample journey for user ID check:', {
-            userId: journeys[0]?.userId,
-            _id: journeys[0]?._id,
-            email: journeys[0]?.email
-        });
-
-        const totalUsers = new Set(journeys.map(j => j.userId)).size;
-        const totalTrips = journeys.length;
-
-        console.log('📈 DEBUG Geospatial Demographics: Total unique users:', totalUsers);
-        console.log('📈 DEBUG Geospatial Demographics: Total trips:', totalTrips);
-
-        // Age distribution
-        const ageGroups = { young: 0, middle: 0, senior: 0 };
-        journeys.forEach(journey => {
-            const age = journey.age || 25;
-            if (age < 30) ageGroups.young++;
-            else if (age < 50) ageGroups.middle++;
-            else ageGroups.senior++;
-        });
-
-        // Income distribution
-        const incomeDistribution = { low: 0, middle: 0, high: 0 };
-        journeys.forEach(journey => {
-            const income = journey.income || 'middle';
-            incomeDistribution[income.toLowerCase()] = (incomeDistribution[income.toLowerCase()] || 0) + 1;
-        });
-
-        // Transport preference distribution
-        const transportPreferences = {};
-        journeys.forEach(journey => {
-            const mode = journey.tripData?.transportMode || 'Unknown';
-            transportPreferences[mode] = (transportPreferences[mode] || 0) + 1;
-        });
-
-        // Most common routes
-        const routeFrequency = {};
-        journeys.forEach(journey => {
-            const startAddr = journey.tripData?.startLocation?.address;
-            const endAddr = journey.tripData?.endLocation?.address;
-            if (startAddr && endAddr) {
-                const route = `${startAddr} → ${endAddr}`;
-                routeFrequency[route] = (routeFrequency[route] || 0) + 1;
-            }
-        });
-
-        const topRoutes = Object.entries(routeFrequency)
-            .sort(([, a], [, b]) => b - a)
-            .slice(0, 5);
-
-        const result = {
-            totalUsers,
-            totalTrips,
-            ageGroups,
-            incomeDistribution,
-            transportPreferences,
-            topRoutes
-        };
-
-        console.log('📈 DEBUG Geospatial Demographics: Final result:', result);
-
-        return result;
-    } catch (error) {
-        console.error('Error getting demographic insights:', error);
-        return {
-            totalUsers: 0,
-            totalTrips: 0,
-            ageGroups: { young: 0, middle: 0, senior: 0 },
-            incomeDistribution: { low: 0, middle: 0, high: 0 },
-            transportPreferences: {},
-            topRoutes: []
-        };
-    }
-};
 
 const Geospatial = () => {
+    // Use React Query for data fetching with caching
+    const {
+        data: geospatialData,
+        isLoading,
+        isError,
+        error,
+        refetch,
+        isFetching
+    } = useGeospatialData();
+
+    const { prefetch } = usePrefetchData();
+    const { cacheManager } = useDataContext();
+
     const [layers, setLayers] = useState({
         heatmap: true,
         odArrows: false,
@@ -501,42 +246,54 @@ const Geospatial = () => {
     const [mapStyle, setMapStyle] = useState('default'); // 'default' or 'satellite'
     const [showControlPanel, setShowControlPanel] = useState(false); // New state for control panel
 
-    // State for async data
-    const [heatmapData, setHeatmapData] = useState([]);
-    const [odData, setOdData] = useState([]);
-    const [demographicData, setDemographicData] = useState({
+    // Prefetch other page data when geospatial loads
+    useEffect(() => {
+        if (!isLoading && geospatialData && prefetch) {
+            // Prefetch dashboard and demographics data for faster navigation
+            setTimeout(() => {
+                if (prefetch.prefetchDashboardData) {
+                    prefetch.prefetchDashboardData();
+                }
+                if (prefetch.prefetchTemporalData) {
+                    prefetch.prefetchTemporalData();
+                }
+            }, 1000);
+        }
+    }, [isLoading, geospatialData, prefetch]);
+
+    // Handle loading state
+    if (isLoading) {
+        return <GeospatialSkeleton />;
+    }
+
+    // Handle error state
+    if (isError) {
+        return (
+            <ErrorState
+                title="Failed to Load Geospatial Data"
+                message={error?.message || "Unable to fetch geospatial data. Please check your connection."}
+                onRetry={refetch}
+            />
+        );
+    }
+
+    // Extract data with defaults and add debugging
+    console.log('🗺️ DEBUG Geospatial Component: geospatialData received:', geospatialData);
+
+    const heatmapData = geospatialData?.heatmapData || [];
+    const odData = geospatialData?.odData || [];
+    const demographicData = geospatialData?.demographicData || {
         totalUsers: 0,
         totalTrips: 0,
         ageGroups: { young: 0, middle: 0, senior: 0 },
         incomeDistribution: { low: 0, middle: 0, high: 0 },
         transportPreferences: {},
         topRoutes: []
-    });
-    const [loading, setLoading] = useState(true);
+    };
 
-    // Load data on component mount
-    useEffect(() => {
-        const loadData = async () => {
-            setLoading(true);
-            try {
-                const [heatmap, od, demographics] = await Promise.all([
-                    generateHeatmapData(),
-                    generateODData(),
-                    getDemographicInsights()
-                ]);
-
-                setHeatmapData(heatmap);
-                setOdData(od);
-                setDemographicData(demographics);
-            } catch (error) {
-                console.error('Error loading geospatial data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadData();
-    }, []);
+    console.log('🗺️ DEBUG Geospatial Component: heatmapData length:', heatmapData.length);
+    console.log('🗺️ DEBUG Geospatial Component: odData length:', odData.length);
+    console.log('🗺️ DEBUG Geospatial Component: demographicData:', demographicData);
 
     // Calculate real-time statistics
     const filteredHeatmapData = heatmapData.filter(point =>
@@ -576,7 +333,7 @@ const Geospatial = () => {
 
     return (
         <div className="min-h-[calc(100vh-140px)] w-full relative overflow-hidden bg-gray-50">
-            {loading && (
+            {isFetching && (
                 <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
@@ -621,8 +378,8 @@ const Geospatial = () => {
                             <div
                                 onClick={() => toggleLayer('heatmap')}
                                 className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${layers.heatmap
-                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
                                     }`}
                             >
                                 <Activity className="w-4 h-4 mr-2" />
@@ -631,8 +388,8 @@ const Geospatial = () => {
                             <div
                                 onClick={() => toggleLayer('odArrows')}
                                 className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${layers.odArrows
-                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
                                     }`}
                             >
                                 <Route className="w-4 h-4 mr-2" />
@@ -641,8 +398,8 @@ const Geospatial = () => {
                             <div
                                 onClick={() => setMapStyle(mapStyle === 'satellite' ? 'default' : 'satellite')}
                                 className={`w-full flex items-center px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 ${mapStyle === 'satellite'
-                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white border-blue-600 shadow-lg'
+                                    : 'bg-white text-gray-700 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
                                     }`}
                             >
                                 <Satellite className="w-4 h-4 mr-2" />

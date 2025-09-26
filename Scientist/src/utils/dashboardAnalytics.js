@@ -6,14 +6,14 @@ const calculateDistance = (coord1, coord2) => {
   if (!coord1 || !coord2 || !coord1.lat || !coord1.lng || !coord2.lat || !coord2.lng) {
     return 0;
   }
-  
+
   const R = 6371; // Earth's radius in km
   const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
   const dLon = (coord2.lng - coord1.lng) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 };
 
@@ -24,20 +24,39 @@ const categorizeAge = (age) => {
   return 'Senior (50+)';
 };
 
+// Combined dashboard data generation function
+export const generateDashboardData = async () => {
+  try {
+    const [chartData, performanceMetrics] = await Promise.all([
+      getChartData(),
+      getPerformanceMetrics()
+    ]);
+
+    return {
+      chartData,
+      performanceMetrics,
+      lastFetched: new Date().toISOString()
+    };
+  } catch (error) {
+    console.error('Error generating dashboard data:', error);
+    throw error;
+  }
+};
+
 // Main analytics function for dashboard
 export const analyzeUserData = async () => {
   try {
     const response = await fetchJourneyData();
     const journeys = response.data || [];
-    
+
 
     console.log('🔍 DEBUG: Full journey object keys:', Object.keys(journeys[0] || {}));
     console.log('🔍 DEBUG: All available fields in first journey:', JSON.stringify(journeys[0], null, 2));
-    
-    
+
+
     const totalUsers = new Set(journeys.map(j => j.userId)).size;
     const totalTrips = journeys.length;
-    
+
     // Demographics analysis
     const ageDistribution = journeys.reduce((acc, journey) => {
       const age = journey.age || 25;
@@ -45,13 +64,13 @@ export const analyzeUserData = async () => {
       acc[category] = (acc[category] || 0) + 1;
       return acc;
     }, {});
-    
+
     const genderDistribution = journeys.reduce((acc, journey) => {
       const gender = journey.gender || 'unknown';
       acc[gender] = (acc[gender] || 0) + 1;
       return acc;
     }, {});
-    
+
     // Transport mode analysis (FIX: Use correct field path)
     const modeCount = {};
     const tripPurposeCount = {};
@@ -59,14 +78,14 @@ export const analyzeUserData = async () => {
     let totalDistance = 0;
     let tripCount = 0;
     let distanceCount = 0;
-    
 
-    
+
+
     journeys.forEach((journey, index) => {
       // FIX: Use the actual API response structure
       const mode = journey.tripData?.transportMode || 'Unknown';
       const purpose = journey.tripData?.journeyPurpose || journey.tripData?.purpose || 'Other';
-      
+
       // Calculate duration from timestamps if available
       let duration = 0;
       if (journey.tripData?.startLocation?.timestamp && journey.tripData?.endLocation?.timestamp) {
@@ -74,7 +93,7 @@ export const analyzeUserData = async () => {
         const endTime = new Date(journey.tripData.endLocation.timestamp);
         duration = Math.round((endTime - startTime) / (1000 * 60)); // in minutes
       }
-      
+
       // Calculate distance from GPS coordinates
       let distance = 0;
       if (journey.tripData?.startLocation && journey.tripData?.endLocation) {
@@ -83,17 +102,17 @@ export const analyzeUserData = async () => {
           { lat: journey.tripData.endLocation.lat, lng: journey.tripData.endLocation.lng }
         );
       }
-      
 
-      
+
+
       modeCount[mode] = (modeCount[mode] || 0) + 1;
       tripPurposeCount[purpose] = (tripPurposeCount[purpose] || 0) + 1;
-      
+
       if (duration > 0) {
         totalDuration += duration;
         tripCount++;
       }
-      
+
       if (distance > 0) {
         totalDistance += distance;
         distanceCount++;
@@ -102,10 +121,10 @@ export const analyzeUserData = async () => {
 
     const avgDuration = tripCount > 0 ? Math.round(totalDuration / tripCount) : 0;
     const avgDistance = distanceCount > 0 ? Math.round((totalDistance / distanceCount) * 100) / 100 : 0;
-    
 
 
-   
+
+
     return {
       totalUsers,
       totalTrips,
@@ -117,7 +136,7 @@ export const analyzeUserData = async () => {
       tripPurposeCount,
       dataSource: 'backend-database'
     };
-    
+
   } catch (error) {
     console.error('Error analyzing journey data:', error);
     return {
@@ -143,9 +162,9 @@ export const getChartData = async () => {
   try {
     const response = await fetchJourneyData();
     const journeys = response.data || [];
-    
 
-    
+
+
     // Age distribution chart data
     const ageData = journeys.reduce((acc, journey) => {
       const age = journey.age || 25;
@@ -191,7 +210,7 @@ export const getChartData = async () => {
 
     const modeColors = {
       'Bus': '#8b7cf6',
-      'Metro': '#06b6d4', 
+      'Metro': '#06b6d4',
       'Auto/Taxi': '#10b981',
       'Car': '#f59e0b',
       'Bike': '#ef4444',
@@ -215,7 +234,7 @@ export const getChartData = async () => {
     const purposeColors = {
       'Work/Office': '#8b7cf6',
       'Education': '#06b6d4',
-      'Shopping': '#10b981', 
+      'Shopping': '#10b981',
       'Healthcare': '#f59e0b',
       'Leisure/Entertainment': '#ef4444',
       'Personal': '#8b5cf6',
@@ -233,21 +252,21 @@ export const getChartData = async () => {
     const dailyTrends = [];
     const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const today = new Date();
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
       const dayOfWeek = daysOfWeek[date.getDay() === 0 ? 6 : date.getDay() - 1];
-      
+
       // Filter journeys for this day (FIX: Use correct field path from actual API)
       const dayJourneys = journeys.filter(journey => {
         if (!journey.tripData?.timestamp) return false;
         const journeyDate = new Date(journey.tripData.timestamp);
         return journeyDate.toDateString() === date.toDateString();
       });
-      
+
       const dayUsers = new Set(dayJourneys.map(j => j.userId)).size;
-      
+
       dailyTrends.push({
         day: dayOfWeek,
         trips: dayJourneys.length,
@@ -292,7 +311,7 @@ export const getPerformanceMetrics = async () => {
     // Calculate performance metrics
     const totalTrips = journeys.length;
     const uniqueUsers = new Set(journeys.map(j => j.userId)).size;
-    
+
     // Average satisfaction score (FIX: Use correct field from updated API)
     const satisfactionMap = {
       'Very Satisfied': 5,
@@ -301,13 +320,13 @@ export const getPerformanceMetrics = async () => {
       'Dissatisfied': 2,
       'Very Dissatisfied': 1
     };
-    
+
     const satisfactionScores = journeys
       .map(j => satisfactionMap[j.tripData?.routeSatisfaction])
       .filter(s => s !== undefined && s !== null);
-    const avgSatisfaction = satisfactionScores.length ? 
+    const avgSatisfaction = satisfactionScores.length ?
       (satisfactionScores.reduce((sum, s) => sum + s, 0) / satisfactionScores.length).toFixed(1) : 4.2;
-    
+
     // Most popular transport mode (FIX: Use correct field path from actual API)
     const modeCount = {};
     journeys.forEach(journey => {
@@ -315,37 +334,37 @@ export const getPerformanceMetrics = async () => {
       modeCount[mode] = (modeCount[mode] || 0) + 1;
     });
     const popularMode = Object.entries(modeCount)
-      .sort(([,a], [,b]) => b - a)[0]?.[0] || 'Unknown';
+      .sort(([, a], [, b]) => b - a)[0]?.[0] || 'Unknown';
 
     // Average trip duration (FIX: Use duration from API or calculate from timestamps)
     let totalDuration = 0;
     let durationCount = 0;
-    
+
     journeys.forEach(journey => {
       let duration = journey.tripData?.duration; // Direct duration from API
-      
+
       // If no direct duration, calculate from timestamps
       if (!duration && journey.tripData?.startLocation?.timestamp && journey.tripData?.endLocation?.timestamp) {
         const startTime = new Date(journey.tripData.startLocation.timestamp);
         const endTime = new Date(journey.tripData.endLocation.timestamp);
         duration = Math.round((endTime - startTime) / (1000 * 60)); // in minutes
       }
-      
+
       if (duration > 0) {
         totalDuration += duration;
         durationCount++;
       }
     });
-    
+
     const avgDuration = durationCount > 0 ? Math.round(totalDuration / durationCount) : 0;
 
     // Average distance calculation (FIX: Use distance from API or calculate from GPS)
     let totalDistance = 0;
     let distanceCount = 0;
-    
+
     journeys.forEach(journey => {
       let distance = journey.tripData?.distance; // Direct distance from API
-      
+
       // If no direct distance, calculate from GPS coordinates
       if (!distance && journey.tripData?.startLocation && journey.tripData?.endLocation) {
         distance = calculateDistance(
@@ -353,14 +372,14 @@ export const getPerformanceMetrics = async () => {
           { lat: journey.tripData.endLocation.lat, lng: journey.tripData.endLocation.lng }
         );
       }
-      
+
       if (distance > 0) {
         totalDistance += distance;
         distanceCount++;
       }
     });
-    
-    const avgDistance = distanceCount > 0 ? 
+
+    const avgDistance = distanceCount > 0 ?
       Math.round((totalDistance / distanceCount) * 100) / 100 : 0;
 
     // Peak hour analysis (FIX: Use correct field path from actual API)
@@ -372,7 +391,7 @@ export const getPerformanceMetrics = async () => {
       }
     });
     const peakHourEntry = Object.entries(hourCounts)
-      .sort(([,a], [,b]) => b - a)[0];
+      .sort(([, a], [, b]) => b - a)[0];
     const peakHour = peakHourEntry ? parseInt(peakHourEntry[0]) : 9; // default to 9 AM
     const peakTraffic = peakHourEntry ? peakHourEntry[1] : 0;
 

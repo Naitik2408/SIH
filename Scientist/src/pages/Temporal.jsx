@@ -31,7 +31,8 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { generateHeatmapData, generatePeakHoursData, generateWeekdayWeekendData, getTemporalMetrics } from '../utils/temporalAnalytics';
+import { useTemporalData, usePrefetchData, useDataContext } from '../contexts/DataContext';
+import { TemporalSkeleton, ErrorState, LoadingState } from '../components/LoadingSkeleton';
 
 // Enhanced custom heatmap cell component
 const HeatmapCell = ({ data, maxIntensity }) => {
@@ -129,47 +130,60 @@ const EnhancedKPICard = ({ title, value, subtitle, icon: Icon, gradient, badge, 
 const Temporal = () => {
     const [timePeriod, setTimePeriod] = useState('7days');
 
-    // State for async data
-    const [heatmapData, setHeatmapData] = useState([]);
-    const [peakHoursData, setPeakHoursData] = useState([]);
-    const [weekdayWeekendData, setWeekdayWeekendData] = useState([]);
-    const [temporalMetrics, setTemporalMetrics] = useState({
+    // Use React Query for data fetching with caching
+    const {
+        data: temporalData,
+        isLoading,
+        isError,
+        error,
+        refetch,
+        isFetching
+    } = useTemporalData();
+
+    const { prefetch } = usePrefetchData();
+    const { cacheManager } = useDataContext();
+
+    // Prefetch other page data when temporal loads
+    useEffect(() => {
+        if (!isLoading && temporalData) {
+            // Prefetch other pages for faster navigation
+            setTimeout(() => {
+                prefetch.prefetchDashboardData();
+                prefetch.prefetchGeospatialData();
+                prefetch.prefetchDemographicsData();
+                prefetch.prefetchODMatrixData();
+            }, 1000);
+        }
+    }, [isLoading, temporalData, prefetch]);
+
+    // Handle loading state
+    if (isLoading) {
+        return <TemporalSkeleton />;
+    }
+
+    // Handle error state
+    if (isError) {
+        return (
+            <ErrorState
+                title="Failed to Load Temporal Data"
+                message={error?.message || "Unable to fetch temporal data. Please check your connection."}
+                onRetry={refetch}
+            />
+        );
+    }
+
+    // Extract data with defaults
+    const heatmapData = temporalData?.heatmapData || [];
+    const peakHoursData = temporalData?.peakHoursData || [];
+    const weekdayWeekendData = temporalData?.weekdayWeekendData || [];
+    const temporalMetrics = temporalData?.temporalMetrics || {
         totalTrips: 0,
         peakHour: '08:00',
         peakHourTrips: 0,
         avgDuration: 0,
         rushHourImpact: 0,
         lastUpdated: new Date().toISOString()
-    });
-    const [loading, setLoading] = useState(true);
-
-    // Load data on component mount
-    useEffect(() => {
-        const loadTemporalData = async () => {
-            setLoading(true);
-            try {
-                console.log('🔄 Loading temporal data...');
-                const [heatmap, peaks, weekdayWeekend, metrics] = await Promise.all([
-                    generateHeatmapData(),
-                    generatePeakHoursData(),
-                    generateWeekdayWeekendData(),
-                    getTemporalMetrics()
-                ]);
-
-                console.log('✅ Temporal data loaded successfully');
-                setHeatmapData(heatmap);
-                setPeakHoursData(peaks);
-                setWeekdayWeekendData(weekdayWeekend);
-                setTemporalMetrics(metrics);
-            } catch (error) {
-                console.error('❌ Error loading temporal data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadTemporalData();
-    }, []);
+    };
 
     const maxIntensity = Math.max(...heatmapData.map(d => d.intensity), 1); // Ensure minimum 1
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];

@@ -36,7 +36,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import L from 'leaflet';
-import { getDemographicKPIs, getAgeGroupData, getIncomeLevelData, getGenderData, getEquityZones, getTransportStops } from '../utils/demographicsAnalytics';
+import { useDemographicsData, usePrefetchData, useDataContext } from '../contexts/DataContext';
+import { DemographicsSkeleton, ErrorState, LoadingState } from '../components/LoadingSkeleton';
 
 // Fix for default markers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -86,53 +87,75 @@ const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent
 
 const Demographics = () => {
     const [selectedZone, setSelectedZone] = useState(null);
-    const [loading, setLoading] = useState(true);
-    
-    // State for async data
-    const [demographicKPIs, setDemographicKPIs] = useState([]);
-    const [ageGroupData, setAgeGroupData] = useState([]);
-    const [incomeLevelData, setIncomeLevelData] = useState([]);
-    const [genderData, setGenderData] = useState([]);
-    const [equityZones, setEquityZones] = useState([]);
-    const [transportStops, setTransportStops] = useState([]);
-    
-    // Load data on component mount
+
+    // Use React Query for data fetching with caching
+    const {
+        data: demographicsData,
+        isLoading,
+        isError,
+        error,
+        refetch,
+        isFetching
+    } = useDemographicsData();
+
+    const prefetch = usePrefetchData();
+    const { cacheManager } = useDataContext();
+
+    // Prefetch other page data when demographics loads
     useEffect(() => {
-        const loadDemographicData = async () => {
-            setLoading(true);
-            try {
-                console.log('🔄 Loading demographic data...');
-                const [kpis, ageData, incomeData, genderData, equityData, stopsData] = await Promise.all([
-                    getDemographicKPIs(),
-                    getAgeGroupData(),
-                    getIncomeLevelData(),
-                    getGenderData(),
-                    getEquityZones(),
-                    getTransportStops()
-                ]);
-                
-                console.log('✅ Demographics data loaded successfully');
-                setDemographicKPIs(kpis);
-                setAgeGroupData(ageData);
-                setIncomeLevelData(incomeData);
-                setGenderData(genderData);
-                setEquityZones(equityData);
-                setTransportStops(stopsData);
-            } catch (error) {
-                console.error('❌ Error loading demographic data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        loadDemographicData();
-    }, []);
+        if (!isLoading && demographicsData) {
+            // Prefetch other pages for faster navigation
+            setTimeout(() => {
+                prefetch.prefetchGeospatialData();
+                prefetch.prefetchODMatrixData();
+                prefetch.prefetchTemporalData();
+            }, 1000);
+        }
+    }, [isLoading, demographicsData, prefetch]);
+
+    // Handle loading state
+    if (isLoading) {
+        return <DemographicsSkeleton />;
+    }
+
+    // Handle error state
+    if (isError) {
+        return (
+            <ErrorState
+                title="Failed to Load Demographics Data"
+                message={error?.message || "Unable to fetch demographics data. Please check your connection."}
+                onRetry={refetch}
+            />
+        );
+    }
+
+    // Debug: Log the actual data structure
+    console.log('🔍 DEBUG Demographics Data Structure:', demographicsData);
+    console.log('🔍 DEBUG Demographics Keys:', demographicsData ? Object.keys(demographicsData) : 'No data');
+
+    // Extract data with defaults - using correct property names from backend
+    const demographicKPIs = demographicsData?.kpis || [];
+    const ageGroupData = demographicsData?.ageGroups || [];
+    const incomeLevelData = demographicsData?.incomeData || [];
+    const genderData = demographicsData?.genderData || [];
+    const equityZones = demographicsData?.equityZones || [];
+    const transportStops = demographicsData?.transportStops || [];
+
+    // Debug: Log extracted data arrays
+    console.log('🔍 DEBUG Extracted Data:', {
+        demographicKPIs: demographicKPIs?.length || 0,
+        ageGroupData: ageGroupData?.length || 0,
+        incomeLevelData: incomeLevelData?.length || 0,
+        genderData: genderData?.length || 0,
+        equityZones: equityZones?.length || 0,
+        transportStops: transportStops?.length || 0
+    });
 
     const totalTrips = ageGroupData.reduce((sum, item) => sum + item.trips, 0);
 
     return (
         <div className="p-6 space-y-6 bg-gradient-to-br from-purple-50/30 via-white to-blue-50/30 min-h-screen">
-            
+
             {/* Enhanced Header */}
             <div className="mb-8">
                 <div className="flex items-center justify-between">
@@ -205,7 +228,7 @@ const Demographics = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="h-80">
-                                {loading ? (
+                                {isLoading ? (
                                     <div className="flex items-center justify-center h-full">
                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                                     </div>
@@ -213,12 +236,12 @@ const Demographics = () => {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={ageGroupData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                            <XAxis 
-                                                dataKey="ageGroup" 
+                                            <XAxis
+                                                dataKey="ageGroup"
                                                 tick={{ fontSize: 12, fill: '#64748b' }}
                                                 axisLine={{ stroke: '#e2e8f0' }}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 tick={{ fontSize: 12, fill: '#64748b' }}
                                                 axisLine={{ stroke: '#e2e8f0' }}
                                             />
@@ -235,7 +258,7 @@ const Demographics = () => {
 
                             {/* Age Group Summary */}
                             <div className="mt-6 grid grid-cols-2 gap-4">
-                                {loading ? (
+                                {isLoading ? (
                                     <>
                                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 animate-pulse">
                                             <div className="h-4 bg-gray-300 rounded mb-2"></div>
@@ -254,8 +277,8 @@ const Demographics = () => {
                                                 <p className="font-semibold text-purple-800">Most Active Group</p>
                                             </div>
                                             <p className="text-purple-700 font-medium">
-                                                {ageGroupData.length > 0 ? 
-                                                    `${ageGroupData.reduce((max, group) => group.trips > max.trips ? group : max, ageGroupData[0]).ageGroup} (${ageGroupData.reduce((max, group) => group.trips > max.trips ? group : max, ageGroupData[0]).percentage}%)` 
+                                                {ageGroupData.length > 0 ?
+                                                    `${ageGroupData.reduce((max, group) => group.trips > max.trips ? group : max, ageGroupData[0]).ageGroup} (${ageGroupData.reduce((max, group) => group.trips > max.trips ? group : max, ageGroupData[0]).percentage}%)`
                                                     : 'Loading...'
                                                 }
                                             </p>
@@ -266,8 +289,8 @@ const Demographics = () => {
                                                 <p className="font-semibold text-blue-800">Total Daily Trips</p>
                                             </div>
                                             <p className="text-blue-700 font-medium">
-                                                {ageGroupData.length > 0 ? 
-                                                    ageGroupData.reduce((total, group) => total + group.trips, 0).toLocaleString() 
+                                                {ageGroupData.length > 0 ?
+                                                    ageGroupData.reduce((total, group) => total + group.trips, 0).toLocaleString()
                                                     : 'Loading...'
                                                 }
                                             </p>
@@ -291,7 +314,7 @@ const Demographics = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="h-80">
-                                {loading ? (
+                                {isLoading ? (
                                     <div className="flex items-center justify-center h-full">
                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                                     </div>
@@ -326,7 +349,7 @@ const Demographics = () => {
 
                             {/* Gender Stats */}
                             <div className="mt-6 space-y-3">
-                                {loading ? (
+                                {isLoading ? (
                                     <div className="text-center py-4">
                                         <div className="animate-pulse text-gray-500">Loading gender statistics...</div>
                                     </div>
@@ -369,7 +392,7 @@ const Demographics = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="h-80">
-                                {loading ? (
+                                {isLoading ? (
                                     <div className="flex items-center justify-center h-full">
                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                                     </div>
@@ -377,12 +400,12 @@ const Demographics = () => {
                                     <ResponsiveContainer width="100%" height="100%">
                                         <BarChart data={incomeLevelData}>
                                             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                                            <XAxis 
-                                                dataKey="incomeRange" 
+                                            <XAxis
+                                                dataKey="incomeRange"
                                                 tick={{ fontSize: 12, fill: '#64748b' }}
                                                 axisLine={{ stroke: '#e2e8f0' }}
                                             />
-                                            <YAxis 
+                                            <YAxis
                                                 tick={{ fontSize: 12, fill: '#64748b' }}
                                                 axisLine={{ stroke: '#e2e8f0' }}
                                             />
@@ -399,7 +422,7 @@ const Demographics = () => {
 
                             {/* Income Insights */}
                             <div className="mt-6 grid grid-cols-2 gap-4">
-                                {loading ? (
+                                {isLoading ? (
                                     <>
                                         <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 animate-pulse">
                                             <div className="h-4 bg-gray-300 rounded mb-2"></div>
@@ -418,8 +441,8 @@ const Demographics = () => {
                                                 <p className="font-semibold text-yellow-800">Low Income Transit</p>
                                             </div>
                                             <p className="text-yellow-700 font-medium">
-                                                {incomeLevelData.length > 0 && incomeLevelData[0] ? 
-                                                    `Bus dependency: ${Math.round((incomeLevelData[0].bus / (incomeLevelData[0].bus + incomeLevelData[0].metro + incomeLevelData[0].auto + incomeLevelData[0].walk)) * 100)}%` 
+                                                {incomeLevelData.length > 0 && incomeLevelData[0] ?
+                                                    `Bus dependency: ${Math.round((incomeLevelData[0].bus / (incomeLevelData[0].bus + incomeLevelData[0].metro + incomeLevelData[0].auto + incomeLevelData[0].walk)) * 100)}%`
                                                     : 'Bus dependency: 0%'
                                                 }
                                             </p>
@@ -430,8 +453,8 @@ const Demographics = () => {
                                                 <p className="font-semibold text-green-800">High Income Transit</p>
                                             </div>
                                             <p className="text-green-700 font-medium">
-                                                {incomeLevelData.length > 2 && incomeLevelData[2] ? 
-                                                    `Metro preference: ${Math.round((incomeLevelData[2].metro / (incomeLevelData[2].bus + incomeLevelData[2].metro + incomeLevelData[2].auto + incomeLevelData[2].walk)) * 100)}%` 
+                                                {incomeLevelData.length > 2 && incomeLevelData[2] ?
+                                                    `Metro preference: ${Math.round((incomeLevelData[2].metro / (incomeLevelData[2].bus + incomeLevelData[2].metro + incomeLevelData[2].auto + incomeLevelData[2].walk)) * 100)}%`
                                                     : 'Metro preference: 0%'
                                                 }
                                             </p>
@@ -455,7 +478,7 @@ const Demographics = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="h-80 rounded-xl overflow-hidden border border-gray-200">
-                                {loading ? (
+                                {isLoading ? (
                                     <div className="flex items-center justify-center h-full bg-gray-50">
                                         <div className="text-center">
                                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
@@ -671,7 +694,7 @@ const Demographics = () => {
                                 </Badge>
                             </CardContent>
                         </Card>
-                        
+
                         <Card className="border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
                             <CardContent className="p-4 text-center">
                                 <div className="text-3xl font-bold text-blue-700 mb-1">26-35</div>
@@ -681,7 +704,7 @@ const Demographics = () => {
                                 </Badge>
                             </CardContent>
                         </Card>
-                        
+
                         <Card className="border border-indigo-200 bg-gradient-to-br from-indigo-50 to-indigo-100">
                             <CardContent className="p-4 text-center">
                                 <div className="text-3xl font-bold text-indigo-700 mb-1">₹25-50k</div>
@@ -691,7 +714,7 @@ const Demographics = () => {
                                 </Badge>
                             </CardContent>
                         </Card>
-                        
+
                         <Card className="border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100">
                             <CardContent className="p-4 text-center">
                                 <div className="text-3xl font-bold text-violet-700 mb-1">3</div>
